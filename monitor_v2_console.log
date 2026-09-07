@@ -1,8 +1,0 @@
-[10:04:18 WIB 2026-08-25] === MONITOR V2 MULAI — glitch filter ON, sumber: overlay_plan.json + posisi.json ===
-[10:04:18 WIB 2026-08-25]   [A] SELL LIMIT SELL entry=4655 SL=4673 TP1=4601 TP2=4583 (waiting)
-[10:04:18 WIB 2026-08-25]   [B] BUY LIMIT BUY entry=4545 SL=4525 TP1=4605 TP2=4625 (waiting)
-[10:04:18 WIB 2026-08-25] GLITCH DITOLAK: c=159.374 l=159.352 h=159.374 — data tidak masuk akal, siklus dilewati
-[10:05:18 WIB 2026-08-25] GLITCH DITOLAK: c=159.347 l=159.344 h=159.376 — data tidak masuk akal, siklus dilewati
-[10:06:18 WIB 2026-08-25] GLITCH DITOLAK: c=159.36 l=159.344 h=159.376 — data tidak masuk akal, siklus dilewati
-[10:07:18 WIB 2026-08-25] GLITCH DITOLAK: c=159.357 l=159.344 h=159.376 — data tidak masuk akal, siklus dilewati
-[10:08:18 WIB 2026-08-25] GLITCH DITOLAK: c=159.331 l=159.33 h=159.376 — data tidak masuk akal, siklus dilewati
