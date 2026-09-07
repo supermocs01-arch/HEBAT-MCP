@@ -1,0 +1,22 @@
+[2026-09-02T13:32:46.979Z] Target: https://id.tradingview.com/chart/KGDsu1Hl/
+[2026-09-02T13:32:47.078Z] Start resolution: 15
+[2026-09-02T13:32:47.082Z] Set 5: OK (3ms)
+[2026-09-02T13:32:48.770Z] Set D: OK (173ms)
+[2026-09-02T13:32:50.365Z] Set 240: OK (88ms)
+[2026-09-02T13:32:51.891Z] Set 60: OK (14ms)
+[2026-09-02T13:32:53.409Z] Set 30: OK (12ms)
+[2026-09-02T13:32:54.924Z] Set 15: OK (13ms)
+[2026-09-02T13:32:56.434Z] Keep at 15
+[2026-09-02T13:32:56.438Z] Done. 6/6 OK in 9418ms. Final: 15
+[2026-09-02T13:32:56.440Z] STATE saved to C:/HEBAT/.last_resolution.json
+[2026-09-03T04:21:11.230Z] Target: https://id.tradingview.com/chart/KGDsu1Hl/
+[2026-09-03T04:21:11.256Z] Start resolution: 15
+[2026-09-03T04:21:11.363Z] Set 5: OK (106ms)
+[2026-09-03T04:21:12.935Z] Set D: OK (57ms)
+[2026-09-03T04:21:14.487Z] Set 240: OK (44ms)
+[2026-09-03T04:21:16.020Z] Set 60: OK (18ms)
+[2026-09-03T04:21:17.548Z] Set 30: OK (15ms)
+[2026-09-03T04:21:19.072Z] Set 15: OK (14ms)
+[2026-09-03T04:21:20.585Z] Keep at 15
+[2026-09-03T04:21:20.588Z] Done. 6/6 OK in 9342ms. Final: 15
+[2026-09-03T04:21:20.589Z] STATE saved to C:/HEBAT/.last_resolution.json

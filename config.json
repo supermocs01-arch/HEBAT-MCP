@@ -1,0 +1,39 @@
+{
+  "pineStudyId": "lX3BtG",
+  "pineStudyVersion": "1.0",
+  "pineStudyName": "SMC×ICT Unified Fitra XAUUSD",
+  "pineStudyUpdatedAt": "2026-09-03T04:35:00.000Z",
+  "targetSymbol": "XAUUSD",
+  "targetBroker": "OANDA",
+  "accountType": "cent",
+  "strategy": {
+    "name": "Paten Fitra v1.0",
+    "description": "SMC klasik (Paten Fitra) + ICT (Kill Zones, Silver Bullet, Judas Swing, OTE, Power of 3) untuk XAUUSD",
+    "modules": [
+      "M1 Struktur SMC (BOS/CHoCH swing + body-confirm)",
+      "M2 Sweep Likuiditas (M10 simetris: post-sweep blokir)",
+      "M3 FVG & OB state (zona retestable)",
+      "M4 Range Premium/Diskon (mid reference)",
+      "M5 FIBO otomatis (OTE 62-79% ICT, demand 61.8-78.6)",
+      "M6 Filter Pelajaran Fitra (RSI ekstrem M9, PREMIUM M11, OB, dll)",
+      "M6B MTF trend (CDP-DRIVEN)",
+      "M7 ICT Kill Zones (Asia/London/NY, Silver Bullet, Judas)",
+      "M8 Power of 3 (PO3) ICT",
+      "M9 Verdict Engine (BUY/SELL/FLAT + ready + reason)",
+      "M10 Output grafik (label, table, JSON alert-ready)"
+    ]
+  },
+  "mtf": {
+    "enabled": true,
+    "method": "CDP-driven (bukan request.security)",
+    "timeframes": ["M5", "M15", "M30", "H1", "H4", "D1"],
+    "note": "request.security() di Pine sering return NA setelah restart. MTF dihitung oleh analyzer Node.js via CDP cycle."
+  },
+  "analyzer": {
+    "pineReader": "baca_pine_json.cjs",
+    "scanAllTF": "scan_all_tf.cjs",
+    "cycleTF": "cycle_tf_efficient.cjs",
+    "monitor": "monitor_limit_xau.cjs",
+    "mainScan": "analisa_gabungan.cjs"
+  }
+}

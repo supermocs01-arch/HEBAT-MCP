@@ -1,0 +1,3 @@
+@echo off
+start "" "C:\Users\Newas\AppData\Local\tradingview-mcp\TradingView.Desktop_3.3.0.7992_x64__n534cwy3pjxzj\TradingView.exe" --remote-debugging-port=9222
+echo TradingView Desktop launching with debug port 9222...

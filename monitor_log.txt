@@ -1,0 +1,45 @@
+🤖 AUTO MONITOR AKTIF
+Update otomatis setiap 15 menit + notifikasi jika sinyal berubah
+Tekan Ctrl+C untuk berhenti
+
+
+──────────────────────────────────────────────
+  UPDATE 23:46 WIB
+──────────────────────────────────────────────
+  Harga: 4039.72 | High15: 4047.20 Low15: 4011.76
+  Close: 4039.72 | Open: 4040.61
+  RSI(14): 62.0 | SMA50: 4036.48 | Trend: BULLISH
+  Swing H: 4038.22 L: 4011.76
+  Sesi: LONDON-NY OVERLAP
+
+  BUY  → BOS:✓ Trend:✓ FVG:✓ RSI:✗ (3/6)
+  SELL → BOS:✗ Trend:✗ FVG:✗ RSI:✗ (0/6)
+  FVG BULLISH aktif: 4029.6 - 4031.78
+──────────────────────────────────────────────
+
+──────────────────────────────────────────────
+  UPDATE 00:16 WIB
+──────────────────────────────────────────────
+  Harga: 4035.97 | High15: 4047.20 Low15: 4011.76
+  Close: 4035.97 | Open: 4037.11
+  RSI(14): 66.9 | SMA50: 4036.10 | Trend: BEARISH
+  Swing H: 4047.20 L: 4011.76
+  Sesi: ASIA
+
+  BUY  → BOS:✗ Trend:✗ FVG:✗ RSI:✗ (0/6)
+  SELL → BOS:✗ Trend:✓ FVG:✓ RSI:✓ (3/6)
+  FVG BEARISH aktif: 4041.235 - 4042.115
+──────────────────────────────────────────────
+
+──────────────────────────────────────────────
+  UPDATE 01:31 WIB
+──────────────────────────────────────────────
+  Harga: 4026.23 | High15: 4047.20 Low15: 4022.16
+  Close: 4026.23 | Open: 4027.18
+  RSI(14): 39.2 | SMA50: 4034.55 | Trend: BEARISH
+  Swing H: 4047.20 L: 4011.76
+  Sesi: ASIA
+
+  BUY  → BOS:✗ Trend:✗ FVG:✗ RSI:✗ (0/6)
+  SELL → BOS:✗ Trend:✓ FVG:✗ RSI:✗ (1/6)
+──────────────────────────────────────────────

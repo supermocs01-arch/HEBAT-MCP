@@ -1,0 +1,11 @@
+[02:13:52 WIB 2026-08-05] === MONITOR LIMIT MULAI (cek tiap 5 menit, disiplin keras) ===
+[02:13:59 WIB 2026-08-05] harga=4099.89 | H1 close=4099.44 (conf>4093.9:Y) | H1 low=4096.52 | RSI-PINE=78.1 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:19:06 WIB 2026-08-05] harga=4095.74 | H1 close=4095.74 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=66.6 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:24:06 WIB 2026-08-05] harga=4102.27 | H1 close=4102.27 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=80.5 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:29:06 WIB 2026-08-05] harga=4103.11 | H1 close=4103.11 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=81.1 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:34:06 WIB 2026-08-05] harga=4106.91 | H1 close=4106.91 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=83.7 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:39:06 WIB 2026-08-05] harga=4118.46 | H1 close=4117.52 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=88.6 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:44:06 WIB 2026-08-05] harga=4125.40 | H1 close=4125.98 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=90.3 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:49:06 WIB 2026-08-05] harga=4130.02 | H1 close=4130.02 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=91.3 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:54:06 WIB 2026-08-05] harga=4127.03 | H1 close=4127.03 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=88 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6
+[02:59:06 WIB 2026-08-05] harga=4130.93 | H1 close=4130.93 (conf>4093.9:Y) | H1 low=4095.42 | RSI-PINE=91.5 | pineSig=FLAT => NO CHASE (>=4095, RSI extended) - TUNGGU pullback ke 4083-4088.6

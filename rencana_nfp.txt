@@ -1,0 +1,67 @@
+═══════════════════════════════════════════
+ RENCANA TEMPUR NFP - JUMAT 7 AGUSTUS 2026
+ Rilis: 08:30 ET = 19:30 WIB (SESI MALAM)
+═══════════════════════════════════════════
+
+TUJUAN: Memaksimalkan profit dari volatilitas NFP
+TANPA melanggar paten (RR 1:3, disiplin, 2 entry max).
+
+───────────────────────────────────────
+ A. SEBELUM RILIS (hari ini - Kamis + Jumat siang)
+───────────────────────────────────────
+1. Analisis normal pagi (hi fitra) - catat zona sebelum news:
+   - Level kunci yang harus diketahui sebelum rilis:
+     * Supply terdekat: 4254.3-4256.2 (FVG M15) | 4261.1 | 4268.1
+     * Demand terdekat: 4243.1 (swing M15) | 4232.4 (BOS M15)
+     * Demand dalam: FVG H4 4213.5-4237.0
+     * Demand utama: 4183.8 (OB H4) + 4161.5-4183.3 (demand H1)
+2. JANGAN entry mulai 18:30 WIB (60 menit sebelum rilis)
+
+───────────────────────────────────────
+ B. SAAT RILIS (19:30 WIB)
+───────────────────────────────────────
+1. 19:30 - Saya cari angka aktual (payroll, unemployment, upah,
+   revisi) dan bandingkan dengan konsensus.
+2. MENIT-MENIT PERTAMA = DILARANG ENTRY (sinyal palsu, spread liar).
+3. Interpretasi:
+   - Payroll > konsensus = USD kuat = emas TURUN (cari SELL)
+   - Payroll < konsensus = USD lemah = emas NAIK (cari BUY)
+   - Perhatikan juga revisi bulan lalu (bisa mengubah arah).
+
+───────────────────────────────────────
+ C. SETELAH RILIS (19:35 - 21:00 WIB)
+───────────────────────────────────────
+1. Tunggu 30-60 menit: biarkan volatilitas awal mereda,
+   struktur baru terbentuk di chart.
+2. Analisis MTF penuh (hi fitra) - baca arah reaksi:
+   - H1/M15 pasca-news: apakah break zone yang mana?
+   - Cari BOS/CHoCH + OB searah + FVG baru + candle tegas.
+3. Hitung entry dengan paten:
+   - ATR live saat itu menentukan jarak SL
+   - TP1 = 1:3 persis | TP2 = 1:3.5
+   - Max 2 entry hari itu (tidak menambah)
+4. Jika setup valid -> report lengkap ke Fitra:
+   arah | entry | SL | TP1 | TP2 | alasan teknikal.
+5. Jika tidak valid -> tetap TIDAK entry. Volatilitas tinggi
+   tidak mengubah aturan.
+
+───────────────────────────────────────
+ D. ATURAN BESI HARI NFP
+───────────────────────────────────────
+- NO ENTRY 18:30 - 20:00 WIB (sebelum & saat rilis)
+- NO MARTINGALE / menambah posisi rugi
+- Max 2 entry/hari, masing-masing RR 1:3
+- Cut loss disiplin saat SL kena (volatilitas tinggi = SL
+  bisa tersapu cepat - terima, jangan dendam)
+- Ambil profit di TP1 minimal (jangan serakah)
+- Setelah 2 entry = berhenti total hari itu
+
+KUNCI: Volatilitas tinggi = peluang besar + risiko besar.
+Kita menang dengan MEMILIH momen, bukan dengan memaksa.
+
+═══════════════════════════════════════════
+LEVEL PANT AU HARI INI (per analisis terakhir):
+harga 4248.9 | supply 4254-4256 / 4261 / 4268
+demand 4243.1 / 4232.4 / FVG H4 4213.5-4237 / 4183.8
+Rencana BUY 4184 = DITUNDA sampai news selesai.
+═══════════════════════════════════════════

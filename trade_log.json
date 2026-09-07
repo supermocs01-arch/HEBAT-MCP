@@ -1,0 +1,26 @@
+[
+ {
+  "tanggal": "2026-08-10",
+  "pair": "XAUUSD",
+  "arah": "BUY",
+  "entry": 4316.7,
+  "sl": 4301.5,
+  "tp1": 4361.7,
+  "tp2": 4367.7,
+  "hasil": "TP2 HIT (+51 pips)",
+  "win": true,
+  "catatan": "Break 4332.3 = sehat; paten lama 45/51 pips; posisi kejar sampai TP2 (keputusan user)"
+ },
+ {
+  "tanggal": "2026-08-11",
+  "pair": "XAUUSD",
+  "arah": "SELL",
+  "entry": 4428.3,
+  "sl": 4430.3,
+  "tp1": 4351.8,
+  "tp2": null,
+  "hasil": "TP 4351.8 HIT (entry #1 hari ini)",
+  "win": true,
+  "catatan": "2 posisi sell (4429.626 & 4427.015) TP di buy limit 4351.8; lot 0.1; RSI overbought ekstrem; sisa jatah entry hari ini: 2"
+ }
+]

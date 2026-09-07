@@ -1,0 +1,48 @@
+RENCANA LIMIT — XAUUSD (15M entry, H4 utama)
+Dibuat: 2026-08-05 | Harga saat analisis: 4094.5
+
+STRATEGI: SMC MTF — BOS/CHoCH + OB searah + konfirmasi candle >=0.45 + RR 1:3
+Arah: BUY (H4 BULLISH, indikator BUY ready 100%)
+
+====================================================
+BUY LIMIT L1 (PRIMER) — pullback ke OB M15
+====================================================
+Zona: 4083.0 - 4088.6 (OB bullish M15 4082.8-4088.6)
+LIMIT: 4084
+SL: 4077.5 (bawah OB, risk 6.5)
+TP1: 4103.5 (RR 1:3)
+TP2: 4106.5 (swing high H1, RR 1:3.5)
+TP3: 4116.0 (atas supply H4, RR 1:4.9)
+Konfirmasi wajib: H1 tutup > 4093.9 (CHoCH-B H1), harga retest 4093.9 bertahan.
+
+====================================================
+BUY LIMIT L2 (CADANGAN) — retest BOS-B H4
+====================================================
+Zona: 4077.7 - 4080.0 (BOS-B H4 @4077.7 + tepi demand H4)
+LIMIT: 4078
+SL: 4071.5 (risk 6.5)
+TP1: 4097.5 (RR 1:3)
+TP2: 4106.5 (RR 1:4.4)
+TP3: 4116.0 (RR 1:5.8)
+Konfirmasi: bertahan di atas 4077.7 (tidak tertutup di bawah BOS H4).
+
+====================================================
+BUY LIMIT L3 (DEEP) — demand H4 bawah, hanya jika koreksi dalam
+====================================================
+Zona: 4063.0 - 4066.0 (demand H4 4061.1-4094.8 bagian bawah + swing low M15 4065.3)
+LIMIT: 4065
+SL: 4058.0 (risk 7)
+TP1: 4086.0 (RR 1:3)
+TP2: 4106.5 (RR 1:5.9)
+TP3: 4116.0 (RR 1:7.3)
+Konfirmasi: M15 reversal di zona (BOS-B/CHoCH-B + candle >=0.45).
+
+====================================================
+SELL: DIBATALKAN — H4 masih BULLISH (BUY 100%).
+====================================================
+
+ATURAN:
+- Jangan entry L1 selama H1 belum konfirmasi CHoCH-B (tutup > 4093.9).
+- Batal semua BUY jika H1 tutup < 4077.7 (struktur H4 rusak).
+- RSI M15 77 (extended) — jangan chase di atas 4095.
+- Harga tembus 4116 dengan H1 bull = perpanjang TP ke swing berikutnya.

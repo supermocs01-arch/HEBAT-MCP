@@ -1,0 +1,264 @@
+[Fri 08/14/2026 10:04:49.43] start_all.cmd mulai 
+[2026-08-14T03:04:49] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[2026-08-14T03:04:49] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-14T03:04:50]   overlay_entry.cjs: OK
+[Fri 08/14/2026 10:05:10.41] start_all.cmd selesai 
+[2026-08-14T03:05:10]   analisa_gabungan.cjs: OK
+[2026-08-14T03:05:10] >>> Overlay + scan selesai.
+[2026-08-14T03:05:10] >>> entry.json ada - start monitor limit...
+[2026-08-14T11:54:21] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-14T11:54:22]   overlay_entry.cjs: OK
+[2026-08-14T11:54:43]   analisa_gabungan.cjs: OK
+[2026-08-14T11:54:43] >>> Overlay + scan selesai.
+[2026-08-14T11:54:43] >>> entry.json ada - start monitor limit...
+[Sat 08/15/2026 14:35:29.14] start_all.cmd mulai 
+[2026-08-15T07:35:34] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[2026-08-15T07:35:49] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-15T07:35:54]   overlay_entry.cjs: ERR Command failed: node C:\HEBAT\overlay_entry.cjs
+read ECONNRESET
+
+[2026-08-15T07:35:55]   analisa_gabungan.cjs: OK
+[2026-08-15T07:35:55] >>> Overlay + scan selesai.
+[2026-08-15T07:35:55] >>> entry.json ada - start monitor limit...
+[Sat 08/15/2026 14:35:55.89] start_all.cmd selesai 
+[2026-08-16T01:39:15] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-16T01:39:17]   overlay_entry.cjs: OK
+[2026-08-16T01:39:42]   analisa_gabungan.cjs: OK
+[2026-08-16T01:39:42] >>> Overlay + scan selesai.
+[2026-08-16T01:39:42] >>> entry.json ada - start monitor limit...
+[2026-08-17T00:01:03] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-17T00:01:04]   overlay_entry.cjs: OK
+[2026-08-17T00:01:29]   analisa_gabungan.cjs: OK
+[2026-08-17T00:01:29] >>> Overlay + scan selesai.
+[2026-08-17T00:01:29] >>> entry.json ada - start monitor limit...
+[Mon 08/17/2026 18:21:38.94] start_all.cmd mulai 
+[2026-08-17T11:21:42] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[2026-08-17T11:21:57] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-17T11:21:57]   overlay_entry.cjs: OK
+[Mon 08/17/2026 18:22:16.76] start_all.cmd selesai 
+[2026-08-17T11:22:22]   analisa_gabungan.cjs: OK
+[2026-08-17T11:22:22] >>> Overlay + scan selesai.
+[2026-08-17T11:22:22] >>> entry.json ada - start monitor limit...
+[Tue 08/18/2026 21:40:21.70] start_all.cmd mulai 
+[2026-08-18T14:40:24] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[2026-08-18T14:40:39] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-18T14:40:40]   overlay_entry.cjs: OK
+[Tue 08/18/2026 21:40:59.14] start_all.cmd selesai 
+[2026-08-18T14:41:05]   analisa_gabungan.cjs: OK
+[2026-08-18T14:41:05] >>> Overlay + scan selesai.
+[2026-08-18T14:41:05] >>> entry.json ada - start monitor limit...
+[Wed 08/19/2026  6:44:17.04] start_all.cmd mulai 
+[2026-08-18T23:44:20] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[2026-08-18T23:44:35] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-18T23:44:35]   overlay_entry.cjs: OK
+[Wed 08/19/2026  6:44:55.00] start_all.cmd selesai 
+[2026-08-18T23:45:00]   analisa_gabungan.cjs: OK
+[2026-08-18T23:45:00] >>> Overlay + scan selesai.
+[2026-08-18T23:45:00] >>> entry.json ada - start monitor limit...
+[2026-08-19T21:58:46] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-19T21:59:05]   overlay_entry.cjs: OK
+[2026-08-19T21:59:25]   analisa_gabungan.cjs: OK
+[2026-08-19T21:59:25] >>> Overlay + scan selesai.
+[2026-08-19T21:59:25] >>> entry.json ada - start monitor limit...
+[2026-08-20T03:46:26] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-20T03:46:27]   overlay_entry.cjs: OK
+[2026-08-20T03:46:52]   analisa_gabungan.cjs: OK
+[2026-08-20T03:46:52] >>> Overlay + scan selesai.
+[2026-08-20T03:46:52] >>> entry.json ada - start monitor limit...
+[2026-08-21T03:43:30] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-21T03:43:31]   overlay_entry.cjs: OK
+[2026-08-21T03:43:56]   analisa_gabungan.cjs: OK
+[2026-08-21T03:43:56] >>> Overlay + scan selesai.
+[2026-08-21T03:43:56] >>> entry.json ada - start monitor limit...
+[Sat 08/22/2026 13:33:32.70] start_all.cmd mulai 
+[2026-08-22T06:33:36] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[Sat 08/22/2026 13:33:49.14] start_all.cmd selesai 
+[2026-08-24T13:01:18] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-24T13:01:20]   overlay_entry.cjs: OK
+[2026-08-24T13:01:45]   analisa_gabungan.cjs: OK
+[2026-08-24T13:01:45] >>> Overlay + scan selesai.
+[2026-08-24T13:01:45] >>> entry.json ada - start monitor limit...
+[2026-08-24T13:38:47] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-24T13:38:47]   overlay_entry.cjs: OK
+[2026-08-24T13:39:13]   analisa_gabungan.cjs: OK
+[2026-08-24T13:39:13] >>> Overlay + scan selesai.
+[2026-08-24T13:39:13] >>> entry.json ada - start monitor limit...
+[Tue 08/25/2026 11:49:04.04] start_all.cmd mulai 
+[2026-08-25T04:50:02] === AUTO-START WATCHER MULAI (memantau TV setiap 15 detik) ===
+[2026-08-25T04:50:33] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-25T04:51:01]   overlay_entry.cjs: OK
+[2026-08-25T04:51:11]   analisa_gabungan.cjs: OK
+[2026-08-25T04:51:11] >>> Overlay + scan selesai.
+[2026-08-25T04:51:11] >>> entry.json ada - start monitor limit...
+[Tue 08/25/2026 11:51:12.38] start_all.cmd selesai 
+[2026-08-25T10:38:15] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-25T10:38:16]   overlay_entry.cjs: OK
+[2026-08-25T10:38:41]   analisa_gabungan.cjs: OK
+[2026-08-25T10:38:41] >>> Overlay + scan selesai.
+[2026-08-25T10:38:41] >>> entry.json ada - start monitor limit...
+[Tue 08/25/2026 20:28:03.16] start_all.cmd mulai 
+[2026-08-25T13:28:05] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-08-25T13:30:21] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-25T13:30:21]   overlay_position.cjs: OK
+[Tue 08/25/2026 20:30:40.40] start_all.cmd selesai 
+[2026-08-25T13:30:47]   analisa_gabungan.cjs: OK
+[2026-08-25T13:30:47] >>> Overlay + scan selesai.
+[2026-08-26T05:35:15] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-26T05:35:16]   overlay_position.cjs: OK
+[2026-08-26T05:35:41]   analisa_gabungan.cjs: OK
+[2026-08-26T05:35:41] >>> Overlay + scan selesai.
+[2026-08-26T05:35:41] >>> Monitor belum jalan - start dengan lock...
+[2026-08-26T05:35:41] >>> Monitor v2 STARTED PID 28312
+[2026-08-28T14:57:16] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-28T14:57:17]   overlay_position.cjs: OK
+[2026-08-28T14:57:43]   analisa_gabungan.cjs: OK
+[2026-08-28T14:57:43] >>> Overlay + scan selesai.
+[2026-08-28T15:12:59] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-28T15:12:59]   overlay_position.cjs: OK
+[2026-08-28T15:13:18]   analisa_gabungan.cjs: OK
+[2026-08-28T15:13:18] >>> Overlay + scan selesai.
+[2026-08-28T15:13:18] >>> Monitor belum jalan - start dengan lock...
+[2026-08-28T15:13:18] >>> Monitor v2 STARTED PID 32272
+[Sun 08/30/2026 23:58:04.33] start_all.cmd mulai 
+[2026-08-30T16:58:08] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[Sun 08/30/2026 23:58:16.16] start_all.cmd selesai 
+[2026-08-30T16:58:38] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-30T16:58:38]   overlay_position.cjs: OK
+[2026-08-30T16:59:08]   analisa_gabungan.cjs: OK
+[2026-08-30T16:59:08] >>> Overlay + scan selesai.
+[2026-08-30T16:59:08] >>> Monitor belum jalan - start dengan lock...
+[2026-08-30T16:59:08] >>> Monitor v2 STARTED PID 38860
+[2026-08-31T04:42:35] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T04:42:40]   overlay_position.cjs: OK
+[2026-08-31T04:43:10]   analisa_gabungan.cjs: OK
+[2026-08-31T04:43:10] >>> Overlay + scan selesai.
+[2026-08-31T04:43:10] >>> Monitor belum jalan - start dengan lock...
+[2026-08-31T04:43:10] >>> Monitor v2 STARTED PID 28224
+[2026-08-31T09:00:19] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T09:00:23]   overlay_position.cjs: OK
+[2026-08-31T09:01:11]   analisa_gabungan.cjs: OK
+[2026-08-31T09:01:11] >>> Overlay + scan selesai.
+[2026-08-31T12:30:58] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T12:31:07]   overlay_position.cjs: OK
+[2026-08-31T12:32:03]   analisa_gabungan.cjs: OK
+[2026-08-31T12:32:03] >>> Overlay + scan selesai.
+[2026-08-31T12:44:50] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T12:44:50]   overlay_position.cjs: OK
+[2026-08-31T12:45:40]   analisa_gabungan.cjs: OK
+[2026-08-31T12:45:40] >>> Overlay + scan selesai.
+[2026-08-31T12:45:40] >>> Monitor belum jalan - start dengan lock...
+[2026-08-31T12:45:40] >>> Monitor v2 STARTED PID 11320
+[2026-08-31T12:53:11] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T12:53:15]   overlay_position.cjs: OK
+[2026-08-31T12:54:06]   analisa_gabungan.cjs: OK
+[2026-08-31T12:54:06] >>> Overlay + scan selesai.
+[2026-08-31T16:40:28] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T16:40:34]   overlay_position.cjs: OK
+[2026-08-31T16:40:49]   analisa_gabungan.cjs: OK
+[2026-08-31T16:40:49] >>> Overlay + scan selesai.
+[2026-08-31T16:41:19] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-08-31T16:41:20]   overlay_position.cjs: OK
+[2026-08-31T16:42:10]   analisa_gabungan.cjs: OK
+[2026-08-31T16:42:10] >>> Overlay + scan selesai.
+[2026-09-01T05:28:17] >>> Monitor belum jalan - start dengan lock...
+[2026-09-01T05:28:17] >>> Monitor v2 STARTED PID 1952
+[2026-09-02T08:18:14] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-02T08:18:18]   overlay_position.cjs: OK
+[2026-09-02T08:19:12]   analisa_gabungan.cjs: OK
+[2026-09-02T08:19:12] >>> Overlay + scan selesai.
+[2026-09-02T08:38:13] >>> Monitor belum jalan - start dengan lock...
+[2026-09-02T08:38:13] >>> Monitor v2 STARTED PID 14040
+[Wed 09/02/2026 21:33:06.67] start_all.cmd mulai 
+[2026-09-02T14:33:09] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-09-02T14:33:24] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-02T14:33:27]   overlay_position.cjs: OK
+[Wed 09/02/2026 21:34:26.01] start_all.cmd selesai 
+[2026-09-02T14:34:28]   analisa_gabungan.cjs: OK
+[2026-09-02T14:34:28] >>> Overlay + scan selesai.
+[2026-09-02T14:54:29] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-02T14:54:31]   overlay_position.cjs: OK
+[2026-09-02T14:54:31]   analisa_gabungan.cjs: ERR Command failed: node C:\HEBAT\analisa_gabungan.cjs
+
+[2026-09-02T14:54:31] >>> Overlay + scan selesai.
+[2026-09-02T14:54:31] >>> Monitor belum jalan - start dengan lock...
+[2026-09-02T14:54:31] >>> Monitor v2 STARTED PID 13736
+[2026-09-02T14:55:31] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-02T14:55:48]   overlay_position.cjs: OK
+[2026-09-02T14:56:51]   analisa_gabungan.cjs: OK
+[2026-09-02T14:56:51] >>> Overlay + scan selesai.
+[2026-09-02T14:56:51] >>> Monitor belum jalan - start dengan lock...
+[2026-09-02T14:56:51] >>> Monitor v2 STARTED PID 14196
+[2026-09-02T14:58:06] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-02T14:58:07]   overlay_position.cjs: OK
+[2026-09-02T14:58:18]   analisa_gabungan.cjs: OK
+[2026-09-02T14:58:18] >>> Overlay + scan selesai.
+[2026-09-02T14:58:18] >>> Monitor belum jalan - start dengan lock...
+[2026-09-02T14:58:18] >>> Monitor v2 STARTED PID 4828
+[Thu 09/03/2026  1:18:57.23] start_all.cmd mulai 
+[2026-09-02T18:19:00] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-09-02T18:19:15] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-02T18:19:17]   overlay_position.cjs: OK
+[Thu 09/03/2026  1:20:16.74] start_all.cmd selesai 
+[2026-09-02T18:20:18]   analisa_gabungan.cjs: OK
+[2026-09-02T18:20:18] >>> Overlay + scan selesai.
+[Thu 09/03/2026 10:03:46.37] start_all.cmd mulai 
+[2026-09-03T03:03:48] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-09-03T03:04:03] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-03T03:04:03]   overlay_position.cjs: OK
+[Thu 09/03/2026 10:04:57.91] start_all.cmd selesai 
+[2026-09-03T03:05:03]   analisa_gabungan.cjs: OK
+[2026-09-03T03:05:03] >>> Overlay + scan selesai.
+[2026-09-03T03:31:49] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-03T03:31:51]   overlay_position.cjs: OK
+[2026-09-03T03:32:51]   analisa_gabungan.cjs: OK
+[2026-09-03T03:32:51] >>> Overlay + scan selesai.
+[2026-09-03T03:32:51] >>> Monitor belum jalan - start dengan lock...
+[2026-09-03T03:32:51] >>> Monitor v2 STARTED PID 19388
+[Fri 09/04/2026 15:30:18.13] start_all.cmd mulai 
+[2026-09-04T08:30:21] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-09-04T08:30:37] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-04T08:30:52]   overlay_position.cjs: OK
+[Fri 09/04/2026 15:30:52.82] start_all.cmd selesai 
+[2026-09-04T08:30:53]   analisa_gabungan.cjs: ERR Command failed: node C:\HEBAT\analisa_gabungan.cjs
+
+[2026-09-04T08:30:53] >>> Overlay + scan selesai.
+[2026-09-04T12:25:50] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-04T12:25:53]   overlay_position.cjs: OK
+[2026-09-04T12:27:47]   analisa_gabungan.cjs: OK
+[2026-09-04T12:27:47] >>> Overlay + scan selesai.
+[Sat 09/05/2026 12:40:40.14] start_all.cmd mulai 
+[2026-09-05T05:40:41] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-09-05T05:40:56] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-05T05:40:56]   overlay_position.cjs: OK
+[Sat 09/05/2026 12:42:42.58] start_all.cmd selesai 
+[2026-09-05T05:42:49]   analisa_gabungan.cjs: OK
+[2026-09-05T05:42:49] >>> Overlay + scan selesai.
+[2026-09-05T08:09:13] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-05T08:09:42]   overlay_position.cjs: OK
+[2026-09-05T08:09:42]   analisa_gabungan.cjs: OK
+[2026-09-05T08:09:42] >>> Overlay + scan selesai.
+[Sun 09/06/2026 14:40:00.24] start_all.cmd mulai 
+[2026-09-06T07:40:02] === AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===
+[2026-09-06T07:40:17] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-06T07:40:17]   overlay_position.cjs: OK
+[Sun 09/06/2026 14:42:04.69] start_all.cmd selesai 
+[2026-09-06T07:42:10]   analisa_gabungan.cjs: OK
+[2026-09-06T07:42:10] >>> Overlay + scan selesai.
+[2026-09-06T17:32:08] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-06T17:32:15]   overlay_position.cjs: ERR Command failed: node C:\HEBAT\overlay_position.cjs
+
+[2026-09-06T17:32:15]   analisa_gabungan.cjs: ERR Command failed: node C:\HEBAT\analisa_gabungan.cjs
+
+[2026-09-06T17:32:15] >>> Overlay + scan selesai.
+[2026-09-06T17:32:46] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-06T17:33:03]   overlay_position.cjs: OK
+[2026-09-06T17:33:05]   analisa_gabungan.cjs: OK
+[2026-09-06T17:33:05] >>> Overlay + scan selesai.
+[2026-09-06T17:33:05] >>> Monitor belum jalan - start dengan lock...
+[2026-09-06T17:33:05] >>> Monitor v2 STARTED PID 20980
+[2026-09-06T17:33:50] >>> TV Desktop MENYALA - menjalankan overlay + scan...
+[2026-09-06T17:33:59]   overlay_position.cjs: OK
+[2026-09-06T17:35:59]   analisa_gabungan.cjs: OK
+[2026-09-06T17:35:59] >>> Overlay + scan selesai.
+[2026-09-06T17:35:59] >>> Monitor belum jalan - start dengan lock...
+[2026-09-06T17:35:59] >>> Monitor v2 STARTED PID 8548

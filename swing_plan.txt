@@ -1,0 +1,29 @@
+════════════════════════════════════════
+  MODE SERIUS - SWING TRADING (Senin)
+════════════════════════════════════════
+
+METODE  : SWING (bukan scalping)
+STRATEGI: SMC + BOS + FVG (tetap)
+TIMEFRAME: H4 struktur + H1 entry
+HOLD    : 1-5 hari (exit saat TP, kapan pun)
+
+AKUN    : CENT ACCOUNT $12 (1200 USC)
+
+LOT     : 0.1 total
+          TP1 → 0.04 lot (exit 1:1)
+          TP2 → 0.06 lot (exit 1:4)
+SL      : 4032 (atau 4038, bahas Senin)
+
+RULES:
+1. Entry hanya di OB/FVG H4 + konfirmasi H1
+2. SL dipasang SEJAK AWAL
+3. Exit di level, jangan micromanage
+4. 1 trade per setup
+5. Win 1x = +37%, SL 1x = -13%
+6. Butuh win rate > 27% untuk profit
+
+DISIPLIN:
+- Berani = jalankan rencana, bukan all-in
+- Tidak greedy = TP tercapai langsung exit
+- Santai Jumat, gas Senin!
+════════════════════════════════════════

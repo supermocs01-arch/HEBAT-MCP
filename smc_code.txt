@@ -1,0 +1,307 @@
+//@version=6
+indicator("SMC BOS FVG Auto Scalper v5", overlay=true, max_lines_count=500, max_labels_count=500)
+
+// ============================================================
+//  INPUT
+// ============================================================
+TF_Utama           = input.int(5, "TF Utama (menit)", minval=1)
+TF_HTF             = input.int(15, "TF HTF (menit)", minval=1)
+Panjang_Swing      = input.int(5, "Panjang Swing", minval=2)
+Toleransi_OB       = input.float(0.3, "Toleransi OB (%)", step=0.1)
+RSI_Periode        = input.int(7, "RSI Konfirmasi", minval=2)
+Batas_RSI_Buy      = input.int(40, "Batas RSI Buy", minval=1, maxval=100)
+Batas_RSI_Sell     = input.int(60, "Batas RSI Sell", minval=1, maxval=100)
+ATR_Periode        = input.int(14, "ATR Periode", minval=1)
+ATR_SL_Margin      = input.float(0.3, "ATR SL Margin", step=0.1)
+Lot_Size           = input.float(0.02, "Lot Size", step=0.01)
+Nilai_Per_Pip_001  = input.float(0.10, "Nilai per Pip 0.01 lot (USD)", step=0.01)
+Target_Profit      = input.float(15, "Target Profit per Trade (USD)", step=1)
+RR                 = input.string("1:4", "R:R", options=["1:3","1:4"])
+TP2_Multiplier     = input.float(1.2, "TP2 Multiplier", step=0.1)
+Max_Entry_Per_Hari = input.int(2, "Max Entry per Hari", minval=1)
+Nonaktifkan        = input.bool(false, "Nonaktifkan Sinyal?")
+Tampilkan_Label    = input.bool(true, "Tampilkan Label")
+
+// --- HYBRID MODE ---
+Mode_Hybrid        = input.bool(true, "Mode Hybrid (Auto-Detect)")
+Trend_Threshold    = input.float(0.3, "Threshold Trend Kuat (%)", step=0.1, tooltip="Jarak harga dari SMA50 dalam % untuk deteksi trend kuat")
+RSI_Trend_Buy      = input.int(50, "RSI Min Trend Buy", tooltip="RSI > nilai ini untuk BUY trend-following")
+RSI_Trend_Sell     = input.int(50, "RSI Max Trend Sell", tooltip="RSI < nilai ini untuk SELL trend-following")
+
+// ============================================================
+//  KONSTANTA
+// ============================================================
+R          = RR == "1:4" ? 4.0 : 3.0
+pipValue   = Nilai_Per_Pip_001 * (Lot_Size / 0.01)
+targetPips = Target_Profit / pipValue
+obTolPct   = Toleransi_OB / 100.0
+
+// ============================================================
+//  HTF TREND FILTER
+// ============================================================
+sma50HTF  = request.security(syminfo.tickerid, tostring(TF_HTF), ta.sma(close, 50))
+trendBuy  = close > sma50HTF
+trendSell = close < sma50HTF
+
+// ============================================================
+//  HYBRID MODE DETECTION
+// ============================================================
+jarakPct   = math.abs(close - sma50HTF) / sma50HTF * 100
+trendKuat  = jarakPct > Trend_Threshold
+modeHybrid = Mode_Hybrid and trendKuat ? "TREND" : "RETRACE"
+
+var label modeLabel = na
+if barstate.islast
+    if na(modeLabel)
+        modeLabel := label.new(x=bar_index, y=high * 1.05, text="",
+                               style=label.style_label_left, color=color.new(color.black, 100),
+                               textcolor=color.white, size=size.small)
+    label.set_x(modeLabel, bar_index)
+    label.set_y(modeLabel, high * 1.05)
+    label.set_text(modeLabel, "MODE: " + modeHybrid + " | Jarak SMA50: " + str.tostring(jarakPct, "#.##") + "%")
+    label.set_textcolor(modeLabel, modeHybrid == "TREND" ? color.green : color.gray)
+
+bgcolor(modeHybrid == "TREND" ? color.new(color.green, 92) : color.new(color.gray, 92))
+
+// ============================================================
+//  SWING POINTS & BOS
+// ============================================================
+var float swingHigh = na
+var float swingLow  = na
+
+sh = ta.pivothigh(high, Panjang_Swing, Panjang_Swing)
+sl = ta.pivotlow(low, Panjang_Swing, Panjang_Swing)
+
+if not na(sh)
+    swingHigh := sh
+if not na(sl)
+    swingLow := sl
+
+bullishBOS = not na(swingHigh) and close > swingHigh
+bearishBOS = not na(swingLow)  and close < swingLow
+
+// ============================================================
+//  FVG DETECTION
+// ============================================================
+fvgBullish = high[2] < low[0]
+fvgBearish = low[2]  > high[0]
+
+var float  fvgLowP   = na
+var float  fvgHighP  = na
+var int    fvgBarIdx = -1
+var bool   fvgAktif  = false
+
+if fvgBullish
+    fvgLowP   := high[2]
+    fvgHighP  := low[0]
+    fvgBarIdx := bar_index
+    fvgAktif  := true
+if fvgBearish
+    fvgLowP   := high[0]
+    fvgHighP  := low[2]
+    fvgBarIdx := bar_index
+    fvgAktif  := true
+
+if fvgAktif and fvgBarIdx != bar_index
+    if high >= fvgLowP and low <= fvgHighP
+        fvgAktif := false
+
+// ============================================================
+//  STATE MACHINE
+// ============================================================
+var int   state       = 0
+var int   arah        = 0
+var float eFvgLow     = na
+var float eFvgHigh    = na
+var float eObLow      = na
+var float eObHigh     = na
+var bool  siapEntry   = false
+var int   entryBarIdx = -1
+var string modeEntry  = "RETRACE"
+
+// ============================================================
+//  COUNTER HARIAN
+// ============================================================
+var int dailyTrades = 0
+newDay = ta.change(time("D"))
+if newDay
+    dailyTrades := 0
+
+// ============================================================
+//  MAIN LOGIKA (candle closed)
+// ============================================================
+if barstate.isconfirmed and not Nonaktifkan and dailyTrades < Max_Entry_Per_Hari
+
+    // --- STATE 0: IDLE ---
+    if state == 0
+
+        // --- RETRACE MODE (existing) ---
+        if not Mode_Hybrid or not trendKuat
+
+            if bullishBOS and trendBuy and fvgAktif and fvgHighP < swingHigh
+                foundOB = false
+                for i = 1 to 50
+                    if not foundOB and close[i] < open[i]
+                        eObLow  := low[i]
+                        eObHigh := high[i]
+                        foundOB := true
+                if foundOB
+                    arah     := 1
+                    state    := 1
+                    eFvgLow  := fvgLowP
+                    eFvgHigh := fvgHighP
+
+            if bearishBOS and trendSell and fvgAktif and fvgLowP > swingLow
+                foundOB = false
+                for i = 1 to 50
+                    if not foundOB and close[i] > open[i]
+                        eObLow  := low[i]
+                        eObHigh := high[i]
+                        foundOB := true
+                if foundOB
+                    arah     := -1
+                    state    := 2
+                    eFvgLow  := fvgLowP
+                    eFvgHigh := fvgHighP
+
+        // --- TREND MODE (new) ---
+        if Mode_Hybrid and trendKuat
+            rsiVal = ta.rsi(close, RSI_Periode)
+            if bullishBOS and trendBuy and rsiVal > RSI_Trend_Buy
+                arah    := 1
+                state   := 3
+                modeEntry := "TREND"
+                eFvgLow  := fvgLowP
+                eFvgHigh := fvgHighP
+            if bearishBOS and trendSell and rsiVal < RSI_Trend_Sell
+                arah    := -1
+                state   := 4
+                modeEntry := "TREND"
+                eFvgLow  := fvgLowP
+                eFvgHigh := fvgHighP
+
+    // --- STATE 1: RETRACE BUY WAIT ---
+    if state == 1
+        obZoneLow  = eObLow  * (1 - obTolPct)
+        obZoneHigh = eObHigh * (1 + obTolPct)
+        inFVG = low <= eFvgHigh and high >= eFvgLow
+        inOB  = low <= obZoneHigh and high >= obZoneLow
+        rsiOK = ta.rsi(close, RSI_Periode) < Batas_RSI_Buy
+        if inFVG and inOB and rsiOK
+            siapEntry  := true
+            entryBarIdx := bar_index
+            modeEntry := "RETRACE"
+            state := 0
+
+    // --- STATE 2: RETRACE SELL WAIT ---
+    if state == 2
+        obZoneLow  = eObLow  * (1 - obTolPct)
+        obZoneHigh = eObHigh * (1 + obTolPct)
+        inFVG = low <= eFvgHigh and high >= eFvgLow
+        inOB  = low <= obZoneHigh and high >= obZoneLow
+        rsiOK = ta.rsi(close, RSI_Periode) > Batas_RSI_Sell
+        if inFVG and inOB and rsiOK
+            siapEntry  := true
+            entryBarIdx := bar_index
+            modeEntry := "RETRACE"
+            state := 0
+
+    // --- STATE 3: TREND BUY (immediate entry) ---
+    if state == 3
+        siapEntry  := true
+        entryBarIdx := bar_index
+        state := 0
+
+    // --- STATE 4: TREND SELL (immediate entry) ---
+    if state == 4
+        siapEntry  := true
+        entryBarIdx := bar_index
+        state := 0
+
+// ============================================================
+//  EKSEKUSI ENTRY
+// ============================================================
+var float entryPrice = na
+var float slPrice    = na
+var float tp1Price   = na
+var float tp2Price   = na
+
+if siapEntry and bar_index == entryBarIdx + 1 and not barstate.isconfirmed
+    ePrice = open
+    atrVal = ta.atr(ATR_Periode)
+    slPad  = atrVal * ATR_SL_Margin
+
+    if arah == 1
+        if modeEntry == "TREND"
+            sPrice = (na(swingLow) ? low : swingLow) - slPad
+        else
+            sPrice = eFvgLow - slPad
+        t1Price = ePrice + targetPips
+        t2Price = ePrice + targetPips * TP2_Multiplier
+    else
+        if modeEntry == "TREND"
+            sPrice = (na(swingHigh) ? high : swingHigh) + slPad
+        else
+            sPrice = eFvgHigh + slPad
+        t1Price = ePrice - targetPips
+        t2Price = ePrice - targetPips * TP2_Multiplier
+
+    slDist  = math.abs(ePrice - sPrice)
+    tp1Dist = math.abs(t1Price - ePrice)
+
+    if slDist > 0 and (tp1Dist / slDist) >= R
+        entryPrice := ePrice
+        slPrice    := sPrice
+        tp1Price   := t1Price
+        tp2Price   := t2Price
+
+        arahStr = arah == 1 ? "BUY" : "SELL"
+        modeStr = modeEntry + " "
+
+        entryColor = modeEntry == "TREND" ? color.aqua : color.blue
+        slColor    = modeEntry == "TREND" ? color.orange : color.red
+
+        line.new(x1=bar_index, y1=ePrice, x2=bar_index+100, y2=ePrice,
+                 width=2, color=entryColor, style=line.style_solid, extend=extend.right)
+        line.new(x1=bar_index, y1=sPrice, x2=bar_index+100, y2=sPrice,
+                 width=1, color=slColor, style=line.style_dashed, extend=extend.right)
+        line.new(x1=bar_index, y1=t1Price, x2=bar_index+100, y2=t1Price,
+                 width=1, color=color.green, style=line.style_solid, extend=extend.right)
+        line.new(x1=bar_index, y1=t2Price, x2=bar_index+100, y2=t2Price,
+                 width=1, color=color.teal, style=line.style_dashed, extend=extend.right)
+
+        if Tampilkan_Label
+            label.new(x=bar_index+1, y=ePrice, text=modeStr + arahStr + " Entry",
+                      color=color.new(color.black, 100), style=label.style_none, textcolor=entryColor, size=size.small)
+            label.new(x=bar_index+1, y=sPrice, text=modeStr + arahStr + " SL",
+                      color=color.new(color.black, 100), style=label.style_none, textcolor=slColor, size=size.small)
+            label.new(x=bar_index+1, y=t1Price, text=modeStr + arahStr + " TP1",
+                      color=color.new(color.black, 100), style=label.style_none, textcolor=color.green, size=size.small)
+            label.new(x=bar_index+1, y=t2Price, text=modeStr + arahStr + " TP2",
+                      color=color.new(color.black, 100), style=label.style_none, textcolor=color.teal, size=size.small)
+
+        dailyTrades := dailyTrades + 1
+
+        alert(modeStr + arahStr + " " + syminfo.ticker + " Entry: " + str.tostring(ePrice) +
+              " SL: " + str.tostring(sPrice) + " TP1: " + str.tostring(t1Price) +
+              " TP2: " + str.tostring(t2Price), alert.freq_once_per_bar)
+
+    siapEntry := false
+
+// ============================================================
+//  DATA WINDOW (transparan)
+// ============================================================
+plot(entryPrice, "Entry", color.new(color.blue, 100), display=display.data_window)
+plot(slPrice,    "SL",    color.new(color.red, 100),  display=display.data_window)
+plot(tp1Price,   "TP1",   color.new(color.green, 100), display=display.data_window)
+plot(tp2Price,   "TP2",   color.new(color.teal, 100), display=display.data_window)
+
+// ============================================================
+//  ALERT
+// ============================================================
+alertcondition(siapEntry and arah == 1 and bar_index == entryBarIdx,
+               title="SMC BOS FVG BUY",
+               message='Sinyal BUY: Entry={{plot("Entry")}}, SL={{plot("SL")}}, TP1={{plot("TP1")}}, TP2={{plot("TP2")}}')
+alertcondition(siapEntry and arah == -1 and bar_index == entryBarIdx,
+               title="SMC BOS FVG SELL",
+               message='Sinyal SELL: Entry={{plot("Entry")}}, SL={{plot("SL")}}, TP1={{plot("TP1")}}, TP2={{plot("TP2")}}')

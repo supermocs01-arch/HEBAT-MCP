@@ -1,0 +1,226 @@
+{
+  "active": true,
+  "title": "XAUUSD - 7 LAYER SELL (3 entry) SAMPAI TP 4.200",
+  "info": "4 Sep (Jumat) entry 1 SELL 4.449 lot 0.15 (3 layer). 7 Sep (Senin) entry 2 SELL 4.414 lot 0.10 (2 layer). 7 Sep SELL STOP 4.380 lot 0.10 (2 layer). Total 7 layer 0.35 lot. Multi-TF BEAR. Fundamental叠加 mendukung sell cascade ke 4.200.",
+  "status": "AKTIF - 3 entry SELL 7 layer (0.35 lot total)",
+  "current_price": 4410.0,
+  "rsi_14": 33.0,
+  "last_update": "2026-09-07 09:15 WIB - REKOMENDASI TP FINAL - market H4 FIBO 50%=4396.8 61.8%=4369.8",
+  "positions": {
+    "entry_1_jumat_4449": {
+      "no": 1,
+      "tanggal_entry": "2026-09-04 (Jumat, kemarin)",
+      "entry": 4.449,
+      "type": "limit_sell_3_layer",
+      "lot": 0.15,
+      "current": 4.410,
+      "floating_pips": 39,
+      "floating_USC": 5.85,
+      "SL": 4.470
+    },
+    "entry_2_senin_4414": {
+      "no": 2,
+      "tanggal_entry": "2026-09-07 (Senin, hari ini)",
+      "entry": 4.414,
+      "type": "limit_sell_2_layer",
+      "lot": 0.10,
+      "current": 4.410,
+      "floating_pips": 4,
+      "floating_USC": 0.40,
+      "SL": 4.460
+    },
+    "entry_3_senin_4380": {
+      "no": 3,
+      "tanggal_entry": "2026-09-07 (Senin, hari ini)",
+      "entry": 4.380,
+      "type": "stop_sell_2_layer",
+      "lot": 0.10,
+      "SL": 4.434,
+      "current": 4.410,
+      "floating_pips": -30,
+      "floating_USC": -3.00,
+      "status": "WAITING - triggered saat H4 close <4.380"
+    },
+    "total": {
+      "total_layer": 7,
+      "total_lot": 0.35,
+      "current": 4.410,
+      "floating_pips": 13,
+      "floating_USC": 3.25
+    }
+  },
+  "TP_optimal_per_entry": {
+    "entry_1_4449_0.15_lot_jumat": {
+      "logic": "Entry PALING TINGGI (4.449) dari JUMAT. Butuh drop besar untuk profit. TP optimal di TP1 4.353 (double konfluen H4 78.6% + D1 78.6%) dan TP2 4.310 (D1 swing low). Lock profit signifikan di support level.",
+      "TP_rekomendasi": {
+        "TP1": {"level": 4.353, "pip_profit": 96, "close_lot": 0.06, "close_pct": "40%", "profit_USC": 5.76, "alasan": "Double konfluen H4+D1 78.6%"},
+        "TP2": {"level": 4.310, "pip_profit": 139, "close_lot": 0.045, "close_pct": "30%", "profit_USC": 6.26, "alasan": "D1 swing low area"},
+        "TP3": {"level": 4.280, "pip_profit": 169, "close_lot": 0.03, "close_pct": "20%", "profit_USC": 5.07, "alasan": "H4 deeper support"},
+        "RUNNER": {"level": 4.200, "pip_profit": 249, "close_lot": 0.015, "close_pct": "10%", "profit_USC": 3.74, "alasan": "User target runner"}
+      },
+      "total_potential": "+20.83 USC (1.04% akun)"
+    },
+    "entry_2_4414_0.10_lot_senin": {
+      "logic": "Entry lebih rendah (4.414) dari SENIN. Lebih dekat dengan TP. TP optimal di TP1 4.353 (support break) dan TP2 4.280 (D1 deeper support). Lock profit lebih cepat karena entry lebih rendah.",
+      "TP_rekomendasi": {
+        "TP1": {"level": 4.353, "pip_profit": 61, "close_lot": 0.05, "close_pct": "50%", "profit_USC": 3.05, "alasan": "Support break H4+D1 78.6%"},
+        "TP2": {"level": 4.280, "pip_profit": 134, "close_lot": 0.03, "close_pct": "30%", "profit_USC": 4.02, "alasan": "D1 deeper support"},
+        "TP3": {"level": 4.213, "pip_profit": 201, "close_lot": 0.015, "close_pct": "15%", "profit_USC": 3.02, "alasan": "Deep demand"},
+        "RUNNER": {"level": 4.200, "pip_profit": 214, "close_lot": 0.005, "close_pct": "5%", "profit_USC": 1.07, "alasan": "User target runner"}
+      },
+      "total_potential": "+11.16 USC (0.56% akun)"
+    },
+    "entry_3_4380_0.10_lot_senin_SELL_STOP": {
+      "logic": "Entry PALING RENDAH (4.380) dari SELL STOP SENIN. Paling dekat dengan TP. TP optimal di TP1 4.310 (D1 swing low) atau TP2 4.250 (D1 161.8% EXT). Lock profit lebih agresif karena entry lebih rendah.",
+      "TP_rekomendasi": {
+        "TP1": {"level": 4.310, "pip_profit": 70, "close_lot": 0.05, "close_pct": "50%", "profit_USC": 3.50, "alasan": "D1 swing low area"},
+        "TP2": {"level": 4.250, "pip_profit": 130, "close_lot": 0.03, "close_pct": "30%", "profit_USC": 3.90, "alasan": "D1 161.8% EXT"},
+        "TP3": {"level": 4.200, "pip_profit": 180, "close_lot": 0.015, "close_pct": "15%", "profit_USC": 2.70, "alasan": "User target runner"},
+        "RUNNER": {"level": 4.150, "pip_profit": 230, "close_lot": 0.005, "close_pct": "5%", "profit_USC": 1.15, "alasan": "Deep runner"}
+      },
+      "total_potential": "+11.25 USC (0.56% akun)"
+    }
+  },
+  "aggregated_TP_plan_7_layer": {
+    "TP1_4.353": {
+      "level": 4.353,
+      "close_lot_total": 0.11, "close_pct_total": "40%",
+      "close_breakdown": {
+        "entry_1": "0.06 lot",
+        "entry_2": "0.05 lot"
+      },
+      "profit_locked": "+8.81 USC (0.44% akun)",
+      "timeframe": "1-3 hari",
+      "prob": "60-70%"
+    },
+    "TP2_4.310": {
+      "level": 4.310,
+      "close_lot_total": 0.105, "close_pct_total": "30%",
+      "close_breakdown": {
+        "entry_1": "0.045 lot",
+        "entry_2": "0.03 lot",
+        "entry_3": "0.03 lot"
+      },
+      "profit_locked": "+12.16 USC (0.61% akun)",
+      "timeframe": "3-7 hari",
+      "prob": "45-55%"
+    },
+    "TP3_4.280": {
+      "level": 4.280,
+      "close_lot_total": 0.045, "close_pct_total": "13%",
+      "close_breakdown": {
+        "entry_1": "0.03 lot",
+        "entry_2": "0.015 lot"
+      },
+      "profit_locked": "+7.08 USC (0.35% akun)",
+      "timeframe": "1-2 minggu",
+      "prob": "30-40%"
+    },
+    "TP4_4.250": {
+      "level": 4.250,
+      "close_lot_total": 0.03, "close_pct_total": "9%",
+      "close_breakdown": {
+        "entry_3": "0.03 lot"
+      },
+      "profit_locked": "+3.90 USC (0.20% akun)",
+      "timeframe": "2-3 minggu",
+      "prob": "20-30%"
+    },
+    "TP5_4.213": {
+      "level": 4.213,
+      "close_lot_total": 0.015, "close_pct_total": "4%",
+      "close_breakdown": {
+        "entry_2": "0.015 lot"
+      },
+      "profit_locked": "+3.02 USC (0.15% akun)",
+      "timeframe": "3-4 minggu",
+      "prob": "10-15%"
+    },
+    "TP6_4.200": {
+      "level": 4.200,
+      "close_lot_total": 0.025, "close_pct_total": "7%",
+      "close_breakdown": {
+        "entry_1": "0.015 lot",
+        "entry_3": "0.01 lot"
+      },
+      "profit_locked": "+3.50 USC (0.18% akun)",
+      "timeframe": "2-3 minggu",
+      "prob": "10-20%"
+    },
+    "RUNNER_4.150": {
+      "level": 4.150,
+      "close_lot_total": 0.005, "close_pct_total": "1%",
+      "close_breakdown": {
+        "entry_3": "0.005 lot"
+      },
+      "profit_locked": "+1.15 USC (0.06% akun)",
+      "timeframe": "1-2 bulan",
+      "prob": "5-10%"
+    }
+  },
+  "total_aggregated_profit_7_layer": {
+    "current_floating": {
+      "entry_1_4449_0.15_lot": "+39 pip × 0.15 = +5.85 USC",
+      "entry_2_4414_0.10_lot": "+4 pip × 0.10 = +0.40 USC",
+      "entry_3_4380_0.10_lot": "-30 pip × 0.10 = -3.00 USC",
+      "total_current_floating": "+3.25 USC (0.16% akun)"
+    },
+    "potential_full_TP_cascade_7_layer": {
+      "TP1_4.353_0.11_lot": "+63 pip avg × 0.11 = +6.93 USC (0.347% akun)",
+      "TP2_4.310_0.105_lot": "+100 pip avg × 0.105 = +10.50 USC (0.525% akun)",
+      "TP3_4.280_0.045_lot": "+159 pip avg × 0.045 = +7.16 USC (0.358% akun)",
+      "TP4_4.250_0.03_lot": "+160 pip × 0.03 = +4.80 USC (0.240% akun)",
+      "TP5_4.213_0.015_lot": "+201 pip × 0.015 = +3.02 USC (0.151% akun)",
+      "TP6_4.200_0.025_lot": "+249 pip avg × 0.025 = +6.23 USC (0.311% akun)",
+      "RUNNER_4.150_0.005_lot": "+230 pip × 0.005 = +1.15 USC (0.058% akun)",
+      "grand_total_potential": "+39.79 USC (1.99% akun)"
+    }
+  },
+  "alert_levels": {
+    "4470_SL_entry_1_0.15_lot": "WARNING - SL H1 (loss -31.5 pip × 0.15 = -4.73 USC)",
+    "4460_SL_entry_2_0.10_lot": "WARNING - SL H1 (loss -46 pip × 0.10 = -4.60 USC)",
+    "4434_SL_entry_3_0.10_lot": "WARNING - SL H1 (loss -54 pip × 0.10 = -5.40 USC)",
+    "4353_TP1": "TARGET - close 0.11 lot (40%)",
+    "4310_TP2": "TARGET - close 0.105 lot (30%)",
+    "4280_TP3": "TARGET - close 0.045 lot (13%)",
+    "4250_TP4": "TARGET - close 0.03 lot (9%)",
+    "4213_TP5": "TARGET - close 0.015 lot (4%)",
+    "4200_TP6": "TARGET - close 0.025 lot (7%)",
+    "4150_RUNNER": "TARGET - close 0.005 lot (1%)"
+  },
+  "re_entry_conditions_entry_3": {
+    "1_H4_close_4.380": "Entry 3 triggered saat H4 close <4.380",
+    "2_volume": "Volume support break (tidak thin)",
+    "3_body_ratio": "H4 candle body ratio > 0.45",
+    "4_PINE_sig": "PINE sig = SELL atau SELL_CHOCH",
+    "5_CHoCH": "M15/H1 CHoCH-S aktif"
+  },
+  "multi_tf_analysis_Senin_7_Sep": {
+    "D1": "BEARISH ✅ (D1 candle BEAR35%, lower wick 53% = seller attempt)",
+    "H4": "BULLISH tapi candle BEAR93% (akan flip soon)",
+    "H1": "BEARISH ✅ (CHoCH-S aktif, mendukung SELL)",
+    "M30": "BEARISH ✅ (CHoCH-S aktif, candle BEAR88%)",
+    "M15": "BULLISH tapi candle BEAR64%",
+    "BENTUR_D1_H4": "Pullback rally normal",
+    "PO3": "ACC (smart money mulai beli, counter-trend buy)",
+    "RSI_14": "33.0 (naik dari 25.5, recovery otomatis - bounce teknis)"
+  },
+  "fundamental_overlay": {
+    "NFP_dovish_4_Sep_Jumat": "USD naik, Gold turun -91 pip (SUDAH TERJADI)",
+    "Fed_tahan_rates_ongoing": "USD tetap kuat",
+    "Trump_minta_cut_ditolak_ongoing": "USD strong",
+    "PPI_MoM_10_Sep_Rabu": "Upcoming HIGH impact (potential cascade trigger)",
+    "CPI_mid_Sep_TBD": "TBD HIGH impact",
+    "FOMC_18_Sep_TBD": "TBD CRITICAL",
+    "叠加_effect": "Multiple bearish叠加 mendukung SELL bias ke 4.200"
+  },
+  "key_recommendations": {
+    "1_HOLD_ALL_7_LAYER": "HOLD semua 7 layer SELL (0.35 lot total)",
+    "2_TP_BERTahap": "TP1 4.353 → TP2 4.310 → TP3 4.280 → TP4 4.250 → TP5 4.213 → TP6 4.200",
+    "3_TOTAL_TARGET": "4.200 (user target runner) dalam 1-1.5 bulan",
+    "4_SL_PROTEKSI": "Entry 1: 4.470, Entry 2: 4.460, Entry 3: 4.434",
+    "5_JANGAN_PANIK_BOUNCE": "Bounce teknis = sementara, multi-TF BEAR mendukung SELL",
+    "6_PPI_10_SEP_CATALYST": "PPI MoM 10 Sep = upcoming HIGH impact event yang bisa trigger cascade",
+    "7_TOTAL_POTENTIAL": "+39.79 USC (1.99% akun) jika full TP cascade ke 4.200"
+  }
+}

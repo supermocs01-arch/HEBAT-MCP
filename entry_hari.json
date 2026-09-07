@@ -1,0 +1,8 @@
+{
+  "tanggal": "2026-09-07",
+  "entry_ke": 1,
+  "sisa_jatah": 2,
+  "loss_count": 0,
+  "note": "Entry Senin 7 Sep 2026: SELL STOP 4.380 lot 0.05. SL 4.434. Target TP bertahap 4.353 → 4.310 → 4.280 → 4.200 runner.",
+  "tahap": "WAITING - SELL STOP 4.380 belum triggered. Tunggu H4 close <4.380."
+}

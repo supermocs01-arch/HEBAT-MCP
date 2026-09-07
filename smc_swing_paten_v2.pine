@@ -1,0 +1,289 @@
+//@version=6
+// =====================================================================
+// SMC SWING PATEN v2.2 - "PATEN GABUNGAN"
+// v2.1 (26 Aug): FIX demandZona terbalik, legHi/legLo max-min,
+//                blokir SELL pasca sweep-bawah (MISS #10 simetris),
+//                FVG jadi zona state, ready pakai kurung.
+// v2.2 (26 Aug): MODUL MTF penuh - trend D1/H4/H1/M15 via request.security
+//                (EMA50), H4 lawan = blokir entry, H1 lawan = warning,
+//                tabel MTF di chart + field MTF di label PINE_DATA.
+// MODUL 1 Struktur | 2 Sweep | 3 FVG/OB | 4 Range Premium/Diskon
+// MODUL 5 FIBO | 6 Filter Pelajaran | 6B MTF | 7 Verdict | 8 Grafik+Output
+// =====================================================================
+indicator("SMC SWING PATEN v2", overlay=true, max_lines_count=100, max_labels_count=100, max_boxes_count=60)
+
+// ============================ INPUT ==================================
+grpTF    = "=== TIMEFRAME ==="
+SwingLen = input.int(3, "Panjang Swing", minval=2, group=grpTF)
+
+grpPat = "=== ATURAN PATEN ==="
+BodyRatio = input.float(0.45, "BodyRatio Konfirmasi", step=0.05, group=grpPat)
+RR1       = input.float(3.0, "RR TP1 (1:?)", step=0.5, group=grpPat)
+RR2       = input.float(4.0, "RR TP2 (1:?)", step=0.5, group=grpPat)
+BufSL     = input.float(3.0, "Buffer SL di luar swing (poin harga)", step=0.5, group=grpPat)
+RangeBars = input.int(192, "Bar utk Range Premium/Diskon", minval=48, group=grpPat)
+
+grpFilter = "=== FILTER PELAJARAN ==="
+RSI_Len     = input.int(14, "Periode RSI", group=grpFilter)
+RSI_MaxBuy  = input.float(80, "RSI maks boleh BUY (MISS #9)", group=grpFilter)
+RSI_MinSell = input.float(20, "RSI min boleh SELL", group=grpFilter)
+BlockBars   = input.int(12, "Bar blokir entry pertama pasca sweep (MISS #10)", group=grpFilter)
+WajibD1Bear = input.bool(true, "SELL wajib D1 bearish (MISS #11)", group=grpFilter)
+BlokH4Lawan = input.bool(true, "Blokir entry lawan trend H4 (MTF)", group=grpFilter)
+
+grpView    = "=== TAMPILAN ==="
+Tampil_FVG   = input.bool(true, "FVG", group=grpView)
+Tampil_OB    = input.bool(true, "OB", group=grpView)
+Tampil_SR    = input.bool(true, "Garis S/R swing (hijau/merah)", group=grpView)
+Tampil_Label = input.bool(true, "Label struktur", group=grpView)
+Tampil_MTF   = input.bool(true, "Tabel MTF", group=grpView)
+
+// ====================== MODUL 1: STRUKTUR ============================
+swingHigh = ta.pivothigh(high, SwingLen, SwingLen)
+swingLow  = ta.pivotlow(low, SwingLen, SwingLen)
+
+var float lastSH = na
+var float lastSL = na
+var float sh1 = na
+var float sh2 = na
+var float sl1 = na
+var float sl2 = na
+if not na(swingHigh)
+    lastSH := swingHigh
+    sh2 := sh1
+    sh1 := swingHigh
+if not na(swingLow)
+    lastSL := swingLow
+    sl2 := sl1
+    sl1 := swingLow
+
+bullStruct = sh1 > sh2 and sl1 > sl2
+bearStruct = sh1 < sh2 and sl1 < sl2
+breakUp    = not na(lastSH) and close > lastSH
+breakDown  = not na(lastSL) and close < lastSL
+bosB   = breakUp   and not bullStruct and not bearStruct
+chochB = breakUp   and bearStruct
+bosS   = breakDown and not bullStruct and not bearStruct
+chochS = breakDown and bullStruct
+
+rangeC    = high - low
+bodyRatio = rangeC > 0 ? math.abs(close - open) / rangeC : 0
+confirmUp = close > open and bodyRatio >= BodyRatio
+confirmDn = close < open and bodyRatio >= BodyRatio
+
+// ====================== MODUL 2: SWEEP LIKUIDITAS ====================
+// MISS #10 SIMETRIS: sweep-atas blokir BUY pertama (sampai CHoCH-B),
+//                     sweep-bawah blokir SELL pertama (sampai CHoCH-S).
+sweepUp = not na(lastSH) and high > lastSH and close < lastSH
+sweepDn = not na(lastSL) and low < lastSL and close > lastSL
+var int sweepUpBar = na
+var int sweepDnBar = na
+var int chochBBar  = na
+var int chochSBar  = na
+if sweepUp
+    sweepUpBar := bar_index
+if sweepDn
+    sweepDnBar := bar_index
+if chochB
+    chochBBar := bar_index
+if chochS
+    chochSBar := bar_index
+postSweepAtas  = not na(sweepUpBar) and bar_index - sweepUpBar <= BlockBars
+postSweepBawah = not na(sweepDnBar) and bar_index - sweepDnBar <= BlockBars
+postSweepBuyOk  = not postSweepAtas  or (not na(chochBBar) and chochBBar > sweepUpBar)
+postSweepSellOk = not postSweepBawah or (not na(chochSBar) and chochSBar > sweepDnBar)
+
+// ====================== MODUL 3: FVG & OB ============================
+// v2.1: FVG jadi ZONA STATE (bisa diretest kapan pun), bukan event 1 bar.
+bullFVG = high[1] < low[2]
+bearFVG = low[1] > high[2]
+var float fvgBullLo = na
+var float fvgBullHi = na
+var float fvgBearLo = na
+var float fvgBearHi = na
+if bullFVG
+    fvgBullLo := low[2]
+    fvgBullHi := high[1]
+if bearFVG
+    fvgBearLo := high[2]
+    fvgBearHi := low[1]
+inBullFVG = not na(fvgBullLo) and close >= fvgBullLo and close <= fvgBullHi
+inBearFVG = not na(fvgBearLo) and close >= fvgBearLo and close <= fvgBearHi
+
+var float obBullLo = na
+var float obBullHi = na
+var bool obBullOn = false
+var float obBearLo = na
+var float obBearHi = na
+var bool obBearOn = false
+if bullFVG and close < open[1]
+    obBullLo := low[1]
+    obBullHi := high[1]
+    obBullOn := true
+if bearFVG and close > open[1]
+    obBearLo := low[1]
+    obBearHi := high[1]
+    obBearOn := true
+inBullOB = obBullOn and close >= obBullLo and close <= obBullHi
+inBearOB = obBearOn and close >= obBearLo and close <= obBearHi
+
+// ====================== MODUL 4: RANGE PREMIUM/DISKON ================
+rngHi = ta.highest(high, RangeBars)
+rngLo = ta.lowest(low, RangeBars)
+midR  = (rngHi + rngLo) / 2
+diskon  = close < midR
+premium = close > midR
+
+// ====================== MODUL 5: FIBO OTOMATIS =======================
+// v2.1 FIX: legHi/legLo selalu max/min supaya tidak terbalik di downtrend.
+legHi = math.max(nz(sh1, rngHi), nz(sl1, rngLo))
+legLo = math.min(nz(sh1, rngHi), nz(sl1, rngLo))
+legRng = legHi - legLo
+f618 = legHi - legRng * 0.618
+f786 = legHi - legRng * 0.786
+// v2.1 FIX: f786 < f618, jadi urutan yang benar: close di antara keduanya.
+demandZona = close >= f786 and close <= f618
+retestZona = close >= legHi - legRng * 0.25 and close <= legHi - legRng * 0.145
+
+// ====================== MODUL 6: FILTER PELAJARAN ====================
+rsiVal  = ta.rsi(close, RSI_Len)
+atrVal  = ta.atr(14)
+rsiBlokJual = rsiVal > RSI_MaxBuy
+
+// ====================== MODUL 6B: MTF TREND (v2.2) ===================
+// Trend HTF via posisi close terhadap EMA50 di TF masing-masing.
+// H4 lawan = BLOKIR keras (paten 4TF). H1 lawan = warning saja
+// (pullback H1 vs D1/H4 bull tetap boleh BUY di diskon dalam).
+d1c = request.security(syminfo.tickerid, "D",   close,            lookahead=barmerge.lookahead_off)
+d1p = request.security(syminfo.tickerid, "D",   close[1],         lookahead=barmerge.lookahead_off)
+h4c = request.security(syminfo.tickerid, "240", close,            lookahead=barmerge.lookahead_off)
+h4e = request.security(syminfo.tickerid, "240", ta.ema(close, 50), lookahead=barmerge.lookahead_off)
+h1c = request.security(syminfo.tickerid, "60",  close,            lookahead=barmerge.lookahead_off)
+h1e = request.security(syminfo.tickerid, "60",  ta.ema(close, 50), lookahead=barmerge.lookahead_off)
+m15e = ta.ema(close, 50)
+
+d1Trend = d1c >= d1p ? "BULL" : "BEAR"
+h4Trend = h4c > h4e ? "BULL" : h4c < h4e ? "BEAR" : "NETRAL"
+h1Trend = h1c > h1e ? "BULL" : h1c < h1e ? "BEAR" : "NETRAL"
+m15Trend = close > m15e ? "BULL" : close < m15e ? "BEAR" : "NETRAL"
+mtfStr = d1Trend + "|" + h4Trend + "|" + h1Trend + "|" + m15Trend
+
+blokBuy = ""
+if premium
+    blokBuy += "PREMIUM(M11);"
+if rsiBlokJual
+    blokBuy += "RSI_EXTREM(M9);"
+if inBearOB
+    blokBuy += "DALAM_OB_BEAR(M9);"
+if postSweepAtas and not postSweepBuyOk
+    blokBuy += "POST_SWEEP(M10);"
+if BlokH4Lawan and h4Trend == "BEAR"
+    blokBuy += "MTF_H4_BEAR;"
+
+blokSell = ""
+if WajibD1Bear and d1Trend == "BULL"
+    blokSell += "LAWAN_D1_BULL(M11);"
+if rsiVal < RSI_MinSell
+    blokSell += "RSI_OS_EKSTREM;"
+if inBullOB
+    blokSell += "DALAM_OB_BULL;"
+if postSweepBawah and not postSweepSellOk
+    blokSell += "POST_SWEEP(M10);"
+if BlokH4Lawan and h4Trend == "BULL"
+    blokSell += "MTF_H4_BULL;"
+
+// ====================== MODUL 7: VERDICT ENGINE ======================
+buyRaw  = (bosB or chochB) and confirmUp and (inBullFVG or inBullOB or demandZona)
+sellRaw = (bosS or chochS) and confirmDn and (inBearFVG or inBearOB or retestZona)
+
+buyValid  = buyRaw and diskon and str.length(blokBuy) == 0
+sellValid = sellRaw and premium and str.length(blokSell) == 0
+
+sigVerdict = buyValid ? "BUY" : sellValid ? "SELL" : "FLAT"
+ready      = (buyValid or sellValid) ? 100 : (buyRaw or sellRaw) ? 50 : 0
+alasan = buyRaw and not buyValid and str.length(blokBuy) > 0 ? "BUY_TERBLOKIR:" + blokBuy :
+         sellRaw and not sellValid and str.length(blokSell) > 0 ? "SELL_TERBLOKIR:" + blokSell :
+         buyRaw ? "BUY_AGRESIF" : sellRaw ? "SELL_AGRESIF" : "NO_SETUP"
+if (buyRaw or sellRaw) and h1Trend != "NETRAL"
+    alasan := alasan + (h1Trend == (buyRaw ? "BEAR" : "BULL") ? " [WARN:H1_LAWAN]" : "")
+
+float slSug = na
+float tp1Sug = na
+float tp2Sug = na
+if buyValid or (buyRaw and diskon)
+    slSug := math.min(nz(sl1, low), low) - BufSL
+    float riskB = close - slSug
+    tp1Sug := close + riskB * RR1
+    tp2Sug := close + riskB * RR2
+if sellValid or (sellRaw and premium)
+    slSug := math.max(nz(sh1, high), high) + BufSL
+    float riskS = slSug - close
+    tp1Sug := close - riskS * RR1
+    tp2Sug := close - riskS * RR2
+
+hrJak = hour(time, "Asia/Jakarta")
+sesiStr = hrJak >= 5 and hrJak < 14 ? "ASIAN" : hrJak >= 14 and hrJak < 21 ? "LONDON" : "NY"
+
+// ====================== MODUL 8: GRAFIK & OUTPUT =====================
+plotshape(buyValid, "BUY VALID", shape.triangleup, location.belowbar, color=color.lime, size=size.small, text="BUY")
+plotshape(buyRaw and not buyValid, "BUY x", shape.triangleup, location.belowbar, color=color.new(color.green, 60), size=size.tiny)
+plotshape(sellValid, "SELL VALID", shape.triangledown, location.abovebar, color=color.red, size=size.small, text="SELL")
+plotshape(sellRaw and not sellValid, "SELL x", shape.triangledown, location.abovebar, color=color.new(color.red, 60), size=size.tiny)
+plot(midR, "Mid Range", color=color.new(color.yellow, 40))
+plot(f618, "FIBO 61.8%", color=color.new(color.aqua, 55))
+plot(f786, "FIBO 78.6%", color=color.new(color.blue, 60))
+
+// ====================== MODUL 8b: GARIS S/R SWING ====================
+// Resistance MERAH = swing high terakhir (2 level), Support HIJAU = swing low
+// terakhir (2 level). Extend kanan, replace otomatis saat swing baru terbentuk.
+var line r1 = na
+var line r2 = na
+var line s1 = na
+var line s2 = na
+if Tampil_SR
+    if not na(swingHigh)
+        line.delete(r2)
+        r2 := r1
+        r1 := line.new(bar_index - SwingLen, swingHigh, bar_index, swingHigh, extend=extend.right, color=color.new(color.red, 15), width=2)
+    if not na(swingLow)
+        line.delete(s2)
+        s2 := s1
+        s1 := line.new(bar_index - SwingLen, swingLow, bar_index, swingLow, extend=extend.right, color=color.new(color.green, 15), width=2)
+
+var table mtfTab = table.new(position.top_left, 4, 2, bgcolor=color.new(color.black, 20), border_width=1, border_color=color.new(color.gray, 50))
+if Tampil_MTF and barstate.islast
+    table.cell(mtfTab, 0, 0, "MTF", text_color=color.yellow, text_size=size.tiny)
+    table.cell(mtfTab, 1, 0, "D1",  text_color=color.gray,   text_size=size.tiny)
+    table.cell(mtfTab, 2, 0, "H4",  text_color=color.gray,   text_size=size.tiny)
+    table.cell(mtfTab, 3, 0, "H1",  text_color=color.gray,   text_size=size.tiny)
+    table.cell(mtfTab, 0, 1, "Trend", text_color=color.white, text_size=size.tiny)
+    table.cell(mtfTab, 1, 1, d1Trend, text_color=d1Trend=="BULL"?color.lime:d1Trend=="BEAR"?color.red:color.gray, text_size=size.tiny)
+    table.cell(mtfTab, 2, 1, h4Trend, text_color=h4Trend=="BULL"?color.lime:h4Trend=="BEAR"?color.red:color.gray, text_size=size.tiny)
+    table.cell(mtfTab, 3, 1, h1Trend, text_color=h1Trend=="BULL"?color.lime:h1Trend=="BEAR"?color.red:color.gray, text_size=size.tiny)
+
+if Tampil_Label
+    if bosB
+        label.new(bar_index, low, "BOS-B", style=label.style_label_up, color=color.green, textcolor=color.white, size=size.tiny)
+    if chochB
+        label.new(bar_index, low, "CHOCH-B", style=label.style_label_up, color=color.teal, textcolor=color.white, size=size.tiny)
+    if bosS
+        label.new(bar_index, high, "BOS-S", style=label.style_label_down, color=color.red, textcolor=color.white, size=size.tiny)
+    if chochS
+        label.new(bar_index, high, "CHOCH-S", style=label.style_label_down, color=color.maroon, textcolor=color.white, size=size.tiny)
+    if sweepUp
+        label.new(bar_index, high, "SWEEP-ATAS", style=label.style_label_down, color=color.orange, textcolor=color.black, size=size.tiny)
+    if sweepDn
+        label.new(bar_index, low, "SWEEP-BAWAH", style=label.style_label_up, color=color.olive, textcolor=color.white, size=size.tiny)
+
+if Tampil_FVG and bullFVG
+    box.new(bar_index[2], high[1], bar_index[1], low[2], border_color=color.new(color.green, 30), bgcolor=color.new(color.green, 85))
+if Tampil_FVG and bearFVG
+    box.new(bar_index[2], high[2], bar_index[1], low[1], border_color=color.new(color.red, 30), bgcolor=color.new(color.red, 85))
+if Tampil_OB and obBullOn
+    box.new(bar_index[1], obBullHi, bar_index, obBullLo, border_color=color.new(color.green, 0), bgcolor=color.new(color.green, 90))
+if Tampil_OB and obBearOn
+    box.new(bar_index[1], obBearHi, bar_index, obBearLo, border_color=color.new(color.red, 0), bgcolor=color.new(color.red, 90))
+
+if barstate.islast
+    txt = "PINE_DATA|" + str.tostring(close) + "|" + str.tostring(rsiVal, "#.#") + "|" + sigVerdict + "|" + str.tostring(ready) + "|" + str.tostring(atrVal, "#.##") + "|" + alasan + "|" + (diskon ? "DISKON" : premium ? "PREMIUM" : "MID") + "|" + str.tostring(midR, "#.#") + "|" + str.tostring(slSug, "#.#") + "|" + str.tostring(tp1Sug, "#.#") + "|" + str.tostring(tp2Sug, "#.#") + "|" + sesiStr + "|" + mtfStr
+    label.new(bar_index, low - atrVal * 1.2, txt, style=label.style_label_up, color=color.new(color.black, 70), textcolor=color.white, size=size.tiny)
