@@ -4,115 +4,188 @@
 
 1. **Node.js** (v16+)
    - Download: https://nodejs.org/
+   - Install and restart terminal
 
 2. **Git**
    - Download: https://git-scm.com/
+   - For cloning the repo
 
 3. **TradingView Desktop**
-   - Install TradingView from official site
-   - Enable Chrome DevTools Protocol (CDP) on port 9222
+   - Download from https://tradingview.com/
+   - Install and log in
 
-## Clone & Setup
+## First Time Setup
+
+### 1. Clone Repo
 
 ```bash
-# 1. Clone repo
 git clone https://github.com/supermocs01-arch/HEBAT-MCP.git
 cd HEBAT-MCP
+```
 
-# 2. Install dependencies
+### 2. Install Dependencies
+
+```bash
 npm install
+```
 
-# 3. Setup git config (if needed)
+### 3. Setup Git Config
+
+```bash
 git config user.email "your-email@example.com"
 git config user.name "Your Name"
-
-# 4. Edit path in scripts (see below)
 ```
+
+### 4. Deploy Pine Script
+
+1. Open **TradingView Desktop**
+2. Open chart **XAUUSD** (recommended: M15)
+3. Press **F3** or click Pine Editor at bottom panel
+4. Open file `smc_ict_unified_v1.pine` in text editor
+5. **Copy ALL contents**
+6. **Paste** into Pine Editor
+7. Click **"Add to Chart"** (bottom right)
+
+You should see "SMC×ICT v1.1 OK" at top right of chart.
+
+### 5. First Run Commands
+
+```bash
+# 1. Verify TV connection
+node C:\HEBAT\tradingview-mcp\src\cli\index.js status
+
+# 2. Warm up PINE (IMPORTANT - fixes HTF data)
+node C:\HEBAT\cycle_tf_efficient.cjs
+
+# 3. Run market analysis
+node C:\HEBAT\analisa_gabungan.cjs
+
+# 4. Update chart overlay
+node C:\HEBAT\overlay_position.cjs
+```
+
+## Daily Usage
+
+### Manual Start
+
+```bash
+# Full startup: TV check + overlay + scan
+node C:\HEBAT\hi_fitra.cjs
+
+# Just scan market
+node C:\HEBAT\analisa_gabungan.cjs
+
+# Just update overlay
+node C:\HEBAT\overlay_position.cjs
+
+# Cycle TF (after TV restart)
+node C:\HEBAT\cycle_tf_efficient.cjs
+```
+
+### Auto-Start Watcher (Recommended)
+
+Run once when PC starts - it runs in background:
+
+```bash
+node C:\HEBAT\auto_start_watch.cjs
+```
+
+What it does:
+- Monitors TV Desktop every 15 seconds
+- If TV restarts → auto-run: cycle TF → overlay → scan
+- Starts position monitor
+- Prevents duplicate monitors (lock file)
 
 ## Path Configuration
 
-Edit these files to match your directory:
+Some scripts have hardcoded paths. Edit if you change directory:
 
-### `overlay_position.cjs` (line 4-6)
+### `overlay_position.cjs` (lines 4-6)
 ```javascript
 const OV = JSON.parse(fs.readFileSync('C:/HEBAT/overlay_plan.json', 'utf8'));
 const P  = JSON.parse(fs.readFileSync('C:/HEBAT/posisi.json', 'utf8'));
 ```
 
-### `analisa_gabungan.cjs`
-Check for any hardcoded paths and update accordingly.
-
 ### `monitor_limit_xau.cjs`
-Check for any hardcoded paths and update accordingly.
+Check for any `C:\HEBAT\` paths
 
-## Deploy Pine Script
+## Pine Script Versions
 
-### Option 1: SMC×ICT Unified v1.0 (Recommended - Full Feature)
-1. Open TradingView Desktop
-2. Open Pine Editor (bottom panel or press F3)
-3. Copy ALL contents of `smc_ict_unified_v1.pine` and paste
-4. Click **"Add to chart"** (bawah kanan)
-5. Indicator akan muncul otomatis dengan nama "SMC×ICT Unified v1"
+### v1.1 (Recommended - Bug Fixed)
+- File: `smc_ict_unified_v1.pine`
+- Features: Fixed PINE none bug, robust MTF detection
+- **Use this version**
 
-**Fitur utama:**
-- SMC klasik (BOS/CHoCH/FVG/OB)
-- ICT (Kill Zones, Silver Bullet, Judas Swing, OTE, Power of 3)
-- Fibonacci retracement + extension
-- Multi-timeframe trend table
-- Auto SL/TP suggestion
-- Alert ready (JSON output)
+### v1.0 (Legacy)
+- File: `smc_swing_paten_v2.pine`
+- Older version, some bugs
 
-### Option 2: SMC Swing Paten v2.2 (Legacy)
-1. Open Pine Editor
-2. Copy contents of `smc_swing_paten_v2.pine`
-3. Add to chart
-
-## Quick Start
-
-```bash
-# Health check
-node C:\HEBAT\tradingview-mcp\src\cli\index.js status
-
-# Run scan
-node C:\HEBAT\analisa_gabungan.cjs
-
-# Update overlay
-node C:\HEBAT\overlay_position.cjs
-
-# Cycle TF (fix PINE none after restart) - runs automatically on TV start
-node C:\HEBAT\cycle_tf_efficient.cjs
-```
-
-## Auto-Start Watcher (Background)
-
-Jalankan sekali saat PC menyala:
-```bash
-node C:\HEBAT\auto_start_watch.cjs
-```
-
-Ini akan:
-1. Pantau TV Desktop terus-menerus
-2. Kalau TV restart → auto **cycle TF** + overlay + scan
-3. Auto start monitor posisi
-4. Anti-monitor-dobel (lock file)
-
-## File Structure
+## File Overview
 
 | File | Purpose |
 |------|---------|
-| `PATEN.md` | Core trading rules |
-| `pelajaran_sl.md` | Lesson history (MISS #1-#14) |
-| `pengetahuan_fibo.md` | Fibonacci knowledge |
-| `KNOWLEDGE_BASE.md` | Full system documentation |
-| `AGENTS.md` | AI agent instructions |
+| `PATEN.md` | Core trading rules (MANDATORY READ) |
+| `pelajaran_sl.md` | MISS #1-#14 from losses |
+| `pengetahuan_fibo.md` | Fibonacci rules |
+| `KNOWLEDGE_BASE.md` | Full system docs |
 | `hitung.cjs` | Risk calculator |
 | `analisa_gabungan.cjs` | Market analysis |
-| `overlay_position.cjs` | Chart overlay panel |
+| `overlay_position.cjs` | Chart overlay |
 | `monitor_limit_xau.cjs` | Position monitor |
-| `hi_fitra.cjs` | Full startup |
-| `smc_ict_unified_v1.pine` | Main indicator (SMC + ICT unified) |
+| `cycle_tf_efficient.cjs` | TF warm-up |
+| `auto_start_watch.cjs` | Auto-start watcher |
 
-## Trading Pair
-- XAUUSD (Gold)
-- Broker: OANDA
-- Account: Cent MT5
+## Troubleshooting
+
+### "PINE shows FLAT/none"
+```bash
+node C:\HEBAT\cycle_tf_efficient.cjs
+```
+
+### "Overlay not appearing"
+```bash
+node C:\HEBAT\overlay_position.cjs
+```
+
+### "Monitor errors"
+```bash
+# Check if monitor is running
+type C:\HEBAT\monitor.lock
+
+# Restart monitor
+node C:\HEBAT\monitor_limit_xau.cjs
+```
+
+### TV not connecting
+```bash
+# Check TV status
+node C:\HEBAT\tradingview-mcp\src\cli\index.js status
+
+# Kill and restart TV
+taskkill /F /IM TradingView.exe
+node C:\HEBAT\hi_fitra.cjs
+```
+
+## System Architecture
+
+```
+TradingView Desktop (CDP :9222)
+    ↓
+smc_ict_unified_v1.pine (on chart)
+    ↓ (CDP WebSocket)
+Node.js Analyzers
+    ├── cycle_tf_efficient.cjs (warm-up)
+    ├── baca_pine_json.cjs (read PINE labels)
+    ├── scan_all_tf.cjs (all TF scan)
+    ├── analisa_gabungan.cjs (full analysis)
+    ├── overlay_position.cjs (chart panel)
+    └── monitor_limit_xau.cjs (position monitor)
+    ↓
+Overlay on chart + Trade decisions
+```
+
+## Support
+
+- Check `KNOWLEDGE_BASE.md` for full documentation
+- Check `pelajaran_sl.md` for trading lessons
+- Ask AI assistant with context of your `posisi.json` and `entry_hari.json`
