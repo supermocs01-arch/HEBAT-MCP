@@ -43,12 +43,21 @@ console.log('------------------------');
 
 const usdD1 = getOHLCV(SYMBOL_USD, '1440', 5);
 const usdH4 = getOHLCV(SYMBOL_USD, '240', 5);
+const usdH1 = getOHLCV(SYMBOL_USD, '60', 10);
+const usdM15 = getOHLCV(SYMBOL_USD, '15', 15);
+const usdM5 = getOHLCV(SYMBOL_USD, '5', 15);
 
 const usdDirD1 = trend(usdD1);
 const usdDirH4 = trend(usdH4);
+const usdDirH1 = trend(usdH1);
+const usdDirM15 = trend(usdM15);
+const usdDirM5 = trend(usdM5);
 
-console.log(`USD D1: ${usdDirD1}`);
-console.log(`USD H4: ${usdDirH4}`);
+console.log(`USD D1 : ${usdDirD1}`);
+console.log(`USD H4 : ${usdDirH4}`);
+console.log(`USD H1 : ${usdDirH1}`);
+console.log(`USD M15: ${usdDirM15}`);
+console.log(`USD M5 : ${usdDirM5}`);
 
 // USD bias
 const usdBias = usdDirD1 === 'UP' || usdDirH4 === 'UP' ? 'UP' : 
@@ -64,16 +73,19 @@ const xauD1 = getOHLCV(SYMBOL_XAU, '1440', 5);
 const xauH4 = getOHLCV(SYMBOL_XAU, '240', 5);
 const xauH1 = getOHLCV(SYMBOL_XAU, '60', 10);
 const xauM15 = getOHLCV(SYMBOL_XAU, '15', 10);
+const xauM5 = getOHLCV(SYMBOL_XAU, '5', 15);
 
 const xauDirD1 = trend(xauD1);
 const xauDirH4 = trend(xauH4);
 const xauDirH1 = trend(xauH1);
 const xauDirM15 = trend(xauM15);
+const xauDirM5 = trend(xauM5);
 
 console.log(`XAU D1 : ${xauDirD1}`);
 console.log(`XAU H4 : ${xauDirH4}`);
 console.log(`XAU H1 : ${xauDirH1}`);
 console.log(`XAU M15: ${xauDirM15}`);
+console.log(`XAU M5 : ${xauDirM5}`);
 
 // XAU bias
 const xauBias = xauDirD1 === 'UP' || xauDirH4 === 'UP' ? 'UP' : 
