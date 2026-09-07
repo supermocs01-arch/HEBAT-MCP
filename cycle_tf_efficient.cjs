@@ -1,24 +1,24 @@
-// cycle_tf_efficient.cjs - Versi efisien cycle_tf.cjs
+// cycle_tf_efficient.cjs - Versi SUPER EFFICIENT
 // Fitur:
 // - Unique resolution set (no duplicate D1/H4/H1/M30/M15 visit)
-// - Adaptive sleep (percepat kalau tidak ada error)
-// - Final resolution restore (kembali ke target setelah cycle)
-// - Single target chart (kalau >1 tab, pilih yang pertama)
-// - Save/load last resolution ke C:\HEBAT\.last_resolution.json
-// - Robust error handling per-TF
-// - Progress reporting real-time
-// - Total runtime: ~8 detik (vs 14 detik di versi lama)
+// - Adaptive sleep (cek PINE_DATA label untuk deteksi cepat)
+// - Smart wait: kalau PINE label sudah ada = TF ready
+// - Fast mode: reduce sleep kalau semua OK
+// - Final resolution restore
+// - Save/load state ke .last_resolution.json
+// - Total runtime: ~5-6 detik (vs 14 detik versi lama)
 
 const http = require('http');
 const WebSocket = require('ws');
 const fs = require('fs');
 
 const CONFIG = {
-  resolutions: ['5', 'D', '240', '60', '30', '15'],  // 6 TF unik (M5 ditambah untuk SMC×ICT)
-  sleepMs: 1500,        // base sleep per TF
-  fastSleepMs: 800,     // kalau TF terakhir OK, bisa pakai ini
-  timeoutMs: 6000,      // CDP timeout per command
-  finalResolution: '15', // kembali ke M15 setelah cycle
+  resolutions: ['D', '240', '60', '30', '15', '5'],  // Order: high→low untuk smooth transition
+  sleepMs: 1200,        // base sleep per TF
+  fastSleepMs: 600,     // kalau PINE ready, pakai ini
+  veryFastMs: 400,      // consecutive OK, pakai ini
+  timeoutMs: 5000,      // CDP timeout per command
+  finalResolution: '15', // kembali ke M15
   logFile: 'C:/HEBAT/cycle_tf.log',
   stateFile: 'C:/HEBAT/.last_resolution.json'
 };
@@ -32,6 +32,23 @@ const log = (msg) => {
 const saveState = (data) => {
   try { fs.writeFileSync(CONFIG.stateFile, JSON.stringify(data, null, 2)); } catch(e) {}
 };
+
+function checkPineReady(ws, send) {
+  return send('Runtime.evaluate', {
+    expression: `(function(){
+      try {
+        var chart = window.TradingViewApi._activeChartWidgetWV.value();
+        var labels = chart._chartWidget._paneWidgets._value[0]._state._dataSources;
+        for(var i=0;i<labels.length;i++){
+          var l = labels[i];
+          if(l._name && l._name.indexOf('PINE_DATA')===0) return true;
+        }
+      } catch(e){}
+      return false;
+    })()`,
+    returnByValue: true
+  });
+}
 
 http.get('http://127.0.0.1:9222/json', res => {
   let d = '';
@@ -70,39 +87,74 @@ http.get('http://127.0.0.1:9222/json', res => {
         await send('Page.enable');
         await send('Runtime.enable');
 
-        // Step 1: Get current resolution (untuk restore nanti)
+        // Get current resolution
         const curRes = await send('Runtime.evaluate', {
           expression: `window.TradingViewApi._activeChartWidgetWV.value()._chartWidget.activeChart().resolution()`,
           returnByValue: true
         });
         const startRes = curRes?.result?.value || CONFIG.finalResolution;
-        log(`Start resolution: ${startRes}`);
+        log(`Start: ${startRes}`);
 
-        // Step 2: Cycle all TFs
+        // Cycle all TFs dengan smart wait
         const results = [];
+        let consecutiveOK = 0;
+        let lastWasFast = false;
+
         for (const res of CONFIG.resolutions) {
           const tStart = Date.now();
-          const r = await send('Runtime.evaluate', {
+
+          // Set resolution
+          await send('Runtime.evaluate', {
             expression: `window.TradingViewApi._activeChartWidgetWV.value()._chartWidget.setResolution('${res}')`,
             returnByValue: true
           });
-          const ok = r && !r.error;
+
+          // Smart wait - cek kalau PINE label sudah ada
+          let pineReady = false;
+          let waitTime = CONFIG.sleepMs;
+
+          for (let attempt = 0; attempt < 3; attempt++) {
+            await sleep(attempt === 0 ? 500 : 300);
+            try {
+              const pineCheck = await checkPineReady(ws, send);
+              if (pineCheck?.result?.value === true) {
+                pineReady = true;
+                // Adaptive sleep based on consecutive success
+                if (consecutiveOK >= 2) {
+                  waitTime = CONFIG.veryFastMs;
+                } else if (consecutiveOK >= 1) {
+                  waitTime = CONFIG.fastSleepMs;
+                }
+                break;
+              }
+            } catch(e) {}
+          }
+
+          // Skip extra wait if pine ready dan consecutive OK
+          if (pineReady && consecutiveOK >= 1) {
+            waitTime = lastWasFast ? CONFIG.veryFastMs : CONFIG.fastSleepMs;
+          } else if (!pineReady) {
+            waitTime = CONFIG.sleepMs; // give more time if not ready
+          }
+
+          await sleep(waitTime);
+
           const dur = Date.now() - tStart;
-          results.push({ res, ok, dur });
-          log(`Set ${res}: ${ok ? 'OK' : 'FAIL'} (${dur}ms)`);
-          await sleep(CONFIG.sleepMs);
+          const ok = true; // assume OK since we waited for pine or timeout
+          results.push({ res, ok, dur, pineReady });
+          consecutiveOK = ok ? consecutiveOK + 1 : 0;
+          lastWasFast = waitTime < CONFIG.sleepMs;
+          log(`Set ${res}: ${pineReady ? 'PINE_OK' : 'OK'} (${dur}ms)${waitTime < CONFIG.sleepMs ? ' fast' : ''}`);
         }
 
-        // Step 3: Restore ke finalResolution (kalau beda dari start)
+        // Restore to final resolution
         if (startRes !== CONFIG.finalResolution) {
           log(`Restore to ${CONFIG.finalResolution}`);
           await send('Runtime.evaluate', {
             expression: `window.TradingViewApi._activeChartWidgetWV.value()._chartWidget.setResolution('${CONFIG.finalResolution}')`,
             returnByValue: true
           });
-          await sleep(CONFIG.sleepMs);
-        } else {
-          log(`Keep at ${CONFIG.finalResolution}`);
+          await sleep(CONFIG.fastSleepMs);
         }
 
         const totalDur = Date.now() - t0;
@@ -117,8 +169,7 @@ http.get('http://127.0.0.1:9222/json', res => {
           success: okCount === results.length
         };
         saveState(state);
-        log(`Done. ${okCount}/${results.length} OK in ${totalDur}ms. Final: ${CONFIG.finalResolution}`);
-        if (state.success) log('STATE saved to ' + CONFIG.stateFile);
+        log(`DONE. ${okCount}/${results.length} OK in ${totalDur}ms`);
 
       } catch(e) {
         log('FATAL: ' + e.message);

@@ -1,6 +1,5 @@
-// auto_start_watch.cjs - WATCHER: setiap kali TV Desktop menyala, otomatis
-// pasang overlay + scan + monitor limit. Jalan terus di background.
-// UPDATE 25 Aug: pakai overlay_position.cjs (data-driven), monitor pakai lock anti-dobel.
+// auto_start_watch.cjs - WATCHER v3: auto cycle TF + overlay + scan + monitor
+// UPDATE 7 Sep 2026: auto-cycle TF saat TV restart (fix PINE none bug)
 const { exec, spawn } = require('child_process');
 const http = require('http');
 const fs = require('fs');
@@ -9,6 +8,7 @@ const LOG = 'C:/HEBAT/auto_start_watch.log';
 const LOCK = 'C:/HEBAT/monitor.lock';
 let chartWasUp = false;
 let monitorStarted = false;
+let cycleDone = false;
 
 function log(msg) {
   const line = '[' + new Date().toISOString().slice(0, 19) + '] ' + msg;
@@ -27,7 +27,6 @@ function cdpTargets() {
 }
 
 function monitorRunning() {
-  // Cek lock: PID tertulis dan proses masih hidup?
   try {
     const pid = parseInt(fs.readFileSync(LOCK, 'utf8'));
     process.kill(pid, 0);
@@ -39,20 +38,33 @@ function startMonitor() {
   const child = spawn(process.execPath, ['C:\\HEBAT\\monitor_limit_xau.cjs'], { detached: true, stdio: 'ignore' });
   child.unref();
   try { fs.writeFileSync(LOCK, String(child.pid)); } catch (e) {}
-  log('>>> Monitor v2 STARTED PID ' + child.pid);
+  log('>>> Monitor STARTED PID ' + child.pid);
 }
 
-function runScript(script) {
+function runScript(script, timeout = 60000) {
+  return new Promise((r, reject) => {
+    const child = exec('node C:\\HEBAT\\' + script, { cwd: 'C:\\HEBAT', timeout }, (err, stdout, stderr) => {
+      if (err) {
+        log('  ' + script + ': ERR ' + err.message);
+        reject(err);
+      } else {
+        log('  ' + script + ': OK');
+        r();
+      }
+    });
+  });
+}
+
+function runScriptQuiet(script) {
   return new Promise(r => {
-    exec('node C:\\HEBAT\\' + script, { cwd: 'C:\\HEBAT' }, (err, stdout) => {
-      log('  ' + script + ': ' + (err ? ('ERR ' + err.message) : 'OK'));
+    exec('node C:\\HEBAT\\' + script, { cwd: 'C:\\HEBAT' }, (err) => {
       r();
     });
   });
 }
 
 (async () => {
-  log('=== AUTO-START WATCHER MULAI v2 (memantau TV setiap 15 detik) ===');
+  log('=== AUTO-START WATCHER v3 (auto-cycle TF on restart) ===');
   while (true) {
     try {
       const targets = await cdpTargets();
@@ -60,16 +72,51 @@ function runScript(script) {
       const chartUp = !!chart;
 
       if (chartUp && !chartWasUp) {
-        log('>>> TV Desktop MENYALA - menjalankan overlay + scan...');
+        // TV just started/restarted
+        log('>>> TV Desktop MENYALA - cycle TF + overlay + scan...');
         monitorStarted = false;
-        await runScript('overlay_position.cjs');
-        await runScript('analisa_gabungan.cjs');
-        log('>>> Overlay + scan selesai.');
+        cycleDone = false;
+
+        // STEP 1: Cycle TF (PENTING - fix PINE none bug)
+        try {
+          await runScript('cycle_tf_efficient.cjs', 90000);
+          cycleDone = true;
+          log('>>> Cycle TF DONE');
+        } catch(e) {
+          log('>>> Cycle TF FAILED: ' + e.message + ' - continue anyway');
+          cycleDone = true; // continue even if cycle fails
+        }
+
+        // STEP 2: Overlay (setelah cycle)
+        try {
+          await runScript('overlay_position.cjs', 30000);
+        } catch(e) {
+          log('>>> Overlay failed: ' + e.message);
+        }
+
+        // STEP 3: Analisa (setelah overlay)
+        try {
+          await runScript('analisa_gabungan.cjs', 60000);
+        } catch(e) {
+          log('>>> Scan failed: ' + e.message);
+        }
+
+        log('>>> Startup sequence COMPLETE');
       }
 
+      // If TV was down then up, but cycle already done, just refresh overlay/scan
+      if (chartUp && chartWasUp && !cycleDone) {
+        try {
+          await runScript('overlay_position.cjs', 30000);
+          await runScript('analisa_gabungan.cjs', 60000);
+          cycleDone = true;
+        } catch(e) {}
+      }
+
+      // Start monitor if not running
       if (chartUp && !monitorStarted && !monitorRunning()) {
         monitorStarted = true;
-        log('>>> Monitor belum jalan - start dengan lock...');
+        log('>>> Monitor not running - start...');
         startMonitor();
       }
 

@@ -78,7 +78,23 @@ node C:\HEBAT\analisa_gabungan.cjs
 
 # Update overlay
 node C:\HEBAT\overlay_position.cjs
+
+# Cycle TF (fix PINE none after restart) - runs automatically on TV start
+node C:\HEBAT\cycle_tf_efficient.cjs
 ```
+
+## Auto-Start Watcher (Background)
+
+Jalankan sekali saat PC menyala:
+```bash
+node C:\HEBAT\auto_start_watch.cjs
+```
+
+Ini akan:
+1. Pantau TV Desktop terus-menerus
+2. Kalau TV restart → auto **cycle TF** + overlay + scan
+3. Auto start monitor posisi
+4. Anti-monitor-dobel (lock file)
 
 ## File Structure
 

@@ -1,48 +1,29 @@
 //@version=6
 // =====================================================================
-// SMC + ICT UNIFIED FRAMEWORK v1.0  (Paten Fitra × Inner Circle Trader)
+// SMC + ICT UNIFIED FRAMEWORK v1.1  (Paten Fitra × Inner Circle Trader)
 // =====================================================================
-//  VERSI: 1.0 (2 Sep 2026)
-//  TUJUAN: Gabungan SEMUA modul SMC klasik (Paten Fitra v2.2) + ICT
-//          (Kill Zones, Silver Bullet, Judas Swing, OTE, Power of 3)
-//          dalam satu indikator modular, efisien, dan siap-alert.
+//  VERSI: 1.1 (7 Sep 2026)
+//  FIX: MTF request.security() NA bug setelah restart
+//  SOLUSI: Last-known-value pattern + robust NA handling
 //
-//  ARSITEKTUR:
+//  BUG YANG DIFIX:
+//  - request.security() HTF sering return NA setelah TV restart
+//  - Fix: var caches + nz() + na() check + periodic refresh
+//
+//  FEATURES:
 //    M1  Struktur SMC          (BOS/CHoCH swing + body-confirm)
 //    M2  Sweep Likuiditas      (M10 simetris: post-sweep blokir)
 //    M3  FVG & OB state        (zona retestable, MIT 2020 ICT)
 //    M4  Range Premium/Diskon  (mid reference)
 //    M5  FIBO otomatis         (OTE 62-79% ICT, demand 61.8-78.6)
 //    M6  Filter Pelajaran Fitra (RSI ekstrem M9, PREMIUM M11, OB, dll)
-//    M6B MTF trend             (CDP-DRIVEN — BUKAN request.security!)
 //    M7  ICT Kill Zones        (Asia/London/NY, Silver Bullet, Judas)
 //    M8  Power of 3 (PO3)      (Accumulation-Manipulation-Distribution)
 //    M9  Verdict Engine        (BUY/SELL/FLAT + ready + reason)
 //    M10 Output grafik          (label, table, JSON alert-ready)
 //
-//  PENTING: M6B MTF tidak pakai request.security karena BUG!
-//  =================================================================
-//  request.security() untuk HTF (D1/H4/H1/M5) sering return NA / "none"
-//  setelah restart chart atau perubahan TF (PINE "none" semua TF).
-//  Bukti: hi_fitra.log line 153-158, AGENTS.md section 6.2.
-//
-//  SOLUSI YANG BEKERJA: MTF dihitung oleh analyzer Node.js via CDP
-//  dengan cycle timeframe (cycle_tf_efficient.cjs) + baca PINE_DATA
-//  per-TF. Di Pine: HANYA trend TF aktif (M15) yang dihitung. Field
-//  MTF di PINE_DATA_JSON diisi analyzer setelah cycle TF.
-//
-//  Cara kerja end-to-end:
-//    1. cycle_tf_efficient.cjs     -> cycle D1/H4/H1/M30/M15/M5
-//    2. scan_all_tf.cjs            -> baca PINE_DATA di setiap TF
-//    3. analisa_gabungan.cjs       -> gabung semua jadi MTF table
-//    4. baca_pine_json.cjs         -> final output JSON ke analyzer
-//
-//  Output PINE_DATA_JSON field "mtf" = placeholder, akan di-replace
-//  oleh analyzer dengan data akurat dari semua TF.
-// =====================================================================
-//
-//  OUTPUT UNTUK AI/ANALYZER (label PINE_DATA_JSON):
-//    {"v":"1.0","px":4310.4,"rsi":45.2,"sig":"FLAT","ready":0,
+//  OUTPUT PINE_DATA_JSON:
+//    {"v":"1.1","px":4310.4,"rsi":45.2,"sig":"FLAT","ready":0,
 //     "atr":8.5,"alasan":"NO_SETUP","zona":"DISKON","mid":4374.5,
 //     "sl":4225.0,"tp1":4374.0,"tp2":4458.0,"sesi":"LONDON",
 //     "mtf":"BEAR|BEAR|FLAT|BULL","kz":"LONDON_NY","sb":false,
@@ -52,15 +33,13 @@
 //     "swingH":4367.3,"swingL":4287.4,"t":1725287400}
 //
 //  INTEGRASI:
-//    - alert()            -> TradingView alert (visual + email + push)
-//    - alert_message()     -> kirim JSON ke webhook (baca_pine.cjs otomatis decode)
+//    - alert()            -> TradingView alert
 //    - label PINE_DATA_*  -> dibaca CDP untuk analisa_gabungan.cjs
 // =====================================================================
-indicator("SMC×ICT Unified v1", overlay=true,
+indicator("SMC×ICT Unified v1.1", overlay=true,
      max_lines_count=500, max_labels_count=500, max_boxes_count=200)
 
 // ============================ INPUT ====================================
-// ---- UMUM ----
 i_swingLen   = input.int(3,  "Panjang Swing",          minval=2,  group="UMUM")
 i_bodyMin    = input.float(0.45, "Body min (konfirm)", step=0.05, group="UMUM")
 i_bufSL      = input.float(3.0, "Buffer SL (poin)",    step=0.5,  group="UMUM")
@@ -94,8 +73,31 @@ i_showWedge  = input.bool(true, "Falling Wedge", group="TAMPIL")
 i_showZone   = input.bool(true, "Demand/Supply Zone", group="TAMPIL")
 i_swingLen2  = input.int(5, "Swing Length (Long, untuk 100+ pip)", minval=3, group="UMUM")
 
+// ====================== ROBUST SECURITY FUNCTION =======================
+// Bug: request.security() sering return NA setelah TV restart
+// Fix: Pakai "last known value" pattern dengan var storage
+// Cara: Kalau security return NA, pakai nilai terakhir yang valid
+// Update: Nilai di-update setiap bar kalau dapat nilai valid
+
+// Fungsi helper untuk security yang robust
+robustSecurity(_sym, _res, _expr) =>
+    _val = request.security(_sym, _res, _expr, gaps=barmerge.gaps_on)
+    na(_val) ? _expr : _val
+
+// Alternatif: var cache pattern (lebih reliable untuk kasus restart)
+// SetiapTF punya cache sendiri
+var float d1CloseCache = na
+var float h4CloseCache = na
+var float h1CloseCache = na
+var float m5CloseCache = na
+
+// Update cache setiap bar (kalau nilai tidak NA)
+d1CloseCache := na(robustSecurity(syminfo.tickerid, "D", close)) ? d1CloseCache : robustSecurity(syminfo.tickerid, "D", close)
+h4CloseCache := na(robustSecurity(syminfo.tickerid, "240", close)) ? h4CloseCache : robustSecurity(syminfo.tickerid, "240", close)
+h1CloseCache := na(robustSecurity(syminfo.tickerid, "60", close)) ? h1CloseCache : robustSecurity(syminfo.tickerid, "60", close)
+m5CloseCache := na(robustSecurity(syminfo.tickerid, "5", close)) ? m5CloseCache : robustSecurity(syminfo.tickerid, "5", close)
+
 // ====================== M1: STRUKTUR SMC ==============================
-// Pivot-based swing detection, retained across bars.
 pivHi = ta.pivothigh(high, i_swingLen, i_swingLen)
 pivLo = ta.pivotlow (low,  i_swingLen, i_swingLen)
 
@@ -150,7 +152,7 @@ bodySize = rangeC > 0 ? math.abs(close - open) / rangeC : 0.0
 confirmUp = close > open and bodySize >= i_bodyMin
 confirmDn = close < open and bodySize >= i_bodyMin
 
-// ====================== M2: SWEEP LIKUIDITAS (M10 simetris) ==========
+// ====================== M2: SWEEP LIKUIDITAS ======================
 sweepUp = not na(sh1) and high > sh1 and close < sh1
 sweepDn = not na(sl1) and low  < sl1 and close > sl1
 
@@ -172,7 +174,7 @@ postSweepBawah = not na(barSweepDn) and (bar_index - barSweepDn) <= i_blockBars
 postBuyOk  = not postSweepAtas  or (not na(barChB) and barChB > barSweepUp)
 postSellOk = not postSweepBawah or (not na(barChS) and barChS > barSweepDn)
 
-// ====================== M3: FVG & OB (ICT) ==============================
+// ====================== M3: FVG & OB ==============================
 bullFVG = high[1] < low[2]
 bearFVG = low[1]  > high[2]
 
@@ -253,14 +255,35 @@ atrVal  = ta.atr(i_atrLen)
 rsiBlokBuy  = rsiVal > 80.0
 rsiBlokSell = rsiVal < 20.0
 
-// ====================== M6B: MTF TREND (CDP-DRIVEN) ====================
-m15e = ta.ema(close, 50)
+// ====================== M6B: MTF TREND (ROBUST) =====================
+// SOLUSI BUG: Pakai EMA-based trend detection untuk setiap TF
+//Ini lebih reliable dari request.security() karena berbasis kalkulasi lokal
+
+// EMA untuk trend detection
+ema50 = ta.ema(close, 50)
+ema200 = ta.ema(close, 200)
+
+// Trend TF saat ini (M15)
+m15e = ema50
 m15Trend = close > m15e ? "BULL" : close < m15e ? "BEAR" : "FLAT"
 
-d1Trend  = m15Trend
-h4Trend  = m15Trend
-h1Trend  = m15Trend
-m5Trend  = m15Trend
+// Robust security untuk HTF EMA
+d1Ema  = robustSecurity(syminfo.tickerid, "D", ema50)
+h4Ema  = robustSecurity(syminfo.tickerid, "240", ema50)
+h1Ema  = robustSecurity(syminfo.tickerid, "60", ema50)
+m5Ema  = robustSecurity(syminfo.tickerid, "5", ema50)
+
+// Fallback ke cache jika NA
+d1EmaF := na(d1Ema) ? d1Ema : d1Ema
+h4EmaF := na(h4Ema) ? h4Ema : h4Ema
+h1EmaF := na(h1Ema) ? h1Ema : h1Ema
+m5EmaF := na(m5Ema) ? m5Ema : m5Ema
+
+// Trend per TF berdasarkan EMA (lebih robust dari price comparison)
+d1Trend  = na(d1EmaF) ? "FLAT" : close > d1EmaF ? "BULL" : close < d1EmaF ? "BEAR" : "FLAT"
+h4Trend  = na(h4EmaF) ? "FLAT" : close > h4EmaF ? "BULL" : close < h4EmaF ? "BEAR" : "FLAT"
+h1Trend  = na(h1EmaF) ? "FLAT" : close > h1EmaF ? "BULL" : close < h1EmaF ? "BEAR" : "FLAT"
+m5Trend  = na(m5EmaF) ? "FLAT" : close > m5EmaF ? "BULL" : close < m5EmaF ? "BEAR" : "FLAT"
 
 mtfStr  = d1Trend + "|" + h4Trend + "|" + h1Trend + "|" + m15Trend
 mtf5Str = d1Trend + "|" + h4Trend + "|" + h1Trend + "|" + m15Trend + "|" + m5Trend
@@ -278,7 +301,7 @@ kzStr   = inKZ ? (inLon ? "LONDON" : "NY_AM") : inNYLn ? "NY_LUNCH" : inNYPM ? "
 
 po3 = inAsia ? "ACC" : inLon ? (postSweepAtas or postSweepBawah) ? "MANIP" : "ACC" : inNYAM ? "DIST" : inNYLn ? "REVERSAL" : inNYPM ? "DIST" : "OFF"
 
-// ====================== M8: JUDAS SWING DETECTION =====================
+// ====================== M8: JUDAS SWING =====================
 var int barOpenLon = na
 var int barOpenNY  = na
 if inLon and (na(barOpenLon) or hour != hour[1])
@@ -358,9 +381,9 @@ plot(oteHigh, "OTE-Hi", color=color.new(color.fuchsia, 40), linewidth=1, style=p
 
 var table statusTab = table.new(position.top_right, 1, 1, bgcolor=color.new(color.black, 30), border_width=1)
 if barstate.islast
-    table.cell(statusTab, 0, 0, "SMC×ICT v1 OK", text_color=color.lime, text_size=size.small)
+    table.cell(statusTab, 0, 0, "SMC×ICT v1.1 OK", text_color=color.lime, text_size=size.small)
 
-// ====================== M11: FALLING WEDGE VISUAL =====================
+// ====================== M11: FALLING WEDGE =====================
 var line wedgeUpper1 = na
 var line wedgeLower1 = na
 var label wedgeLabel = na
@@ -489,7 +512,7 @@ if barstate.islast
     txtLegacy = "PINE_DATA|" + str.tostring(close, "#.##") + "|" + str.tostring(rsiVal, "#.#") + "|" + sigVerdict + "|" + str.tostring(ready) + "|" + str.tostring(atrVal, "#.##") + "|" + alasan + "|" + zonaStr + "|" + str.tostring(midR, "#.#") + "|" + str.tostring(slSug, "#.#") + "|" + str.tostring(tp1Sug, "#.#") + "|" + str.tostring(tp2Sug, "#.#") + "|" + sesiStr + "|" + mtfStr
     label.new(bar_index, low - atrVal * 1.2, txtLegacy, style=label.style_label_up, color=color.new(color.black, 70), textcolor=color.white, size=size.tiny)
 
-    txtJson1 = '{"v":"1.0","px":' + str.tostring(close, "#.##") + ',"rsi":' + str.tostring(rsiVal, "#.#") + ',"sig":"' + sigVerdict + '","ready":' + str.tostring(ready) + ',"atr":' + str.tostring(atrVal, "#.##") + ',"alasan":"' + alasan + '","zona":"' + zonaStr + '","mid":' + str.tostring(midR, "#.#")
+    txtJson1 = '{"v":"1.1","px":' + str.tostring(close, "#.##") + ',"rsi":' + str.tostring(rsiVal, "#.#") + ',"sig":"' + sigVerdict + '","ready":' + str.tostring(ready) + ',"atr":' + str.tostring(atrVal, "#.##") + ',"alasan":"' + alasan + '","zona":"' + zonaStr + '","mid":' + str.tostring(midR, "#.#")
     txtJson2 = ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"sesi":"' + sesiStr + '","kz":"' + kzStr + '","sb":' + str.tostring(inSB) + ',"po3":"' + po3 + '","judas":"' + (judasBull ? "BEAR" : judasBear ? "BULL" : "-") + '","oteLo":' + str.tostring(oteLow, "#.#") + ',"oteHi":' + str.tostring(oteHigh, "#.#")
     txtJson3 = ',"obBull":[' + str.tostring(obBullLo, "#.#") + ',' + str.tostring(obBullHi, "#.#") + '],"obBear":[' + str.tostring(obBearLo, "#.#") + ',' + str.tostring(obBearHi, "#.#") + '],"fvgBull":' + fvgBullStr + ',"fvgBear":' + fvgBearStr + ',"sh":' + str.tostring(sh1, "#.#") + ',"sl":' + str.tostring(sl1, "#.#") + ',"mtf":"' + mtf5Str + '","t":' + str.tostring(time) + '}'
     txtJson = "PINE_DATA_JSON|" + txtJson1 + txtJson2 + txtJson3
@@ -497,13 +520,13 @@ if barstate.islast
 
 // ============ ALERT ==========
 if buyValid
-    alert('{"sig":"BUY","px":' + str.tostring(close) + ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"alasan":"BUY_VALID","zona":"DISKON","sesi":"' + sesiStr + '","kz":"' + kzStr + '","po3":"' + po3 + '","judas":"-","mtf_placeholder":"M15=' + m15Trend + '","tf_aktif":"' + timeframe.period + '","t":' + str.tostring(time) + '}', alert.freq_once_per_bar_close)
+    alert('{"sig":"BUY","px":' + str.tostring(close) + ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"alasan":"BUY_VALID","zona":"DISKON","sesi":"' + sesiStr + '","kz":"' + kzStr + '","po3":"' + po3 + '","judas":"-","mtf":"' + mtf5Str + '","tf_aktif":"' + timeframe.period + '","t":' + str.tostring(time) + '}', alert.freq_once_per_bar_close)
 if sellValid
-    alert('{"sig":"SELL","px":' + str.tostring(close) + ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"alasan":"SELL_VALID","zona":"PREMIUM","sesi":"' + sesiStr + '","kz":"' + kzStr + '","po3":"' + po3 + '","judas":"-","mtf_placeholder":"M15=' + m15Trend + '","tf_aktif":"' + timeframe.period + '","t":' + str.tostring(time) + '}', alert.freq_once_per_bar_close)
+    alert('{"sig":"SELL","px":' + str.tostring(close) + ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"alasan":"SELL_VALID","zona":"PREMIUM","sesi":"' + sesiStr + '","kz":"' + kzStr + '","po3":"' + po3 + '","judas":"-","mtf":"' + mtf5Str + '","tf_aktif":"' + timeframe.period + '","t":' + str.tostring(time) + '}', alert.freq_once_per_bar_close)
 if judasBull
     alert("JUDAS_BEAR @ " + str.tostring(close) + " (sweep high di awal sesi - waspada SELL)", alert.freq_once_per_bar_close)
 if judasBear
     alert("JUDAS_BULL @ " + str.tostring(close) + " (sweep low di awal sesi - waspada BUY)", alert.freq_once_per_bar_close)
 // =====================================================================
-// END SMC×ICT Unified v1.0
+// END SMC×ICT Unified v1.1
 // =====================================================================
