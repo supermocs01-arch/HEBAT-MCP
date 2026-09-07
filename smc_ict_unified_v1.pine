@@ -18,7 +18,7 @@
 //    M7  ICT Kill Zones        (Asia/London/NY, Silver Bullet, Judas)
 //    M8  Power of 3 (PO3)      (Accumulation-Manipulation-Distribution)
 //    M9  Verdict Engine        (BUY/SELL/FLAT + ready + reason)
-//    M10 Output grafik         (label, table, JSON alert-ready)
+//    M10 Output grafik          (label, table, JSON alert-ready)
 //
 //  PENTING: M6B MTF tidak pakai request.security karena BUG!
 //  =================================================================
@@ -53,7 +53,7 @@
 //
 //  INTEGRASI:
 //    - alert()            -> TradingView alert (visual + email + push)
-//    - alert_message()    -> kirim JSON ke webhook (baca_pine.cjs otomatis decode)
+//    - alert_message()     -> kirim JSON ke webhook (baca_pine.cjs otomatis decode)
 //    - label PINE_DATA_*  -> dibaca CDP untuk analisa_gabungan.cjs
 // =====================================================================
 indicator("SMC×ICT Unified v1", overlay=true,
@@ -114,7 +114,6 @@ bullStruct = not na(sh1) and not na(sh2) and not na(sl1) and not na(sl2) and sh1
 bearStruct = not na(sh1) and not na(sh2) and not na(sl1) and not na(sl2) and sh1 < sh2 and sl1 < sl2
 
 // ====================== M1B: FALLING WEDGE DETECTION =================
-// Pivot kedua (lebih panjang) untuk deteksi swing 100+ pip
 pivHi2 = ta.pivothigh(high, i_swingLen2, i_swingLen2)
 pivLo2 = ta.pivotlow (low,  i_swingLen2, i_swingLen2)
 
@@ -133,17 +132,14 @@ if not na(pivLo2)
     sl2w := sl1w
     sl1w := pivLo2
 
-// Falling wedge: 3 lower highs + 3 lower lows (konvergen ke atas = bullish)
 fallingWedge = not na(sh1w) and not na(sh2w) and not na(sh3w) and not na(sl1w) and not na(sl2w) and not na(sl3w) and
                  sh1w < sh2w and sh2w < sh3w and
                  sl1w < sl2w and sl2w < sl3w and
                  (sh1w - sl1w) < (sh3w - sl3w)
-// Break atas: harga cross di atas upper trendline (sh1w)
 wedgeBreak = fallingWedge and close > sh1w and close[1] <= sh1w
 
 brkUp   = not na(sh1) and close > sh1
 brkDn   = not na(sl1) and close < sl1
-// FIX: BOS = kelanjutan trend, CHoCH = perubahan trend (sesuai standar SMC)
 bosB    = brkUp and bullStruct
 chochB  = brkUp and bearStruct
 bosS    = brkDn and bearStruct
@@ -155,7 +151,6 @@ confirmUp = close > open and bodySize >= i_bodyMin
 confirmDn = close < open and bodySize >= i_bodyMin
 
 // ====================== M2: SWEEP LIKUIDITAS (M10 simetris) ==========
-// ICT konsep: liquidity grab = wick tembus swing, close kembali di sisi lain.
 sweepUp = not na(sh1) and high > sh1 and close < sh1
 sweepDn = not na(sl1) and low  < sl1 and close > sl1
 
@@ -177,14 +172,10 @@ postSweepBawah = not na(barSweepDn) and (bar_index - barSweepDn) <= i_blockBars
 postBuyOk  = not postSweepAtas  or (not na(barChB) and barChB > barSweepUp)
 postSellOk = not postSweepBawah or (not na(barChS) and barChS > barSweepDn)
 
-// ====================== M3: FVG & OB (ICT) =============================
-// ICT FVG = gap 3 candle: high[1] < low[2] (bull) atau low[1] > high[2] (bear)
-// Disimpan sebagai ZONA STATE — bisa diretest kapan pun, tidak hilang.
+// ====================== M3: FVG & OB (ICT) ==============================
 bullFVG = high[1] < low[2]
 bearFVG = low[1]  > high[2]
 
-// Array FVG aktif (multiple zones). Cara kerja: tambah saat event,
-// hapus saat price tembus/melanggar. Disimpan max 5.
 var float[] fvgBullLo = array.new_float(0)
 var float[] fvgBullHi = array.new_float(0)
 var float[] fvgBearLo = array.new_float(0)
@@ -197,8 +188,6 @@ if bearFVG and array.size(fvgBearLo) < 5
     array.push(fvgBearLo, high[2])
     array.push(fvgBearHi, low[1])
 
-// Hapus FVG jika sudah ditembus + close di luar (invalidated).
-// Bull FVG: invalid jika close < fvgBullLo. Bear FVG: invalid jika close > fvgBearHi.
 if array.size(fvgBullLo) > 0
     for i = array.size(fvgBullLo) - 1 to 0
         if close < array.get(fvgBullLo, i)
@@ -221,9 +210,6 @@ if array.size(fvgBearLo) > 0 and array.size(fvgBearLo) == array.size(fvgBearHi)
         if close >= array.get(fvgBearLo, i) and close <= array.get(fvgBearHi, i)
             inBearFVG := true
 
-// ORDER BLOCK ICT: candle terakhir yang menentang arah sebelum impulse.
-// Bull OB: candle bearish tepat sebelum bullFVG. Bear OB: candle bullish
-// tepat sebelum bearFVG. Kita pakai deteksi sederhana di M3 v2.1.
 var float obBullLo = na
 var float obBullHi = na
 var bool  obBullOn = false
@@ -249,8 +235,6 @@ isDiskon  = close < midR
 isPremium = close > midR
 
 // ====================== M5: FIBO + ICT OTE ============================
-// ICT OTE (Optimal Trade Entry) zone: 62%-79% retracement dari swing.
-// Paten Fitra: 61.8 dan 78.6 sebagai demand zone (sama range-nya).
 legHi = math.max(nz(sh1, rngHi), nz(sl1, rngLo))
 legLo = math.min(nz(sh1, rngHi), nz(sl1, rngLo))
 legRng = legHi - legLo
@@ -258,73 +242,43 @@ f_50  = legHi - legRng * 0.50
 f_618 = legHi - legRng * 0.618
 f_705 = legHi - legRng * 0.705
 f_786 = legHi - legRng * 0.786
-// ICT menyebut 62-79% sebagai "OTE" (sweet spot entry).
-oteLow  = math.min(f_618, f_786)  // pastikan urut benar walau leg terbalik
+oteLow  = math.min(f_618, f_786)
 oteHigh = math.max(f_618, f_786)
 inOTE = close >= oteLow and close <= oteHigh
-inDemand = close >= f_786 and close <= f_618  // alias kompatibel v2.1
+inDemand = close >= f_786 and close <= f_618
 
 // ====================== M6: FILTER PELAJARAN FITRA ===================
 rsiVal  = ta.rsi(close, i_rsiLen)
 atrVal  = ta.atr(i_atrLen)
-rsiBlokBuy  = rsiVal > 80.0  // M9: jangan BUY di RSI overbought
-rsiBlokSell = rsiVal < 20.0  // kebalikan SELL (lebih longgar di OS)
+rsiBlokBuy  = rsiVal > 80.0
+rsiBlokSell = rsiVal < 20.0
 
 // ====================== M6B: MTF TREND (CDP-DRIVEN) ====================
-// !! PENTING — HISTORICAL BUG !!
-// request.security() untuk HTF (D1/H4/H1/M5) SERING RETURN NA setelah
-// restart chart (PINE "none" semua TF) — ini glitch TERSANGKAL di TV.
-// Lihat: hi_fitra.log baris 153-158, AGENTS.md section 6.2, KNOWLEDGE_BASE
-// section 7.2. Solusi: MTF dihitung oleh analyzer Node.js via CDP (bukan
-// dari Pine), dengan cara cycle timeframe pakai cycle_tf_efficient.cjs lalu
-// baca PINE_DATA di setiap TF.
-//
-// Di Pine: HANYA hitung trend TF aktif (mis. M15) + tandai variabel MTF
-// untuk diisi analyzer. Kalau Pine di-load di TF lain (M5/H1/H4), analyzer
-// tinggal gabung data dari semua TF.
 m15e = ta.ema(close, 50)
 m15Trend = close > m15e ? "BULL" : close < m15e ? "BEAR" : "FLAT"
 
-// Placeholder untuk diisi analyzer (lihat field mtf di PINE_DATA_JSON).
-// Default: pakai trend TF saat ini (M15) untuk semua slot — analyzer akan
-// replace dengan data akurat dari cycle TF.
 d1Trend  = m15Trend
 h4Trend  = m15Trend
 h1Trend  = m15Trend
 m5Trend  = m15Trend
 
-// String MTF — analyzer akan replace via baca_pine_json.cjs (lihat
-// scan_all_tf.cjs) setelah cycle TF selesai.
 mtfStr  = d1Trend + "|" + h4Trend + "|" + h1Trend + "|" + m15Trend
 mtf5Str = d1Trend + "|" + h4Trend + "|" + h1Trend + "|" + m15Trend + "|" + m5Trend
 
 // ====================== M7: ICT KILL ZONES ============================
-// ICT Kill Zones = jam high-probability move institusi.
-// Asia       = rebalance London close + setup London
-// London     = first hour impulse (Judas Swing biasanya di sini)
-// NY AM      = real move setelah London fakeout
-// NY PM      = closing auction / profit-taking
-// Silver Bullet = 10:00-11:00 NY / 03:00-04:00 London
-// (waktu Exchange, bukan Asia/Jakarta — TV default UTC-5)
 inAsia  = not na(time(timeframe.period, i_kzAsia))
 inLon   = not na(time(timeframe.period, i_kzLondon))
 inNYAM  = not na(time(timeframe.period, i_kzNYAM))
 inNYLn  = not na(time(timeframe.period, i_kzNYLunch))
 inNYPM  = not na(time(timeframe.period, i_kzNYPM))
 inSB    = not na(time(timeframe.period, i_silverB))  or not na(time(timeframe.period, i_silverBNY))
-inKZ    = inLon or inNYAM  // "kill zone" = London + NY AM saja
+inKZ    = inLon or inNYAM
 sesiStr = inLon ? "LONDON" : inNYAM ? "NY" : inNYLn ? "NY_LUNCH" : inNYPM ? "NY_PM" : inAsia ? "ASIA" : "OFF"
 kzStr   = inKZ ? (inLon ? "LONDON" : "NY_AM") : inNYLn ? "NY_LUNCH" : inNYPM ? "NY_PM" : inAsia ? "ASIA" : "OFF"
 
-// Power of 3 (PO3) ICT: Accumulation → Manipulation → Distribution.
-// Versi sederhana: jam pertama sesi (Asia) = ACC, jam ke-2 (London open) =
-// MANIP (Judas Swing), jam ke-3+ (NY AM) = DIST.
-// Pendeteksian: di London AM, jika sweep sebelum CHoCH → MANIPULATION.
 po3 = inAsia ? "ACC" : inLon ? (postSweepAtas or postSweepBawah) ? "MANIP" : "ACC" : inNYAM ? "DIST" : inNYLn ? "REVERSAL" : inNYPM ? "DIST" : "OFF"
 
 // ====================== M8: JUDAS SWING DETECTION =====================
-// ICT Judas Swing = false breakout awal sesi untuk trap retail.
-// Detection: sweep dalam 5 candle pertama sesi London/NY AM.
 var int barOpenLon = na
 var int barOpenNY  = na
 if inLon and (na(barOpenLon) or hour != hour[1])
@@ -333,18 +287,13 @@ if inNYAM and (na(barOpenNY) or hour != hour[1])
     barOpenNY  := bar_index
 inLonEarly = not na(barOpenLon) and (bar_index - barOpenLon) <= 5
 inNYEarly  = not na(barOpenNY)  and (bar_index - barOpenNY)  <= 5
-judasBull  = (inLonEarly or inNYEarly) and sweepUp  // sweep high di awal sesi = false breakout atas → bearish reversal
-judasBear  = (inLonEarly or inNYEarly) and sweepDn  // sweep low  di awal sesi = false breakout bawah → bullish reversal
+judasBull  = (inLonEarly or inNYEarly) and sweepUp
+judasBear  = (inLonEarly or inNYEarly) and sweepDn
 
 // ====================== M9: VERDICT ENGINE =============================
-// PENTING: filter MTF (H4/D1) di Pine pakai PLACEHOLDER (= M15 trend).
-// Analyzer Node.js akan replace h4Trend/d1Trend dengan data akurat dari
-// cycle TF (lihat catatan M6B). Di Pine: hanya blok NY_LUNCH + RSIE +
-// PREMIUM + OB + POST_SWEEP yang aktif. MTF filter = via analyzer.
 buyRaw  = (bosB or chochB) and confirmUp and (inBullFVG or inBullOB or inDemand or inOTE)
 sellRaw = (bosS or chochS) and confirmDn and (inBearFVG or inBearOB or (close >= legHi - legRng * 0.25 and close <= legHi - legRng * 0.145))
 
-// Blok BUY (filter Paten Fitra — yang BISA dihitung Pine)
 blokBuy = ""
 if isPremium
     blokBuy += "PREMIUM(M11);"
@@ -355,11 +304,8 @@ if inBearOB
 if postSweepAtas and not postBuyOk
     blokBuy += "POST_SWEEP(M10);"
 if inNYLn
-    blokBuy += "NY_LUNCH;"   // tidak entry saat lunch (choppy)
-// NB: H4_BEAR(MTF) + D1 wajib bear = di-handle analyzer (lihat scan_all_tf.cjs)
+    blokBuy += "NY_LUNCH;"
 
-// SELL wajib D1 BEAR (M11) + filter lain — analyzer filter D1.
-// Di Pine: filter yang bisa dihitung saja.
 blokSell = ""
 if rsiBlokSell
     blokSell += "RSI_OS_EXT;"
@@ -369,7 +315,6 @@ if postSweepBawah and not postSellOk
     blokSell += "POST_SWEEP(M10);"
 if inNYLn
     blokSell += "NY_LUNCH;"
-// NB: D1_BULL(M11) + H4_BULL(MTF) = di-handle analyzer
 
 buyValid  = buyRaw  and isDiskon  and str.length(blokBuy)  == 0
 sellValid = sellRaw and isPremium and str.length(blokSell) == 0
@@ -380,7 +325,6 @@ alasan = buyRaw and not buyValid and str.length(blokBuy) > 0 ? "BUY_BLOK:" + blo
          buyRaw ? "BUY_AGRESIF" : sellRaw ? "SELL_AGRESIF" :
          judasBull ? "JUDAS_BEAR" : judasBear ? "JUDAS_BULL" : "NO_SETUP"
 
-// Saran SL/TP otomatis
 var float slSug = na
 var float tp1Sug = na
 var float tp2Sug = na
@@ -403,18 +347,15 @@ plotshape(sellRaw and not sellValid, "SELLx", shape.triangledown, location.above
 plotshape(judasBull, "JUDAS↑", shape.xcross, location.abovebar, color=color.orange, size=size.tiny, text="JUDAS")
 plotshape(judasBear, "JUDAS↓", shape.xcross, location.belowbar, color=color.orange, size=size.tiny, text="JUDAS")
 
-// DEBUG: Pivot detection (selalu tampil)
 plotshape(not na(pivHi), "Pivot↑", shape.diamond, location.abovebar, color=color.new(color.yellow, 30), size=size.tiny, text="Piv")
 plotshape(not na(pivLo), "Pivot↓", shape.diamond, location.belowbar, color=color.new(color.aqua, 30), size=size.tiny, text="Piv")
 
-// Garis referensi (selalu tampil)
 plot(midR,  "Mid",   color=color.new(color.yellow, 20), linewidth=2)
 plot(f_618, "F618",  color=color.new(color.aqua,   30), linewidth=1)
 plot(f_786, "F786",  color=color.new(color.blue,   30), linewidth=1)
 plot(oteLow,  "OTE-Lo", color=color.new(color.fuchsia, 40), linewidth=1, style=plot.style_stepline)
 plot(oteHigh, "OTE-Hi", color=color.new(color.fuchsia, 40), linewidth=1, style=plot.style_stepline)
 
-// Status aktif (selalu tampil di pojok kanan atas)
 var table statusTab = table.new(position.top_right, 1, 1, bgcolor=color.new(color.black, 30), border_width=1)
 if barstate.islast
     table.cell(statusTab, 0, 0, "SMC×ICT v1 OK", text_color=color.lime, text_size=size.small)
@@ -434,7 +375,7 @@ if i_showWedge and not na(sh1w) and not na(sh2w) and not na(sl1w) and not na(sl2
 
 plotshape(i_showWedge and wedgeBreak, "Wedge Break", shape.diamond, location.abovebar, color=color.new(color.lime, 0), size=size.normal, text="WEDGE")
 
-// ====================== M12: ENHANCED DEMAND/SUPPLY ZONES =================
+// ====================== M12: DEMAND/SUPPLY ZONES =================
 var box lastDemandBox = na
 var box lastSupplyBox = na
 var label lastDemandLabel = na
@@ -458,7 +399,6 @@ bgcolor(i_showKZ and inNYLn  ? color.new(color.gray,   95) : na, title="KZ: NY L
 bgcolor(i_showKZ and inSB    ? color.new(color.yellow, 92) : na, title="KZ: Silver Bullet")
 bgcolor(i_showKZ and inAsia  ? color.new(color.teal,   96) : na, title="KZ: Asia")
 
-// S/R swing lines
 var line r1 = na
 var line r2 = na
 var line s1 = na
@@ -475,19 +415,16 @@ if i_showSR
         s1 := line.new(bar_index - i_swingLen, pivLo, bar_index, pivLo,
              extend=extend.right, color=color.new(color.green, 20), width=2)
 
-// FVG boxes (draw saat event, bukan setiap bar — seperti v2.2)
 if i_showFVG and bullFVG and bar_index >= 2
     box.new(bar_index[2], high[1], bar_index[1], low[2], border_color=color.new(color.green, 30), bgcolor=color.new(color.green, 85))
 if i_showFVG and bearFVG and bar_index >= 2
     box.new(bar_index[2], low[1], bar_index[1], high[2], border_color=color.new(color.red, 30), bgcolor=color.new(color.red, 85))
 
-// OB boxes (draw saat event, bukan setiap bar — seperti v2.2)
 if i_showOB and bullFVG and close < open[1] and bar_index >= 1
     box.new(bar_index[1], high[1], bar_index + 10, low[1], border_color=color.new(color.green, 30), bgcolor=color.new(color.green, 85))
 if i_showOB and bearFVG and close > open[1] and bar_index >= 1
     box.new(bar_index[1], high[1], bar_index + 10, low[1], border_color=color.new(color.red, 30), bgcolor=color.new(color.red, 85))
 
-// Label struktur
 if i_showLabel
     if bosB
         label.new(bar_index, low,  "BOS-B",   style=label.style_label_up,   color=color.green,  textcolor=color.white, size=size.tiny)
@@ -506,7 +443,6 @@ if i_showLabel
     if i_showPO3 and po3 == "MANIP"
         label.new(bar_index, high, "MANIP", style=label.style_label_down, color=color.orange, textcolor=color.black, size=size.tiny)
 
-// Tabel MTF + ICT
 var table tab = table.new(position.top_left, 6, 3, bgcolor=color.new(color.black, 20), border_width=1, border_color=color.new(color.gray, 50))
 if i_showTable and barstate.islast
     table.cell(tab, 0, 0, "TF",      text_color=color.yellow, text_size=size.tiny)
@@ -520,7 +456,7 @@ if i_showTable and barstate.islast
     table.cell(tab, 2, 1, h4Trend,   text_color=h4Trend=="BULL"?color.lime:h4Trend=="BEAR"?color.red:color.gray,  text_size=size.tiny)
     table.cell(tab, 3, 1, h1Trend,   text_color=h1Trend=="BULL"?color.lime:h1Trend=="BEAR"?color.red:color.gray,  text_size=size.tiny)
     table.cell(tab, 4, 1, m15Trend,  text_color=m15Trend=="BULL"?color.lime:m15Trend=="BEAR"?color.red:color.gray, text_size=size.tiny)
-    table.cell(tab, 5, 1, m5Trend,   text_color=m5Trend=="BULL"?color.lime:m5Trend=="BEAR"?color.red:color.gray,  text_size=size.tiny)
+    table.cell(tab, 5, 1, m5Trend,   text_color=m5Trend=="BULL"?color.lime:m5Trend=="BEAR"?color.red:color.gray, text_size=size.tiny)
     table.cell(tab, 0, 2, "ICT",     text_color=color.white,  text_size=size.tiny)
     table.cell(tab, 1, 2, kzStr,     text_color=inKZ?color.yellow:color.gray, text_size=size.tiny)
     table.cell(tab, 2, 2, po3,       text_color=po3=="DIST"?color.lime:po3=="MANIP"?color.orange:po3=="ACC"?color.aqua:color.gray, text_size=size.tiny)
@@ -528,9 +464,8 @@ if i_showTable and barstate.islast
     table.cell(tab, 4, 2, judasBull or judasBear ? "JUDAS" : "-", text_color=color.orange, text_size=size.tiny)
     table.cell(tab, 5, 2, sigVerdict, text_color=buyValid?color.lime:sellValid?color.red:color.gray, text_size=size.tiny)
 
-// ============ OUTPUT PINE_DATA (label) — untuk baca_pine.cjs ==========
+// ============ OUTPUT PINE_DATA ==========
 if barstate.islast
-    // Serialize FVG arrays ke string "[[lo1,hi1],[lo2,hi2]]"
     fvgBullStr = "[]"
     fvgBearStr = "[]"
     bullFVGsz = array.size(fvgBullLo)
@@ -550,30 +485,17 @@ if barstate.islast
             fvgBearStr += "[" + str.tostring(array.get(fvgBearLo, i), "#.#") + "," + str.tostring(array.get(fvgBearHi, i), "#.#") + "]"
         fvgBearStr += "]"
 
-    // Label "PINE_DATA" (kompabel dgn v2.1/v2.2) — pipe-delimited
     zonaStr = isDiskon ? "DISKON" : isPremium ? "PREMIUM" : "MID"
     txtLegacy = "PINE_DATA|" + str.tostring(close, "#.##") + "|" + str.tostring(rsiVal, "#.#") + "|" + sigVerdict + "|" + str.tostring(ready) + "|" + str.tostring(atrVal, "#.##") + "|" + alasan + "|" + zonaStr + "|" + str.tostring(midR, "#.#") + "|" + str.tostring(slSug, "#.#") + "|" + str.tostring(tp1Sug, "#.#") + "|" + str.tostring(tp2Sug, "#.#") + "|" + sesiStr + "|" + mtfStr
     label.new(bar_index, low - atrVal * 1.2, txtLegacy, style=label.style_label_up, color=color.new(color.black, 70), textcolor=color.white, size=size.tiny)
-    // Label "PINE_DATA_JSON" (v1.0+) — JSON lengkap, untuk analyzer modern
-    // Split jadi 2 baris agar tidak melebihi limit string Pine
-    txtJson1 = '{"v":"1.0","px":' + str.tostring(close, "#.##") + ',"rsi":' + str.tostring(rsiVal, "#.#") + ',"sig":"' + sigVerdict + '","ready":' + str.tostring(ready) + ',"atr":' + str.tostring(atrVal, "#.##") + ',"alasan":"' + alasan + '","zona":"' + (isDiskon ? "DISKON" : isPremium ? "PREMIUM" : "MID") + '","mid":' + str.tostring(midR, "#.#")
+
+    txtJson1 = '{"v":"1.0","px":' + str.tostring(close, "#.##") + ',"rsi":' + str.tostring(rsiVal, "#.#") + ',"sig":"' + sigVerdict + '","ready":' + str.tostring(ready) + ',"atr":' + str.tostring(atrVal, "#.##") + ',"alasan":"' + alasan + '","zona":"' + zonaStr + '","mid":' + str.tostring(midR, "#.#")
     txtJson2 = ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"sesi":"' + sesiStr + '","kz":"' + kzStr + '","sb":' + str.tostring(inSB) + ',"po3":"' + po3 + '","judas":"' + (judasBull ? "BEAR" : judasBear ? "BULL" : "-") + '","oteLo":' + str.tostring(oteLow, "#.#") + ',"oteHi":' + str.tostring(oteHigh, "#.#")
     txtJson3 = ',"obBull":[' + str.tostring(obBullLo, "#.#") + ',' + str.tostring(obBullHi, "#.#") + '],"obBear":[' + str.tostring(obBearLo, "#.#") + ',' + str.tostring(obBearHi, "#.#") + '],"fvgBull":' + fvgBullStr + ',"fvgBear":' + fvgBearStr + ',"sh":' + str.tostring(sh1, "#.#") + ',"sl":' + str.tostring(sl1, "#.#") + ',"mtf":"' + mtf5Str + '","t":' + str.tostring(time) + '}'
     txtJson = "PINE_DATA_JSON|" + txtJson1 + txtJson2 + txtJson3
     label.new(bar_index, low - atrVal * 2.2, txtJson, style=label.style_label_up, color=color.new(color.purple, 50), textcolor=color.white, size=size.tiny)
 
-// ============ ALERT — JSON siap webhook ================================
-// alert_message(): format JSON untuk dikirim via TradingView alert webhook.
-// Skema:
-//   {"sig":"BUY","px":4310.4,"sl":4225,"tp1":4374,"tp2":4458,
-//    "alasan":"BUY_VALID","zona":"DISKON","sesi":"LONDON",
-//    "kz":"LONDON","po3":"DIST","judas":"-",
-//    "mtf_placeholder":"M15=BULL","t":1725287400}
-//
-// PENTING: Field "mtf" di sini PLACEHOLDER (semua TF = M15 trend).
-// Analyzer Node.js (baca_pine_json.cjs + scan_all_tf.cjs) yang akan
-// replace dengan data akurat dari cycle TF. Jangan trade berdasarkan
-// "mtf" dari alert ini sebelum analyzer mereplace.
+// ============ ALERT ==========
 if buyValid
     alert('{"sig":"BUY","px":' + str.tostring(close) + ',"sl":' + str.tostring(slSug, "#.#") + ',"tp1":' + str.tostring(tp1Sug, "#.#") + ',"tp2":' + str.tostring(tp2Sug, "#.#") + ',"alasan":"BUY_VALID","zona":"DISKON","sesi":"' + sesiStr + '","kz":"' + kzStr + '","po3":"' + po3 + '","judas":"-","mtf_placeholder":"M15=' + m15Trend + '","tf_aktif":"' + timeframe.period + '","t":' + str.tostring(time) + '}', alert.freq_once_per_bar_close)
 if sellValid

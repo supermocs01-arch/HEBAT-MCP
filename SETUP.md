@@ -47,10 +47,25 @@ Check for any hardcoded paths and update accordingly.
 
 ## Deploy Pine Script
 
+### Option 1: SMC×ICT Unified v1.0 (Recommended - Full Feature)
 1. Open TradingView Desktop
-2. Open Pine Editor
-3. Copy contents of `smc_swing_paten_v2.pine` and paste
-4. Save/Add to chart
+2. Open Pine Editor (bottom panel or press F3)
+3. Copy ALL contents of `smc_ict_unified_v1.pine` and paste
+4. Click **"Add to chart"** (bawah kanan)
+5. Indicator akan muncul otomatis dengan nama "SMC×ICT Unified v1"
+
+**Fitur utama:**
+- SMC klasik (BOS/CHoCH/FVG/OB)
+- ICT (Kill Zones, Silver Bullet, Judas Swing, OTE, Power of 3)
+- Fibonacci retracement + extension
+- Multi-timeframe trend table
+- Auto SL/TP suggestion
+- Alert ready (JSON output)
+
+### Option 2: SMC Swing Paten v2.2 (Legacy)
+1. Open Pine Editor
+2. Copy contents of `smc_swing_paten_v2.pine`
+3. Add to chart
 
 ## Quick Start
 
@@ -79,7 +94,7 @@ node C:\HEBAT\overlay_position.cjs
 | `overlay_position.cjs` | Chart overlay panel |
 | `monitor_limit_xau.cjs` | Position monitor |
 | `hi_fitra.cjs` | Full startup |
-| `smc_swing_paten_v2.pine` | Main indicator |
+| `smc_ict_unified_v1.pine` | Main indicator (SMC + ICT unified) |
 
 ## Trading Pair
 - XAUUSD (Gold)
