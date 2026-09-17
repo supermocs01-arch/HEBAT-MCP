@@ -215,3 +215,15 @@
   5. **User yang entry sendiri TAU risk tolerance-nya.** Jangan mandate "TUTUP" posisi yang user sengaja hold untuk target besar. Cukupkan dengan analisis risk:reward, bukan perintah exit.
   6. **Konfirmasi 3 posisi aktif (1 BUY + 2 SELL) butuh cross-check lot size dan net exposure.** Saya tidak tanya lot size, sehingga tidak bisa hitung max loss total. Pelajaran: SELALU tanya lot size saat user re-entry.
 
+## MISS #15 — 11 SEP 2026 (BUY 4353 kena SL 4345 — entry AGRESIF tanpa konfirmasi; harga lalu break OB & lanjut turun)
+- **Kejadian**: BUY LIMIT 4353 (zona diskon, OB bullish 4324.2-4373.9) terisi **10 Sep 22:09 WIB**. Saat terisi PINE=BEAR, RSI=BEAR, belum CHoCH-B → monitor langsung warning **AGRESIF (MISS #12 pattern)**, siap cut cepat. Floating sempat +11 pip (harga 4364) lalu pagi **11 Sep 02:23 WIB SL 4345 KENA** — harga menembus OB 4324.2 ke **low 4319.5** (sweep-the-sweep, persis pola MISS #13). Loss -8 pip × 2 layer @0.05 = 0.10 lot.
+- **Yang BENAR (dipuji)**: SL 4345 dihormati dan **cut disiplin tanpa balas dendam**. Posisi sudah dikasih warning sejak fill (log monitor: MISS #12 warning) — eksekusi keluar sesuai aturan.
+- **Root cause loss**:
+  1. **Entry AGRESIF tanpa konfirmasi PINE BUY + CHoCH-B** — restatan (resting) limit di dalam OB diskon BUKAN izin masuk. Konsisten dengan MISS #9/#10/#12/#13: zona diskon tanpa PINE M15 searah + CHoCH = masih "kandidat", bukan signal eksekusi.
+  2. **Sweep-the-sweep lagi** — harga tidak reversal di OB pertama (4324.2); dia sweep ke 4319.5. Entry di OB pertama tanpa tunggu konfirmasi = kena leg lanjutan (pola MISS #13 berulang).
+  3. **Pagi Asia = sesi sepi**: pergerakan 4 jam setelah fill (22:09 → 02:23) terjadi saat NY tutup, likuiditas tipis, mudah offset yang dalam.
+- **RULE BARU (dipatenkan)**:
+  1. **Zona diskon ≠ valid tanpa konfirmasi.** 61.8%/\FVG/\OB hanyalah tempat, bukan izin. Izin = PINE M15 BUY ready=100 + CHoCH-B + candle tegas + D1/MTF pendukung. Tanpa itu dan harga datang = JANGAN eksekusi (MISS #12/#15).
+  2. **Setelah break OB bullish 4324.2 bersih (close di bawah) + BOS-S lanjut** → bias turun lanjut ke box 4282.6-4331.6 → 4280 (TP3 lama) → 4221 (swing H4) → 4200. SELL hanya valid saat harga RETEST PREMIUM (>4383.6) dengan D1 BEARISH (MISS #6/#11), bukan mengejar di DISKON.
+  3. **Posisi yang dibuka di sesi NY lalu dipinggirkan pagi hari Asia = rawan gap/sweep** — manajemen SL proaktif (BE manual) wajib kalau cuti, atau tutup sebelum NY tutup.
+  4. **Loss 1 hari ini (11 Sep), jatah tersisa 2, bukan 0** — TETAP STOP TOTAL kalau loss ke-2 kena (anti balas dendam).

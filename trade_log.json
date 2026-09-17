@@ -22,5 +22,29 @@
   "hasil": "TP 4351.8 HIT (entry #1 hari ini)",
   "win": true,
   "catatan": "2 posisi sell (4429.626 & 4427.015) TP di buy limit 4351.8; lot 0.1; RSI overbought ekstrem; sisa jatah entry hari ini: 2"
+ },
+ {
+  "tanggal": "2026-09-10",
+  "pair": "XAUUSD",
+  "arah": "SELL",
+  "entry": 4449,
+  "sl": 4480,
+  "tp1": 4353,
+  "tp2": 4310,
+  "hasil": "TP SEMUA LAYER ~+71.1 pip (exit manual sblm PPI 19:30)",
+  "win": true,
+  "catatan": "3 layer (0.05/0.05/0.01) @4449, tutup ~4377.9. SBLM TP1 4353 tercapai tp profit dikunci manual. PINE FLAT, SELL 3 layer dari 7 Sep."
+ },
+ {
+  "tanggal": "2026-09-10/11",
+  "pair": "XAUUSD",
+  "arah": "BUY",
+  "entry": 4353,
+  "sl": 4345,
+  "tp1": 4377,
+  "tp2": 4385,
+  "hasil": "SL KENA -8 pip (exit 11 Sep 02:23 WIB)",
+  "win": false,
+  "catatan": "2 layer @0.05. AGRESIF tanpa PINE BUY/CHoCH-B (warning MISS #12). Floating sempat +11, lalu break OB 4324.2 -> 4319.5. Cut disiplin. MISS #15 dicatat."
  }
 ]

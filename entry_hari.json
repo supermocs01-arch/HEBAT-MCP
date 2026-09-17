@@ -1,8 +1,8 @@
 {
-  "tanggal": "2026-09-07",
-  "entry_ke": 1,
-  "sisa_jatah": 2,
+  "tanggal": "2026-09-14",
+  "entry_ke": 0,
+  "sisa_jatah": 3,
   "loss_count": 0,
-  "note": "Entry Senin 7 Sep 2026: SELL STOP 4.380 lot 0.05. SL 4.434. Target TP bertahap 4.353 → 4.310 → 4.280 → 4.200 runner.",
-  "tahap": "WAITING - SELL STOP 4.380 belum triggered. Tunggu H4 close <4.380."
+  "note": "MODE CUTI Fitra 13-25/26 Sep 2026 TANPA plan otomatis. Saat comeback: cari entry baru (BUY LIMIT atau STOP) target +150 pips. Update file saat comeback (25/26 Sep).",
+  "tahap": "CUTI 10+ HARI (13 -> comeback 25/26 Sep): TANPA POSISI, TANPA LIMIT. Sistem standby (monitor/TV/hi_fitra). Saat comeback: scan analisa_gabungan -> pilih setup -> entry limit/stop target 150 pips. Cek paten: konfirmasi PINE+CHoCH, SL struktural, RR 1:3/1:4, jatah 3, 2 loss = STOP."
 }

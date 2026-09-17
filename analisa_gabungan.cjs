@@ -519,7 +519,10 @@ for (const o of others) {
         }
         let prevPlan = null;
         try { prevPlan = JSON.parse(fs.readFileSync(PLAN_FILE, 'utf8')); } catch (e) {}
-        if (plan.active || !prevPlan || !prevPlan.active) {
+        // GUARD MANUAL: plan manual (manual:true & active) tidak pernah ditimpa sinyal auto
+        // (diaktifkan utk mode cuti Fitra 13-23 Sep — SELALU dipertahankan sampai manual::false)
+        const manualPlan = prevPlan && prevPlan.active === true && prevPlan.manual === true;
+        if (!manualPlan && (plan.active || !prevPlan || !prevPlan.active)) {
           fs.writeFileSync(PLAN_FILE, JSON.stringify(plan, null, 1));
           if (plan.active && plan.title.indexOf('ZONA BEKAS') < 0) console.log('LIMIT DIPASANG KE OVERLAY: ' + plan.title);
           else if (plan.active) console.log('OVERLAY: ' + plan.title);

@@ -1,4 +1,5 @@
 const http = require('http');
+const symbol = process.argv[2] || 'THINKMARKETS:USDINDEX';
 http.get('http://127.0.0.1:9222/json', res => {
   let d = '';
   res.on('data', c => d += c);
@@ -15,11 +16,10 @@ http.get('http://127.0.0.1:9222/json', res => {
     });
     ws.on('open', async () => {
       await send('Runtime.enable');
-      // Switch symbol to XAUUSD via chart widget
       const expr = `(function(){
         var wv=window.TradingViewApi._activeChartWidgetWV.value();
-        if(wv) wv.setSymbol('OANDA:XAUUSD',function(){});
-        return 'Symbol set to OANDA:XAUUSD';
+        if(wv) wv.setSymbol('${symbol}',function(){});
+        return 'Symbol set to ${symbol}';
       })()`;
       const r = await send('Runtime.evaluate', { expression: expr, returnByValue: true });
       console.log(r.result.value);

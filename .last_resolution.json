@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-09-07T09:27:14.301Z",
-  "totalDurationMs": 14270,
+  "timestamp": "2026-09-07T13:10:42.911Z",
+  "totalDurationMs": 14214,
   "targetUrl": "https://id.tradingview.com/chart/KGDsu1Hl/",
   "startResolution": "15",
   "finalResolution": "15",
@@ -8,37 +8,37 @@
     {
       "res": "D",
       "ok": true,
-      "dur": 2422,
+      "dur": 2397,
       "pineReady": false
     },
     {
       "res": "240",
       "ok": true,
-      "dur": 2415,
+      "dur": 2397,
       "pineReady": false
     },
     {
       "res": "60",
       "ok": true,
-      "dur": 2337,
+      "dur": 2351,
       "pineReady": false
     },
     {
       "res": "30",
       "ok": true,
-      "dur": 2354,
+      "dur": 2348,
       "pineReady": false
     },
     {
       "res": "15",
       "ok": true,
-      "dur": 2341,
+      "dur": 2355,
       "pineReady": false
     },
     {
       "res": "5",
       "ok": true,
-      "dur": 2371,
+      "dur": 2348,
       "pineReady": false
     }
   ],

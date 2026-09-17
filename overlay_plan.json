@@ -1,14 +1,15 @@
 {
- "active": true,
- "title": "XAU BUY LIMIT 4407.1 (FVG M15 - PULLBACK D1 VALID)",
- "info": "Zona BULLISH 4406.8-4407.1 | Bias D1 BULLISH (pullback H4, diskon dalam)",
- "sl": "4397.1",
- "slNote": "struktural maks 20 pips (risk 10.0)",
- "tp1": "4695.1",
- "tp1Note": "di bawah swing (1:3, 30-40+ pips) (288.0 pips)",
- "tp2": "4705.1",
- "tp2Note": "di bawah swing H4 (1:4, 40+ pips, situasional) (298.0 pips)",
- "syarat": "VALID jika: limit kena + PINE M15 BUY + BOS-B H4 baru + candle tegas | PULLBACK D1: konfirmasi CHoCH-B M15 + PINE BUY",
- "status": "LIMIT BARU: menunggu kena + konfirmasi | RSI M15 75",
- "catatan": "Jika PINE FLAT saat kena: JANGAN eksekusi | SL/TP struktural, jangan kaku | SWING EXT (fibo H4): 127.2 @ 4802.1 | 161.8 @ 4935.7 | 261.8 @ 5321.8"
+  "active": false,
+  "manual": true,
+  "info": "MODE CUTI (13-25/26 Sep) - TANPA PLAN AKTIF. Saat comeback: scan fresh analisa_gabungan -> pilih entry (LIMIT/STOP) target +150 pips. Sistem standby: monitor hidup, TV nyala.",
+  "current_price": 4349.4,
+  "plan_a_sell": null,
+  "plan_b_buy": null,
+  "macro_context": [
+    { "t": "16 Sep 19:30", "e": "US Retail Sales (forecast 0.8% vs -0.6%)" },
+    { "t": "17 Sep 01:00", "e": "FOMC Rate 3.75% (hold expected) + Statement + Dots" },
+    { "t": "17 Sep 01:30", "e": "Powell Press Conference" },
+    { "t": "18 Sep", "e": "BOJ Policy Rate (<1.25%) + Japan CPI" },
+    { "t": "30 Sep 19:30", "e": "ADP + Core PCE + Final GDP (penutup bulan)" }
+  ]
 }
