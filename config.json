@@ -5,7 +5,7 @@
   "pineStudyUpdatedAt": "2026-09-03T04:35:00.000Z",
   "targetSymbol": "XAUUSD",
   "targetBroker": "OANDA",
-  "accountType": "cent",
+  "accountType": "standard",
   "strategy": {
     "name": "Paten Fitra v1.0",
     "description": "SMC klasik (Paten Fitra) + ICT (Kill Zones, Silver Bullet, Judas Swing, OTE, Power of 3) untuk XAUUSD",

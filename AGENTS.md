@@ -3,9 +3,9 @@
 > Dokumen ini untuk AI MANA PUN yang meneruskan kerja. Baca habis-habisan sebelum bertindak.
 
 ## 1. KONTEKS USER
-- **Fitra**, trader XAUUSD (OANDA) di **akun cent MT5**, dibantu AI bernama "Fatra".
-- Misi: konsisten ikut aturan paten → migrasi ke akun standar saat saldo $70-80.
-- Saldo: **2.000 USC** (top-up 25 Aug 2026).
+- **Fitra**, trader XAUUSD (OANDA) di **akun standard MT5**, dibantu AI bernama "Fatra".
+- Misi: konsisten ikut aturan paten → profit konsisten.
+- Saldo: **$2.200 USD** (standard account, upgrade Sep 2026).
 - Gaya komunikasi: Bahasa Indonesia santai, tapi DISIPLIN KERAS soal aturan.
 
 ## 2. ATURAN PATEN (ringkas — detail & kisah lengkap: `pelajaran_sl.md`)
@@ -15,11 +15,11 @@
 - **BUY hanya di DISKON** (di bawah mid range); **SELL hanya jika D1 BEARISH** + harga PREMIUM (MISS #6/#11).
 - Entry tanpa konfirmasi = larangan: tunggu **PINE M15 searah + CHoCH** (MISS #9/#10/#12).
 - Limit yang harganya sudah jauh melenceng = HAPUS, jangan dibiarkan (MISS #5/#11).
-- **Layer ≠ jatah** (Pilihan B): 1 entry = 2 layer @0.05 lot → L1 tutup di TP1 (1:3), L2 runner ke TP2 (1:4). Setelah TP1 kena: **geser SL L2 ke BE**.
+- **Layer ≠ jatah** (Pilihan B): 1 entry = 2 layer @**0.1** lot → L1 tutup di TP1 (1:3), L2 runner ke TP2 (1:4). Setelah TP1 kena: **geser SL L2 ke BE**.
 - **Protokol eksekusi standar (revisi 26 Aug — cara Fitra sebenarnya)**:
   - **SEMUA entry = LIMIT ORDER swing** (taruh limit di zona → tunggu terisi → kelola sampai TP/SL). Bukan scalp chase dengan SL kaku.
-  - **Setup zona dekat** = 2 layer @**0.05** lot → L1 tutup di TP1 (1:3), L2 runner ke TP2 (1:4). Setelah TP1: **SL L2 ke BE**.
-  - **Setup SWING JAUH** (FIBO EXT / zona diskon dalam) = **1 layer @0.01-0.05** lot → target EXT/trailing.
+  - **Setup zona dekat** = 2 layer @**0.1** lot → L1 tutup di TP1 (1:3), L2 runner ke TP2 (1:4). Setelah TP1: **SL L2 ke BE**.
+  - **Setup SWING JAUH** (FIBO EXT / zona diskon dalam) = **1 layer @0.05-0.1** lot → target EXT/trailing.
   - **SL selalu struktural** (di luar sweep/swing + buffer) — bukan 10 pips kaku. Hasil akhir hanya 2: TP kena atau SL kena.
 
 ## 3. FILE INTI (pipeline utama — jangan diubah sembarangan)
@@ -63,8 +63,9 @@ Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.c
 6. **TV exe ada 2 lokasi** (LOCALAPPDATA\tradingview-mcp\... dan Program Files\WindowsApps\...) — `hi_fitra.cjs` sudah handle keduanya.
 
 ## 7. OPEN QUESTIONS (prioritas selesaikan)
-- **Konversi USC/pip belum terverifikasi!** Rumus lama bilang 1 pip @0.05 lot = 500 USC, tapi tidak masuk akal vs saldo. Cara cek: MT5 → History → trade BUY 4661.8 (SL 24 Aug, -30 pips) → berapa persis USC terpotong? Itu jawabannya.
-- Setelah konversi jelas: pastikan risiko per trade ≤ 2% saldo (2.000 USC = maks ~40 USC/trape).
+- ✅ Akun sudah upgrade ke STANDARD $2,200 (Sep 2026).
+- ✅ Risk calculator sudah dibuat (`risk_calculator.json`): max $44/trade (2%), max $88/day (4%).
+- Lot range: 0.1-0.15. Spread: 0.2 pip.
 
 ## 8. GAYA KERJA AI PENERUS
 - Selalu update `posisi.json` + `entry_hari.json` SETIAP event: limit terisi, SL kena, TP kena.

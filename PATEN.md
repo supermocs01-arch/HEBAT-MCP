@@ -22,17 +22,16 @@
 5. **Filter D1**: D1 harus SEARAH dengan H4. Kalau bentur: JANGAN entry paksa, tunggu.
 6. Trend 4TF searah (D1/H4/H1/M15) = kualitas terbaik.
 
-## ROADMAP SALDO (KEPUTUSAN FINAL — 10 AGU 2026)
-**Mulai: $12 (1,200 USC) — akun cent Exness, leverage 1:2000, spread 0.3 pips. 0.05×2 layer TIDAK MUAT MARGIN di $12 (butuh $21.75).**
-**SL/TP SAMA DI SEMUA TIER (paten): SL struktural maks 20 pips | TP1 30–40+ pips | TP2 40+ pips.**
+## ROADMAP SALDO (UPDATE — 22 SEP 2026)
+**Sekarang: $2,200 — akun standard OANDA, spread 0.2 pip. Lot 0.1-0.15.**
+**SL/TP SAMA DI SEMUA TIER (paten): SL struktural maks 30 pips | TP1 45-55 pips | TP2 70-80 pips.**
 
 | Saldo | Lot | Risk/trade |
 |---|---|---|
-| $12–120 (SURVIVAL) | **0.01, 1 entry** | ±35% (AGRESIF) |
-| $120–600 | 0.02–0.03 | 12–25% |
-| **$600+** | **0.05×2 layer** | 25% → 5% di $3,000 |
+| $2,200 (STANDARD) | **0.1, 1 entry** | $30 (1.36%) |
+| $2,200 (STANDARD) | **0.15, 1 entry** | $30 (1.36%) |
 
-**Target: $12 → $120 → naik lot bertahap → 0.05×2 di $600.**
+**Risk: max $44/trade (2%), max $88/day (4%). Spread: 0.2 pip = $2 per 0.1 lot.**
 
 ## SL/TP PATEN (XAUUSD) — 1 pips = 1.0 harga (KEPUTUSAN USER: 10 AGU 2026)
 - **SL = STRUKTURAL, MAKS 20 PIPS** (di bawah zona/min 10 pips — mentok 20 pips tidak apa).

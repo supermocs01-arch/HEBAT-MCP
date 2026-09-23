@@ -1,0 +1,81 @@
+{
+  "account": {
+    "type": "STANDARD",
+    "modal_usd": 2200,
+    "currency": "USD",
+    "broker": "OANDA"
+  },
+  "risk_management": {
+    "max_risk_per_trade_percent": 2,
+    "max_risk_per_trade_usd": 44,
+    "max_loss_per_day_percent": 4,
+    "max_loss_per_day_usd": 88,
+    "max_loss_count": 2,
+    "jatah_entry_per_hari": 3
+  },
+  "lot_calculation": {
+    "1_pip_value_01_lot": 0.10,
+    "1_pip_value_05_lot": 0.50,
+    "1_pip_value_10_lot": 1.00,
+    "1_pip_value_15_lot": 1.50,
+    "1_pip_value_20_lot": 2.00
+  },
+  "lot_by_sl_pips": {
+    "sl_10_pips": {
+      "max_lot": 0.44,
+      "recommended_lot": 0.3,
+      "risk_usd": 30
+    },
+    "sl_15_pips": {
+      "max_lot": 0.29,
+      "recommended_lot": 0.2,
+      "risk_usd": 30
+    },
+    "sl_20_pips": {
+      "max_lot": 0.22,
+      "recommended_lot": 0.15,
+      "risk_usd": 30
+    },
+    "sl_30_pips": {
+      "max_lot": 0.15,
+      "recommended_lot": 0.1,
+      "risk_usd": 30
+    },
+    "sl_40_pips": {
+      "max_lot": 0.11,
+      "recommended_lot": 0.1,
+      "risk_usd": 40
+    }
+  },
+  "spread": {
+    "type": "FIXED",
+    "pips": 0.2,
+    "cost_per_lot": 2.00,
+    "note": "0.2 pip spread = $2 per 0.1 lot = $4 per 0.2 lot"
+  },
+  "quick_ref": {
+    "buy_limit_4300": {
+      "lot": 0.1,
+      "sl": 4270,
+      "sl_pips": 30,
+      "risk_usd": 30,
+      "risk_percent": 1.36,
+      "tp1": 4345,
+      "tp1_pips": 45,
+      "reward_usd": 45,
+      "rr_1": "1:1.5"
+    },
+    "buy_limit_4290": {
+      "lot": 0.15,
+      "sl": 4270,
+      "sl_pips": 20,
+      "risk_usd": 30,
+      "risk_percent": 1.36,
+      "tp1": 4345,
+      "tp1_pips": 55,
+      "reward_usd": 82.5,
+      "rr_1": "1:2.7"
+    }
+  },
+  "last_update": "2026-09-22"
+}
