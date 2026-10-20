@@ -2,8 +2,8 @@
   "active": false,
   "manual": true,
   "title": "NO LIMIT AKTIF (A + B SL kena 6-7 Okt) - tunggu setup",
-  "info": "UPDATE 20 Okt: XAU ~4146.77, turun dari 4184 (19 Okt) dan SUDAH DI BAWAH 4150 (invalidasi tesis posisi lama). Range 4100-4200 masih utuh; DXY 101.8 = 79% range 120D1 (USD premium) + bias DXY DOWN semua TF = DIVERGING. PINE M15 FLAT ready=0. Katalis: FOMC 27-28 Okt, PCE+GDP 29 Okt.",
-  "current_price": 4146.77,
+  "info": "UPDATE 20 Okt 14:07: XAU 4132.65 (turun dari 4184) - DI BAWAH 4150, waspada 4100. DXY 101.8 = premium + bias DOWN = DIVERGING. PINE M15 FLAT. Event: FOMC 28-29 Okt (statement 29 Okt 01:00 WIB), GDP+PCE 29 Okt 19:30 WIB. Risk guard monitor: posisi 1.0 lot = 101x batas risiko.",
+  "current_price": 4132.65,
   "plan_a_sell": null,
   "plan_b_sell": null,
   "plan_a_buy": null,
@@ -56,5 +56,5 @@
       "e": "BUY 4096 -> SL 4078 KENA (7 Okt 19:31)"
     }
   ],
-  "last_update": "2026-10-20 11:22 WIB"
+  "last_update": "2026-10-20 14:07 WIB"
 }

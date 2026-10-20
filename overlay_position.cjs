@@ -18,11 +18,36 @@ try {
   AKUN = [brk, cur, modal].filter(Boolean).join(' ') || 'AKUN STANDARD';
 } catch (e) { /* fallback label lama */ }
 
+const evGuard = require('./event_guard.cjs');
+
+// RISK + EVENT (20 Okt): tampilkan risiko posisi vs batas 2% dan countdown event
+let riskLine = '', riskLvl = 0;
+try {
+  const R = JSON.parse(fs.readFileSync('C:/HEBAT/risk_calculator.json', 'utf8'));
+  const maxUsd = Number((R.risk_management || {}).max_risk_per_trade_usd) || 30;
+  const oz = Number((R.lot_calculation || {}).contract_size_oz) || 100;
+  const modalUsd = Number((R.account || {}).modal_usd_estimate) || 1500;
+  const lots = Array.isArray(P.layers) && P.layers.length
+    ? P.layers.reduce((s, l) => s + (Number(l.lot) || 0), 0)
+    : (Number(P.lot) || (P.active ? 0.01 : 0));
+  const pips = Math.abs((Number(P.entry) || 0) - (Number(P.sl) || 0));
+  if (P.active && lots && pips) {
+    const usd = Math.round(lots * oz * pips);
+    const pct = (usd / modalUsd * 100).toFixed(0);
+    riskLine = 'RISK: ' + lots.toFixed(2) + ' lot x ' + pips.toFixed(1) + ' = $' + usd + ' (' + pct + '% modal, batas $' + maxUsd + ')';
+    riskLvl = usd > maxUsd ? 2 : (usd > maxUsd * 0.6 ? 1 : 0);
+  }
+} catch (e) {}
+
+const evList = evGuard.upcoming(6).map(e => ({ t: e.title, ts: e.ts, block: e.block }));
+const evWin = evGuard.load().windowMinutes;
+const evText = evGuard.text();
+
 const D = JSON.stringify({
   akun: AKUN,
   pTitle: 'XAUUSD M15 • ' + AKUN + ' • ' + (P.active ? (/SELL/i.test(P.title || '') ? 'SELL' : 'BUY') + ' LIVE' : 'NO POSITION'),
   pInfo: OV.info || '',
-  currentPrice: OV.current_price || P.current_price || 4155.5,
+  currentPrice: P.current_price || OV.current_price || 4155.5,
   // LIVE posisi (dari posisi.json)
   liveActive: P.active ? true : false,
   liveDir: /SELL/i.test(P.title || '') ? 'SELL' : 'BUY',
@@ -50,7 +75,12 @@ const D = JSON.stringify({
   // WATCHLIST / STATUS (overlay_plan.json)
   watchTitle: OV.title || '',
   watchStatus: OV.status || '',
-  watchSyarat: OV.syarat || ''
+  watchSyarat: OV.syarat || '',
+  riskLine: riskLine,
+  riskLvl: riskLvl,
+  evList: evList,
+  evWin: evWin,
+  evText: evText
 });
 const code = `(function(){
   var D = ${D};
@@ -73,6 +103,12 @@ const code = `(function(){
   var sess = el('', 'font-size:12px;text-align:center;margin-bottom:6px;padding:2px;border-radius:4px;font-weight:bold;'); sess.id='smc_session';
   el('XAUUSD M15 • '+(D.akun || 'AKUN STANDARD')+' • '+(D.liveActive ? 'LIVE ['+D.liveDir+']' : 'NO POSITION'), 'color:#888;font-size:11px;text-align:center;');
   el('Current: <b style="color:#FFD700;">'+D.currentPrice.toFixed(2)+'</b> &nbsp; Float: <b style="color:#00FF00;">+'+D.liveFloat+' pip</b>', 'color:#fff;font-weight:bold;font-size:12px;text-align:center;margin-bottom:6px;');
+  if(D.riskLine){
+    var rc = D.riskLvl>=2 ? '#FF5252' : (D.riskLvl>=1 ? '#FFA500' : '#66BB6A');
+    el(D.riskLine, 'color:'+rc+';font-size:10px;text-align:center;margin-bottom:4px;font-weight:bold;');
+  }
+  var evEl = el(D.evText || '', 'color:#FFB74D;font-size:10px;text-align:center;margin-bottom:4px;');
+  evEl.id = 'smc_event';
   sep();
 
   // LIVE POSITION (dari posisi.json)
@@ -111,6 +147,16 @@ const code = `(function(){
 
   document.body.appendChild(ov);
 
+  function evLine(){
+    var now = Date.now(), i, e;
+    for(i=0;i<D.evList.length;i++){ e=D.evList[i]; if(e.block && Math.abs(now-e.ts) <= D.evWin*60000) return {txt:'JENDELA EVENT: '+e.t+' - ENTRY DIBLOKIR', col:'#FF5252'}; }
+    for(i=0;i<D.evList.length;i++){ if(D.evList[i].ts >= now-60000){ e=D.evList[i]; break; } }
+    if(!e || e.ts < now-60000) return {txt:'Tidak ada event terjadwal', col:'#888'};
+    var dt=e.ts-now, d=Math.floor(dt/86400000), h=Math.floor(dt%86400000/3600000), m=Math.floor(dt%3600000/60000);
+    var s = d>0 ? d+'h '+h+'j' : (h>0 ? h+'j '+m+'m' : m+'m');
+    return {txt:'EVENT: '+e.t+' - '+s+' lagi', col: dt<=3600000 ? '#FFA500' : '#FFB74D'};
+  }
+
   function uc(){
     var n=new Date();
     var c=document.getElementById('smc_clock');
@@ -121,6 +167,8 @@ const code = `(function(){
     else{ses='NEW YORK';scl='#4169E1';}
     var s=document.getElementById('smc_session');
     if(s){s.textContent='SESI '+ses;s.style.background=scl;s.style.color='#000';}
+    var ev=document.getElementById('smc_event');
+    if(ev){ var L=evLine(); ev.textContent=L.txt; ev.style.color=L.col; }
   }
   uc();
   window._smcRefresh=setInterval(uc,60000);

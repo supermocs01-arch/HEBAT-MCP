@@ -33,6 +33,11 @@
 | `verify_overlay_dom.cjs` | Cek panel overlay benar-benar muncul di DOM TV. |
 | `chart_lock.cjs` | **MODUL LOCK BERSAMA** — semua skrip yang MENULIS chart (ganti symbol/TF) wajib `acquire()` dulu, selesai `release()`. Cegah race. |
 | `warmup_pine.cjs` | Warm-up PINE (jebakan #2) **dengan lock**. **PAKAI INI, jangan tulis loop `timeframe --set` manual.** |
+| `event_guard.cjs` | Guard event high-impact: baca `events.json`, blokir limit pending ±`window_minutes`, countdown di overlay. |
+| `pine_study.cjs` | Auto-detect `pineStudyId` dari chart (cocokkan nama study SMC) → update `config.json`. |
+| `backup_data.cjs` | Backup JSON + pine ke `_backup/YYYY-MM-DD/` (retensi 14 hari). Dipanggil `hi_fitra.cjs`. |
+| `laporan_harian.cjs` | Tulis ringkasan harian ke `laporan/YYYY-MM-DD.md`. |
+| `test_sistem.cjs` | Smoke test: audit + PINE + overlay DOM + monitor + event. Exit code ≠0 kalau ada FAIL. |
 
 ## 4. FILE DATA (sumber kebenaran — EDIT INI, jangan hardcode di skrip)
 | File | Isi |
@@ -41,7 +46,8 @@
 | `posisi.json` | Posisi live. WAJIB ada: `active`, `entry`, `sl`, `tp1`, `tp2`, `title` (title harus mengandung kata BUY/SELL untuk deteksi arah). |
 | `entry_hari.json` | Jatah harian: `tanggal`, `sisa_jatah`, `loss_count`. **Reset manual saat tanggal berganti** (jatah 3, loss 0). |
 | `pelajaran_sl.md` | SEMUA pelajaran (MISS #1-#13). **AI BARU WAJIB BACA INI DULU.** Format catatan loss baru: tiru MISS #12. |
-| `monitor.lock` | PID monitor aktif (anti duplikasi). |
+| `events.json` | Kalender event high-impact (`at` ISO +07:00, `block`, `window_minutes`). Monitor menolak limit pending di jendela event; overlay menampilkan countdown. |
+| `monitor.lock` | PID monitor aktif (anti duplikasi). Runtime — tidak di-commit. |
 | `chart.lock` | Lock chart TV (otomatis). Kalau ada isinya = skrip lain sedang baca/pindah chart. Aman diabaikan kalau PID di dalamnya sudah mati (auto-stale 10 mnt). |
 | `trade_log.json`, `zona_history.json` | Riwayat trade lama (referensi). |
 
@@ -54,6 +60,11 @@ Update overlay             -> edit overlay_plan.json / posisi.json, lalu:
 Verifikasi overlay         -> node C:\HEBAT\verify_overlay_dom.cjs
 PINE 'none' di semua TF    -> node C:\HEBAT\warmup_pine.cjs   (JANGAN cycle manual)
 DXY/korelasi emas          -> node C:\HEBAT\usdxau_correlation.cjs  (switch chart, auto-restore)
+Cek event terdekat         -> node -e "console.log(require('C:/HEBAT/event_guard.cjs').text())"
+Laporan harian             -> node C:\HEBAT\laporan_harian.cjs   (tulis laporan/YYYY-MM-DD.md)
+Smoke test sistem          -> node C:\HEBAT\test_sistem.cjs      (exit ≠0 = ada yang rusak)
+Auto-detect study id       -> node C:\HEBAT\pine_study.cjs
+Backup manual              -> node C:\HEBAT\backup_data.cjs
 Cek log monitor            -> Get-Content C:\HEBAT\monitor_limit_xau.log -Tail 20
 Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.cjs,
                               LALU node C:\HEBAT\warmup_pine.cjs (warm-up PINE)
@@ -115,7 +126,9 @@ Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.c
 2. **Konfirmasi**: PINE M15 searah + CHoCH searah. Tanpa ini = entry AGRESIF → catat & siap cut cepat (MISS #12).
 3. **SL struktural**: swing = di luar sweep low/high + buffer 5-10 pips (JANGAN tepat di tepi obvious = magnet hunt, MISS #7/#8). Scalp = 10 pips.
 4. **RR & jatah**: minimal TP1 1:3, TP2 1:4. Jatah harian tersisa. Belum kena 2 loss.
-5. **Double-plan**: satu limit keisi → LANGSUNG cancel yang satunya (jangan hedging).
+5. **Risiko lot**: `lot x 100 oz x SL_poin <= $30` (2%). Di akun ini 0.01 lot = $1/poin → SL maks 30 poin. 2 layer @0.01 hanya kalau SL ≤15 poin.
+6. **Event**: tidak entry dalam ±`window_minutes` (default 30 mnt) dari event high-impact di `events.json` (FOMC, NFP, CPI, GDP/PCE).
+7. **Double-plan**: satu limit keisi → LANGSUNG cancel yang satunya (jangan hedging).
 
 ### 9.4 Konteks sesi (jam WIB)
 Asian 05:00-14:00 (vol rendah-menengah) | London 14:00-20:00 (tinggi) | NY 20:00-05:00 (tinggi) | Overlap London+NY 20:00-23:00 (tertinggi). Setup besar lebih valid saat volatilitas cukup; jangan chase breakout di sesi sepi.

@@ -4,3 +4,11 @@ node_modules/
 npm-debug.log*
 Thumbs.db
 desktop.ini
+# runtime / generated (20 Okt 2026)
+monitor.lock
+.last_resolution.json
+monitor_plan_state.json
+_hi_fitra_run.log
+_backup/
+laporan/
+screenshots/

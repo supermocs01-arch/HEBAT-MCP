@@ -1,0 +1,17 @@
+{
+  "timezone": "WIB (UTC+7)",
+  "window_minutes": 30,
+  "updated": "2026-10-20",
+  "catatan": "Format 'at' = ISO 8601 dengan offset +07:00. block=true -> monitor menolak memproses limit pending selama +/- window_minutes. Tambahkan event baru manual (cek kalender ekonomi).",
+  "events": [
+    { "id": "fomc-day1", "title": "FOMC hari-1 (belum ada statement)", "at": "2026-10-28T01:00:00+07:00", "impact": "medium", "block": false, "note": "Statement baru besok 01:00 WIB" },
+    { "id": "fomc-statement", "title": "FOMC Statement", "at": "2026-10-29T01:00:00+07:00", "impact": "high", "block": true },
+    { "id": "fomc-press", "title": "Press Conference Powell", "at": "2026-10-29T01:30:00+07:00", "impact": "high", "block": true },
+    { "id": "us-gdp-pce", "title": "US GDP Q3 + PCE", "at": "2026-10-29T19:30:00+07:00", "impact": "high", "block": true },
+    { "id": "ecb", "title": "ECB Rate Decision", "at": "2026-10-29T20:15:00+07:00", "impact": "high", "block": true },
+    { "id": "boj", "title": "BoJ Statement (perkiraan)", "at": "2026-10-30T11:00:00+07:00", "impact": "high", "block": true, "note": "Jam pasti bervariasi" },
+    { "id": "nfp", "title": "US Non-Farm Payrolls", "at": "2026-11-06T19:30:00+07:00", "impact": "high", "block": true },
+    { "id": "us-cpi", "title": "US CPI (perkiraan)", "at": "2026-11-12T19:30:00+07:00", "impact": "high", "block": true, "note": "Tanggal perkiraan - verifikasi" },
+    { "id": "fomc-minutes", "title": "FOMC Minutes (perkiraan)", "at": "2026-11-19T02:00:00+07:00", "impact": "high", "block": true, "note": "Perkiraan" }
+  ]
+}

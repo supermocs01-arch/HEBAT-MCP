@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const chartLock = require('./chart_lock.cjs');
+const eventGuard = require('./event_guard.cjs');
 
 const LOG = 'C:/HEBAT/monitor_limit_xau.log';
 let lastClose = null;
@@ -14,6 +15,45 @@ function log(msg) {
   const line = '[' + n.toTimeString().slice(0, 8) + ' WIB ' + n.toISOString().slice(0, 10) + '] ' + msg;
   console.log(line);
   fs.appendFileSync(LOG, line + '\n');
+}
+
+function readJson(f, def) { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return def; } }
+
+let riskWarnKey = null;
+let stopWarnDate = null;
+let blockEventId = null;
+
+// ===== RISK GUARD (20 Okt): lot x 100 oz x SL poin harus <= 2% = $30 =====
+function riskReport() {
+  const rc = readJson('C:/HEBAT/risk_calculator.json', {});
+  const maxUsd = Number((rc.risk_management || {}).max_risk_per_trade_usd) || 30;
+  const oz = Number((rc.lot_calculation || {}).contract_size_oz) || 100;
+  const modalUsd = Number((rc.account || {}).modal_usd_estimate) || 1500;
+  const pos = readJson('C:/HEBAT/posisi.json', {});
+  const lots = Array.isArray(pos.layers) && pos.layers.length
+    ? pos.layers.reduce((s, l) => s + (Number(l.lot) || 0), 0)
+    : (Number(pos.lot) || (pos.active ? 0.01 : 0));
+  const entry = Number(pos.entry) || 0, sl = Number(pos.sl) || 0;
+  if (!pos.active || !lots || !entry || !sl) return null;
+  const pips = Math.abs(entry - sl);
+  const usd = +(lots * oz * pips).toFixed(2);
+  const pct = +(usd / modalUsd * 100).toFixed(1);
+  const key = lots + '@' + pips;
+  if (key !== riskWarnKey) {
+    riskWarnKey = key;
+    log('RISK CHECK: ' + lots.toFixed(2) + ' lot x ' + pips.toFixed(1) + ' poin = $' + usd + ' (' + pct + '% modal) | batas $' + maxUsd +
+      (usd > maxUsd ? ' -> LEWAT BATAS ' + (usd / maxUsd).toFixed(1) + 'x' : ''));
+  }
+  return { usd, pct, maxUsd, lots, pips };
+}
+
+function stopDayCheck() {
+  const e = readJson('C:/HEBAT/entry_hari.json', {});
+  const today = new Date().toISOString().slice(0, 10);
+  if (e.tanggal === today && Number(e.loss_count) >= 2 && stopWarnDate !== today) {
+    stopWarnDate = today;
+    log('STOP HARIAN: loss_count=' + e.loss_count + '/2 - JANGAN entry lagi hari ini (aturan paten)');
+  }
 }
 
 // Sumber plan: overlay_plan.json (limit pending) + posisi.json (posisi aktif) - bukan entry.json stale
@@ -131,10 +171,24 @@ async function check() {
     const sig = pine ? pine[3] : '?';
     const rsi = pine ? pine[2] : '?';
 
+    // ===== EVENT GUARD (20 Okt): blokir limit pending +/- 30 mnt dari event high-impact =====
+    const evActive = eventGuard.activeWindow();
+    if (evActive) {
+      if (blockEventId !== evActive.id) {
+        blockEventId = evActive.id;
+        log('EVENT WINDOW: ' + evActive.title + ' (+/-' + eventGuard.load().windowMinutes + ' mnt) - limit pending TIDAK diproses');
+      }
+    } else if (blockEventId) {
+      log('EVENT WINDOW selesai - limit pending diproses lagi');
+      blockEventId = null;
+    }
+    stopDayCheck();
+    riskReport();
+
     for (const p of loadPlans()) {
       const skey = p.id + '@' + p.entry;
       if (planState[skey]) p.state = planState[skey];
-      if (p.state === 'waiting') {
+      if (p.state === 'waiting' && !evActive) {
         const touched = p.dir === 'BUY' ? (v.l <= p.entry) : (v.h >= p.entry);
         if (touched) {
           p.state = 'filled';
@@ -204,7 +258,13 @@ async function check() {
     }
   })();
 
-  log('=== MONITOR XAU V2 MULAI (update 28 Aug: self-lock + guard TF + wick sanity + state persist) ===');
+  log('=== MONITOR XAU V2 MULAI (20 Okt: + risk guard + event guard + state persist) ===');
+  try {
+    const det = require('./pine_study.cjs').detect({ quiet: true });
+    log('  pine_study: ' + (det.ok ? 'id ' + det.id + ' (' + det.name + ')' + (det.changed ? ' [DIPERBARUI dari ' + (det.previous || 'kosong') + ']' : '') : 'GAGAL - ' + det.reason));
+  } catch (e) { log('  pine_study: error ' + e.message); }
+  log('  ' + eventGuard.text());
+  riskReport();
   const p0 = loadPlans();
   if (!p0.length) log('  Tidak ada plan aktif / posisi aktif saat ini');
   p0.forEach(p => log('  [' + p.id + '] ' + p.name + ' ' + p.dir + ' entry=' + p.entry + ' SL=' + p.sl + ' TP1=' + p.tp1 + ' TP2=' + p.tp2 + ' (' + p.state + ')'));

@@ -19,7 +19,8 @@ const core = [
   'hi_fitra.cjs', 'full_pipeline.cjs', 'cycle_tf_efficient.cjs',
   'switch_symbol.cjs', 'tv_health_check.cjs', 'usdxau_correlation.cjs',
   'verify_overlay_dom.cjs', 'auto_start_watch.cjs', 'remote_cmd.js',
-  'baca_pine.cjs'
+  'baca_pine.cjs', 'chart_lock.cjs', 'warmup_pine.cjs', 'event_guard.cjs',
+  'pine_study.cjs', 'backup_data.cjs', 'laporan_harian.cjs', 'test_sistem.cjs'
 ];
 core.forEach(f => {
   const p = H + '/' + f;
@@ -32,6 +33,7 @@ const jsonFiles = {
   'entry_hari.json': ['tanggal', 'entry_ke', 'sisa_jatah', 'loss_count'],
   'overlay_plan.json': ['active', 'title', 'plan_a_buy', 'plan_b_buy'],
   'risk_calculator.json': ['account', 'risk_management', 'lot_calculation'],
+  'events.json': ['events', 'window_minutes'],
   'config.json': ['targetSymbol', 'targetBroker']
 };
 Object.entries(jsonFiles).forEach(([f, required]) => {
@@ -82,6 +84,14 @@ try {
   if (r.risk_management.max_risk_per_trade_percent > 2) warn('risk_calculator: max risk > 2%');
   ok('risk_calculator.json: loaded');
 } catch (e) { fail(`risk_calculator.json: ${e.message}`); }
+
+// Event guard (20 Okt): tampilkan jendela event / event berikutnya
+try {
+  const EG = require(H + '/event_guard.cjs');
+  const act = EG.activeWindow();
+  if (act) warn('JENDELA EVENT AKTIF: ' + act.title + ' (+/-' + EG.load().windowMinutes + ' mnt) - entry diblokir');
+  else ok(EG.text());
+} catch (e) { warn('event_guard: ' + e.message); }
 
 // ===== 4. MONITOR PROCESS =====
 head('4. MONITOR PROCESS');

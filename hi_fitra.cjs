@@ -2,9 +2,27 @@ const { execSync, spawn, exec } = require('child_process');
 const http = require('http');
 const net = require('net');
 const fs = require('fs');
+const path = require('path');
 
-const TV_DIR = process.env.LOCALAPPDATA + '\\tradingview-mcp';
+const H = __dirname;
+const TV_DIR = (process.env.LOCALAPPDATA || '') + '\\tradingview-mcp';
 const TV_EXE = TV_DIR + '\\TradingView.Desktop_3.3.0.7992_x64__n534cwy3pjxzj\\TradingView.exe';
+const LOGF = path.join(H, '_hi_fitra_run.log');
+
+try { fs.writeFileSync(LOGF, ''); } catch (e) {}
+function L(msg) {
+  const line = '[' + new Date().toISOString().slice(0, 19).replace('T', ' ') + '] ' + msg;
+  console.log(line);
+  try { fs.appendFileSync(LOGF, line + '\n'); } catch (e) {}
+}
+function run(label, cmd, timeout) {
+  L('>> ' + label);
+  try { execSync(cmd, { stdio: 'inherit', timeout: timeout || 1200000, windowsHide: true }); }
+  catch (e) { L('!! ' + label + ' gagal: ' + (e.message || e)); }
+}
+
+process.on('unhandledRejection', e => L('UNHANDLED: ' + (e && e.message ? e.message : e)));
+process.on('uncaughtException', e => L('UNCAUGHT: ' + (e && e.message ? e.message : e)));
 
 function findExe() {
   if (fs.existsSync(TV_EXE)) return TV_EXE;
@@ -46,8 +64,7 @@ function waitChart(retries = 45) {
   return new Promise(async r => {
     for (let i = 0; i < retries; i++) {
       const targets = await cdpTargets();
-      const chart = targets.find(t => t.url && t.url.includes('/chart/'));
-      if (chart) return r(true);
+      if (targets.find(t => t.url && t.url.includes('/chart/'))) return r(true);
       await new Promise(s => setTimeout(s, 3000));
     }
     r(false);
@@ -56,80 +73,98 @@ function waitChart(retries = 45) {
 
 function killTvProcesses() {
   return new Promise(r => {
-    exec('taskkill /F /IM TradingView.exe', () => r());
+    exec('taskkill /F /IM TradingView.exe', { windowsHide: true }, () => r());
     setTimeout(r, 2500);
   });
 }
 
+// Cek PID hidup TANPA process.kill (penyebab error "Unknown: ChildProcess.kill" di Windows)
+function pidInfo(pid) {
+  if (!pid || isNaN(pid)) return null;
+  try {
+    const out = execSync('tasklist /FI "PID eq ' + pid + '" /NH', { encoding: 'utf8', timeout: 15000, windowsHide: true });
+    const line = out.split(/\r?\n/).find(l => l.includes(String(pid)));
+    if (!line) return null;
+    return line.trim().split(/\s+/)[0];
+  } catch (e) { return null; }
+}
+
 (async () => {
-  console.log('>>> HI FITRA - MODE SIAGA OTOMATIS');
+  L('>>> HI FITRA - MODE SIAGA OTOMATIS');
 
   const exe = findExe();
-  if (!exe) { console.error('TradingView.exe tidak ditemukan!'); process.exit(1); }
+  if (!exe) { L('TradingView.exe tidak ditemukan!'); process.exit(1); }
+
+  // Backup data harian (retensi 14 hari)
+  run('Backup data (_backup)', 'node "' + path.join(H, 'backup_data.cjs') + '"', 60000);
 
   const targets = await cdpTargets();
   const hasChart = targets.some(t => t.url && t.url.includes('/chart/'));
-  const isChrome = targets.some(t => t.type === 'page' && t.url && t.url.includes('tradingview.com'));
   const tvAlive = targets.length > 0;
 
   let started = false;
   if (!tvAlive) {
-    console.log('>> TradingView mati - menyalakan dengan remote debugging...');
-    spawn(exe, ['--remote-debugging-port=9222'], { detached: true, stdio: 'ignore' }).unref();
+    L('>> TradingView mati - menyalakan dengan remote debugging...');
+    spawn(exe, ['--remote-debugging-port=9222'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
     started = true;
   } else if (!hasChart) {
-    console.log('>> Port 9222 aktif tapi belum ada chart. Tunggu halaman chart...');
+    L('>> Port 9222 aktif tapi belum ada chart. Tunggu halaman chart...');
   } else {
-    console.log('>> TradingView Desktop sudah aktif + chart siap.');
+    L('>> TradingView Desktop sudah aktif + chart siap.');
   }
 
   if (started || !tvAlive) {
     const ok = await waitCDP(60);
     if (!ok) {
-      console.error('!! CDP 9222 tidak aktif setelah 2 menit. Restart paksa TV Desktop...');
+      L('!! CDP 9222 tidak aktif setelah 2 menit. Restart paksa TV Desktop...');
       await killTvProcesses();
-      spawn(exe, ['--remote-debugging-port=9222'], { detached: true, stdio: 'ignore' }).unref();
+      spawn(exe, ['--remote-debugging-port=9222'], { detached: true, stdio: 'ignore', windowsHide: true }).unref();
       const ok2 = await waitCDP(60);
-      if (!ok2) { console.error('!! GAGAL total - buka manual via start_tv.cmd'); process.exit(1); }
+      if (!ok2) { L('!! GAGAL total - buka manual via start_tv.cmd'); process.exit(1); }
     }
   }
 
   const chartOk = await waitChart(45);
-  if (!chartOk) {
-    console.error('!! Chart tidak ditemukan - mungkin terbuka di Chrome. Tutup Chrome dan jalankan lagi.');
-    process.exit(1);
-  }
+  if (!chartOk) { L('!! Chart tidak ditemukan - mungkin terbuka di Chrome. Tutup Chrome dan jalankan lagi.'); process.exit(1); }
 
   const t2 = await cdpTargets();
   const chart = t2.find(t => t.url && t.url.includes('/chart/'));
-  console.log('>> Chart OK: ' + (chart ? chart.url : '?'));
+  L('>> Chart OK: ' + (chart ? chart.url : '?'));
 
-    console.log('>> Health check TradingView Desktop...');
-  try { execSync('node C:\\HEBAT\\tv_health_check.cjs', { stdio: 'inherit' }); } catch (e) { console.log('health: ' + e.message); }
+  // Auto-detect id indikator SMC (jebakan #13: id berubah setelah re-add)
+  run('Deteksi pineStudyId', 'node "' + path.join(H, 'pine_study.cjs') + '"', 120000);
 
-  console.log('>> Pasang overlay POSISI LIVE...');
-  try { execSync('node C:\\HEBAT\\overlay_position.cjs', { stdio: 'inherit' }); } catch (e) { console.log('overlay: ' + e.message); }
-
-  console.log('>> Scan gabungan (D1/H4/H1/M15 + PINE)...');
-  try { execSync('node C:\\HEBAT\\analisa_gabungan.cjs', { stdio: 'inherit' }); } catch (e) { console.log('scan: ' + e.message); }
-
-  console.log('>> Monitor limit v2 (baca overlay_plan.json + posisi.json)...');
-  const LOCK = 'C:/HEBAT/monitor.lock';
-  let monitorRunning = false;
+  // Event guard info
   try {
-    const pid = parseInt(fs.readFileSync(LOCK, 'utf8'));
-    process.kill(pid, 0); // lempar error kalau proses mati
+    const eg = require(path.join(H, 'event_guard.cjs'));
+    L('>> ' + eg.text());
+  } catch (e) { L('event_guard: ' + e.message); }
+
+  run('Health check TradingView Desktop', 'node "' + path.join(H, 'tv_health_check.cjs') + '"', 300000);
+  run('Pasang overlay POSISI LIVE', 'node "' + path.join(H, 'overlay_position.cjs') + '"', 120000);
+  run('Scan gabungan (D1/H4/H1/M15 + PINE)', 'node "' + path.join(H, 'analisa_gabungan.cjs') + '"', 1800000);
+
+  // Monitor: cek PID hidup + pastikan itu node.exe (bukan PID bekas)
+  const LOCK = path.join(H, 'monitor.lock');
+  let monitorRunning = false;
+  let pid = NaN;
+  try { pid = parseInt(fs.readFileSync(LOCK, 'utf8')); } catch (e) {}
+  const pname = pidInfo(pid);
+  if (pname && /node/i.test(pname)) {
     monitorRunning = true;
-    console.log('>> Monitor sudah jalan (PID ' + pid + ') - tidak diduplikasi.');
-  } catch (e) { monitorRunning = false; }
-  if (!monitorRunning) {
-    const child = spawn(process.execPath, ['C:\\HEBAT\\monitor_limit_xau.cjs'], { detached: true, stdio: 'ignore' });
-    child.unref();
-    try { fs.writeFileSync(LOCK, String(child.pid)); } catch (e) {}
-    console.log('>> MONITOR LIMIT XAU V2: STARTED PID ' + child.pid + ' (log: monitor_limit_xau.log)');
+    L('>> Monitor sudah jalan (PID ' + pid + ') - tidak diduplikasi.');
+  } else if (pname) {
+    L('>> monitor.lock menunjuk PID ' + pid + ' (' + pname + ') yang bukan monitor - lock dibersihkan.');
+    try { fs.unlinkSync(LOCK); } catch (e) {}
   }
 
-  console.log('');
-  console.log('>>> SIAP - semua otomatis sudah jalan.');
-  console.log('>>> TV + overlay + scan + monitor: AKTIF otomatis.');
+  if (!monitorRunning) {
+    const child = spawn(process.execPath, [path.join(H, 'monitor_limit_xau.cjs')], { detached: true, stdio: 'ignore', windowsHide: true, cwd: H });
+    child.unref();
+    try { fs.writeFileSync(LOCK, String(child.pid)); } catch (e) {}
+    L('>> MONITOR XAU: STARTED PID ' + child.pid + ' (log: monitor_limit_xau.log)');
+  }
+
+  L('>>> SIAP - TV + overlay + scan + monitor: AKTIF.');
+  process.exit(0);
 })();

@@ -7,8 +7,8 @@
   "close_type": null,
   "close_price": null,
   "close_pips": null,
-  "status": "LIVE BUY 1.0 lot avg 4088.32 +58.5 pip (harga 4146.77, 20 Okt 11:22 WIB) - HOLD ke 4600",
-  "catatan": "AKUN: Rp24.000.000 STANDARD (Exness, akun IDR). KONTRAK 100oz KONFIRMASI 7 Okt dari P/L sendiri (21 pip x 1.0 lot = ~Rp35jt => $100/pip) - semua risiko x10 vs angka 10oz lama. Per pip: $100 = Rp1,6jt. Entry AGRESIF: PINE FLAT ready=0 saat entry, tanpa CHoCH (MISS #9/#10/#12) - dikelola KETAT. SL 4058 = 30.3 pip x $100 = $3.030 = 202% = AKUN HABIS (stop-out ~4070) - TIDAK BISA dipakai untuk 1.0 lot. STRATEGI 8 Okt: user HOLD selama mungkin (runner ke 4600), swing 100-200 pip dipisah di akun lain. KEPUTUSAN 13 Okt: HOLD sampai 4600 (dikonfirmasi user). PLAN A (opsional) tetap: tutup L2 0.5 @4093.842 -> bank profit, sisa L1 runner. UPDATE 19 Okt: CPI/PPI sudah lewat, harga drift 4190 -> 4165 (Jumat close). Tesis hold masih hidup selama > 4150. Katalis berikut FOMC 27-28 Okt. UPDATE 20 Okt 11:22 WIB: harga 4146.77 = SUDAH DI BAWAH 4150 (ambang invalidasi tesis tercapai). DXY 101.8 (79% range 120D1 = premium) tapi bias DXY DOWN semua TF -> DIVERGING, awas sweep/reversal. PINE M15 FLAT ready=0. Tidak ada konfirmasi BUY baru; jangan tambah lot.",
+  "status": "LIVE BUY 1.0 lot avg 4088.32 +44.3 poin (harga 4132.65, 20 Okt 14:07 WIB) - HOLD ke 4600, di bawah 4150",
+  "catatan": "AKUN: Rp24.000.000 STANDARD (Exness, akun IDR). KONTRAK 100oz KONFIRMASI 7 Okt dari P/L sendiri (21 pip x 1.0 lot = ~Rp35jt => $100/pip) - semua risiko x10 vs angka 10oz lama. Per pip: $100 = Rp1,6jt. Entry AGRESIF: PINE FLAT ready=0 saat entry, tanpa CHoCH (MISS #9/#10/#12) - dikelola KETAT. SL 4058 = 30.3 pip x $100 = $3.030 = 202% = AKUN HABIS (stop-out ~4070) - TIDAK BISA dipakai untuk 1.0 lot. STRATEGI 8 Okt: user HOLD selama mungkin (runner ke 4600), swing 100-200 pip dipisah di akun lain. KEPUTUSAN 13 Okt: HOLD sampai 4600 (dikonfirmasi user). PLAN A (opsional) tetap: tutup L2 0.5 @4093.842 -> bank profit, sisa L1 runner. UPDATE 19 Okt: CPI/PPI sudah lewat, harga drift 4190 -> 4165 (Jumat close). Tesis hold masih hidup selama > 4150. Katalis berikut FOMC 27-28 Okt. UPDATE 20 Okt 11:22 WIB: harga 4146.77 = SUDAH DI BAWAH 4150 (ambang invalidasi tesis tercapai). DXY 101.8 (79% range 120D1 = premium) tapi bias DXY DOWN semua TF -> DIVERGING, awas sweep/reversal. PINE M15 FLAT ready=0. Tidak ada konfirmasi BUY baru; jangan tambah lot. UPDATE 20 Okt 14:07 WIB: harga 4132.65 (turun terus dari 4184). Risk guard monitor aktif: 1.0 lot x SL 30.3 poin = .032 = 202% modal (101x batas ) - tercatat di log tiap perubahan. Tidak ada sinyal BUY/SELL (PINE FLAT, RSI 47.8). Waspada 4100.",
   "layers": [
     {
       "id": "L1",
@@ -28,8 +28,8 @@
   "tp1": 4600,
   "tp2": 4600,
   "tp_note": "Target user tunggal 4600-an (bukan format paten TP1 1:3 / TP2 1:4)",
-  "current_price": 4146.77,
-  "floating_pips": 58.5,
+  "current_price": 4132.65,
+  "floating_pips": 44.3,
   "tanggal_close": null,
-  "last_update": "2026-10-20 11:22 WIB"
+  "last_update": "2026-10-20 14:07 WIB"
 }
