@@ -1,58 +1,60 @@
 {
-  "active": true,
-  "title": "XAU BUY LIMIT 4300 (DISKON + FIBO 50 H4)",
-  "info": "4TF BULLISH SEARAH | Harga menunggu pullback ke DISKON | FIBO 50 H4 = 4317 | Target 4345-4370 | Modal STANDARD $2,200",
-  "account": {
-    "type": "STANDARD",
-    "modal": 2200,
-    "spread": 0.2,
-    "max_risk_percent": 2,
-    "max_risk_usd": 44,
-    "lot_range": "0.1 - 0.15"
-  },
-  "plan_a_buy": {
-    "type": "BUY",
-    "entry": 4300.0,
-    "sl": 4270.0,
-    "tp1": 4345.0,
-    "tp2": 4370.0,
-    "lot": 0.1,
-    "risk_pips": 30,
-    "risk_usd": 30,
-    "risk_percent": 1.36,
-    "reward_pips_tp1": 45,
-    "reward_usd_tp1": 45,
-    "rr_1": "1:1.5",
-    "reward_pips_tp2": 70,
-    "reward_usd_tp2": 70,
-    "rr_2": "1:2.3",
-    "note": "SL di bawah FIBO 78.6 H4 (4270) + buffer"
-  },
-  "plan_b_buy": {
-    "type": "BUY",
-    "entry": 4290.0,
-    "sl": 4270.0,
-    "tp1": 4345.0,
-    "tp2": 4370.0,
-    "lot": 0.15,
-    "risk_pips": 20,
-    "risk_usd": 30,
-    "risk_percent": 1.36,
-    "reward_pips_tp1": 55,
-    "reward_usd_tp1": 82.5,
-    "rr_1": "1:2.7",
-    "reward_pips_tp2": 80,
-    "reward_usd_tp2": 120,
-    "rr_2": "1:4",
-    "note": "Deep diskon, lot lebih besar, RR lebih baik"
-  },
-  "syarat": "BUY hanya jika: 1) Harga masuk DISKON (<4317), 2) PINE M15 show BUY, 3) CHoCH-B terbentuk, 4) Candle BEAR retest lalu BULL",
-  "sl_note": "Struktural di bawah FIBO 78.6 (4270). Risk terkontrol.",
-  "tp1_note": "Di atas mid range (4345). Partial close 70%.",
-  "tp2_note": "Dekat swing high H4 (4370). Close sisa 30%.",
-  "status": "PENDING - menunggu harga masuk DISKON + konfirmasi PINE",
-  "catatan": "4TF BULLISH, tapi PINE masih FLAT. Jangan eksekusi sebelum PINE kasih signal BUY. Jika limit kena tapi PINE FLAT → cancel.",
-  "double_plan": "Satu limit keisi → cancel yang lain. Jangan hedging.",
-  "manual": false,
-  "timestamp": "2026-09-22T07:00:00Z"
+  "active": false,
+  "manual": true,
+  "title": "NO LIMIT AKTIF (A + B SL kena 6-7 Okt) - tunggu setup",
+  "info": "UPDATE 20 Okt: XAU ~4146.77, turun dari 4184 (19 Okt) dan SUDAH DI BAWAH 4150 (invalidasi tesis posisi lama). Range 4100-4200 masih utuh; DXY 101.8 = 79% range 120D1 (USD premium) + bias DXY DOWN semua TF = DIVERGING. PINE M15 FLAT ready=0. Katalis: FOMC 27-28 Okt, PCE+GDP 29 Okt.",
+  "current_price": 4146.77,
+  "plan_a_sell": null,
+  "plan_b_sell": null,
+  "plan_a_buy": null,
+  "plan_b_buy": null,
+  "sl": null,
+  "tp1": null,
+  "tp2": null,
+  "slNote": "Tidak ada order - tidak ada SL aktif",
+  "tp1Note": "-",
+  "tp2Note": "-",
+  "status": "NO LIMIT AKTIF - tunggu scan baru + PINE ready=100 + CHoCH. Jangan pasang limit sebelum FOMC statement 29 Okt 01:00 WIB.",
+  "syarat": "Syarat entry TETAP berlaku (aturan paten 9.3): BUY hanya di DISKON + PINE M15 BUY ready=100 + CHoCH-B; SELL hanya D1 BEARISH + PREMIUM + PINE M15 SELL ready=100 + CHoCH-S. Double-plan: satu terisi -> CANCEL satunya. Limit baru BELUM dibuat (PINE FLAT semua TF = tidak ada konfirmasi).",
+  "catatan": "HASIL 6-7 Okt (tercatat di monitor): A SELL 4145/4157 KENA 6 Okt 22:14 (harga sudah 4162) -> SL 4157 kena = -12 pips, 2 layer x 0.01 = 1.5% (SIMULASI - konfirmasi apakah nyata di MT5). B BUY 4096/4078 KENA 7 Okt 19:28 -> SL 4078 kena (low 4066.5) = -18 pips, 0.01 = 1.2% (SIMULASI). Bug monitor spam KENA/SL (planState key mismatch) SUDAH DIPERBAIKI 7 Okt 21:20 + state persist ke monitor_plan_state.json.",
+  "hasil_limit": [
+    {
+      "id": "A",
+      "dir": "SELL",
+      "entry": 4145,
+      "sl": 4157,
+      "outcome": "SL KENA 2026-10-06 22:14 (harga 4162+)",
+      "pips": -12,
+      "risk": "1.5% (2 layer x 0.01)"
+    },
+    {
+      "id": "B",
+      "dir": "BUY",
+      "entry": 4096,
+      "sl": 4078,
+      "outcome": "SL KENA 2026-10-07 19:31 (low 4066.5)",
+      "pips": -18,
+      "risk": "1.2% (0.01)"
+    }
+  ],
+  "syarat_double_plan": "Satu limit terisi -> LANGSUNG cancel yang satunya (jangan hedging).",
+  "macro_context": [
+    {
+      "t": "RABU 7 Okt 21:30",
+      "e": "Minyak mentah AS (EIA)"
+    },
+    {
+      "t": "KAMIS 8 Okt 01:00 WIB",
+      "e": "FOMC Minutes - VOLATILITAS TINGGI, jangan entry sebelum/saat rilis"
+    },
+    {
+      "t": "HASIL A",
+      "e": "SELL 4145 -> SL 4157 KENA (6 Okt 22:14)"
+    },
+    {
+      "t": "HASIL B",
+      "e": "BUY 4096 -> SL 4078 KENA (7 Okt 19:31)"
+    }
+  ],
+  "last_update": "2026-10-20 11:22 WIB"
 }

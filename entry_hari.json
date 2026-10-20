@@ -1,11 +1,13 @@
 {
-  "tanggal": "2026-09-23",
-  "entry_ke": 1,
-  "sisa_jatah": 2,
+  "tanggal": "2026-10-20",
+  "entry_ke": 0,
+  "sisa_jatah": 3,
   "loss_count": 0,
-  "modal": "$2,200 STANDARD",
-  "lot": "0.1 - 0.15",
+  "modal": "Rp24.000.000 STANDARD (Exness, akun IDR) + floating dari posisi BUY 1.0 lot avg 4088.32 (HOLD)",
+  "lot": "Kontrak 100oz KONFIRMASI (1 lot = $100/pip). Batas 2% = $30: SL10 -> 0.03, SL30 -> 0.01, SL>30 TIDAK BISA (lihat risk_calculator.json)",
   "spread": 0.2,
-  "note": "SELL 4373 TP FULL CLOSE +56 pips. Modal upgrade ke STANDARD. Cari BUY LIMIT di 4300/4290.",
-  "tahap": "CARI BUY LIMIT - TUNGGU DISKON + PINE CONFIRM"
+  "note": "RESET harian -> 20 Okt (jatah 3, loss 0). Posisi BUY 0.5+0.5 @4082.793/4093.842 avg 4088.32 MASIH HOLD (entry 7 Okt; Plan A close-separuh BELUM dieksekusi). Harga live 4146.77 = +58.5 pip (turun dari 4184 pada 19 Okt).",
+  "tahap": "DXY 101.8 = posisi 79% range 120D1 (BAGIAN ATAS = USD premium) + bias DXY DOWN di semua TF = DIVERGING dgn XAU (korelasi putus, awas sweep). Gold masih range 4100-4200; harga 4146 SUDAH DI BAWAH 4150 (level invalidasi tesis) -> tesis hold tertekan, breakdown 4100 buka jalan 4073/3996. Kalender 10 hari: Fed blackout; FOMC 27-28 Okt (statement 29 Okt 01:00 WIB, press 01:30 WIB), GDP Q3 + PCE 29 Okt 19:30 WIB, ECB 20:15 WIB, BoJ 30 Okt. Odds: hold Okt ~83%, hike Des ~89-94%. Rencana: HOLD ke 4600 selama > 4100. Jatah 20 Okt: 3, loss 0.",
+  "reset_berikutnya": "2026-10-21 (jatah 3, loss 0)",
+  "last_update": "2026-10-20 11:22 WIB"
 }

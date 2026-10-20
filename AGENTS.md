@@ -5,7 +5,7 @@
 ## 1. KONTEKS USER
 - **Fitra**, trader XAUUSD (OANDA) di **akun standard MT5**, dibantu AI bernama "Fatra".
 - Misi: konsisten ikut aturan paten → profit konsisten.
-- Saldo: **$2.200 USD** (standard account, upgrade Sep 2026).
+- Saldo: **Rp24.000.000 (Exness, akun IDR, standard)** per 7 Okt 2026 — sebelumnya Rp2.500.000 (1 Okt), $2.200 OANDA (lama).
 - Gaya komunikasi: Bahasa Indonesia santai, tapi DISIPLIN KERAS soal aturan.
 
 ## 2. ATURAN PATEN (ringkas — detail & kisah lengkap: `pelajaran_sl.md`)
@@ -31,6 +31,8 @@
 | `monitor_limit_xau.cjs` | Pantau limit pending (dari `overlay_plan.json`) + posisi aktif (dari `posisi.json`) tiap 60 dtk. Ada **FILTER GLITCH** (tolak tick mustahil). Log → `monitor_limit_xau.log`. |
 | `auto_start_watch.cjs` | Watcher background: TV menyala → auto overlay + scan; start monitor **dengan lock** anti-dobel. |
 | `verify_overlay_dom.cjs` | Cek panel overlay benar-benar muncul di DOM TV. |
+| `chart_lock.cjs` | **MODUL LOCK BERSAMA** — semua skrip yang MENULIS chart (ganti symbol/TF) wajib `acquire()` dulu, selesai `release()`. Cegah race. |
+| `warmup_pine.cjs` | Warm-up PINE (jebakan #2) **dengan lock**. **PAKAI INI, jangan tulis loop `timeframe --set` manual.** |
 
 ## 4. FILE DATA (sumber kebenaran — EDIT INI, jangan hardcode di skrip)
 | File | Isi |
@@ -40,6 +42,7 @@
 | `entry_hari.json` | Jatah harian: `tanggal`, `sisa_jatah`, `loss_count`. **Reset manual saat tanggal berganti** (jatah 3, loss 0). |
 | `pelajaran_sl.md` | SEMUA pelajaran (MISS #1-#13). **AI BARU WAJIB BACA INI DULU.** Format catatan loss baru: tiru MISS #12. |
 | `monitor.lock` | PID monitor aktif (anti duplikasi). |
+| `chart.lock` | Lock chart TV (otomatis). Kalau ada isinya = skrip lain sedang baca/pindah chart. Aman diabaikan kalau PID di dalamnya sudah mati (auto-stale 10 mnt). |
 | `trade_log.json`, `zona_history.json` | Riwayat trade lama (referensi). |
 
 ## 5. PERINTAH HARIAN
@@ -49,9 +52,11 @@ Scan pasar                 -> node C:\HEBAT\analisa_gabungan.cjs
 Update overlay             -> edit overlay_plan.json / posisi.json, lalu:
                               node C:\HEBAT\overlay_position.cjs
 Verifikasi overlay         -> node C:\HEBAT\verify_overlay_dom.cjs
+PINE 'none' di semua TF    -> node C:\HEBAT\warmup_pine.cjs   (JANGAN cycle manual)
+DXY/korelasi emas          -> node C:\HEBAT\usdxau_correlation.cjs  (switch chart, auto-restore)
 Cek log monitor            -> Get-Content C:\HEBAT\monitor_limit_xau.log -Tail 20
 Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.cjs,
-                              LALU cycle timeframe D->240->60->30->15 (warm-up PINE)
+                              LALU node C:\HEBAT\warmup_pine.cjs (warm-up PINE)
 ```
 
 ## 6. JEBAKAN YANG SUDAH TERBUKTI (JANGAN ULANGI)
@@ -61,11 +66,22 @@ Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.c
 4. **Monitor dobel** = log kacau & deteksi rusak. Selalu cek `monitor.lock` sebelum start monitor manual.
 5. **PowerShell merusak JSON** saat passing `--overrides` ke CLI MCP → tulis lewat file `.cjs`, bukan inline.
 6. **TV exe ada 2 lokasi** (LOCALAPPDATA\tradingview-mcp\... dan Program Files\WindowsApps\...) — `hi_fitra.cjs` sudah handle keduanya.
+7. **RACE CHART (2 Okt 2026)** — `usdxau_correlation` (switch symbol), `analisa_gabungan` (cycle TF), `warmup_pine`, dan monitor GUARD TF semuanya MENULIS chart yang sama. Kalau jalan bareng → PINE terbaca dari symbol/TF salah (terbukti: PINE DXY 102.x terbaca saat scan XAUUSD). **SOLUSI: `chart_lock.cjs`** — semua penulis wajib `acquire()`/`release()`; monitor otomatis menunda auto-set M15 selama lock dipegang. Jangan tulis skrip baru yang `setResolution`/`symbol --set` tanpa lock ini.
+8. **`analisa_gabungan` dulu tidak pernah menampilkan PINE** (`PINE:none` / `PINE n/a`) karena `readPine()` mengembalikan *string* sedangkan `parsePineData()` mengharap *objek* `{t}` — retry tak pernah cocok (buang 20 dtk/TF) lalu hasilnya null. SUDAH DIPERBAIKI (baca objek label + terima string juga). Kalau hasil scan kembali `PINE n/a` di semua TF → periksa regresi ini dulu.
+9. **Jangan jalankan `usdxau_correlation.cjs` bersamaan siklus warm-up manual** — sama seperti jebakan #7; kalau ragu, jalankan berurutan atau lewat lock.
+10. **Monitor dulu salah baca PINE** (`PINE=BEAR RSI=BEAR` di log) karena prefix `indexOf('PINE_DATA')===0` ikut match label `PINE_DATA_JSON|{...}` → split `|` menghasilkan potongan `mtf "BEAR|BEAR|..."`. Akibat: RSI/sig salah + peringatan MISS #12 tak pernah bisa lolos konfirmasi. SUDAH DIPERBAIKI (prefix `PINE_DATA|`). Kalau log monitor kembali `PINE=BEAR RSI=BEAR` → regresi parsing ini. Format label pipe yang benar: `PINE_DATA|price|rsi|sig|ready|atr|alasan|zona|mid|...` (`[2]`=rsi, `[3]`=sig).
+
+11. **PAKET BASIC = MAKS 2 INDIKATOR PER CHART** (19 Okt 2026). Menambah indikator ke-3 memunculkan modal upsell "Lebih banyak indikator…" dan penambahan DITOLAK. Modal itu menampilkan daftar indikator **stale** (masih menyebut indikator yang sudah dihapus) — abaikan daftarnya, hitung sendiri lewat `state`. Kalau perlu pasang yang lain: hapus dulu salah satu (`indicator remove <id>`).
+12. **"Tambah kedalam chart" dari Pine Editor** sering butuh 2 langkah: (a) kalau skrip punya perubahan belum tersimpan, TV menampilkan dialog **"Simpan skrip ini sebelum menambahkannya?"** → klik tombol **Simpan** di dialog (bukan yang di header), baru indikator masuk; (b) kliknya harus mouse event asli (`ui mouse` di tengah `getBoundingClientRect`), klik JS (`ui click`) sering tidak register. **Screenshot region "chart" itu di-scale** — jangan ambil koordinat klik dari gambar, selalu ambil rect dari DOM via `ui eval`. Untuk bikin file baru tanpa menimpa yang lama: dropdown judul skrip → **"Buat salinan…"**.
+13. **`config.json` menyimpan `pineStudyId`** — kalau indikator SMC dihapus/di-add ulang, id entity BERUBAH (19 Okt: `lX3BtG` → `ypai3y`) dan WAJIB di-update, kalau tidak skrip pipeline baca study salah. Cek `node C:\HEBAT\tradingview-mcp\src\cli\index.js state` untuk id terbaru, verifikasi dengan `node C:\HEBAT\baca_pine.cjs`.
 
 ## 7. OPEN QUESTIONS (prioritas selesaikan)
-- ✅ Akun sudah upgrade ke STANDARD $2,200 (Sep 2026).
-- ✅ Risk calculator sudah dibuat (`risk_calculator.json`): max $44/trade (2%), max $88/day (4%).
-- Lot range: 0.1-0.15. Spread: 0.2 pip.
+- ✅ Akun sekarang **Rp24.000.000 (Exness, akun IDR)** per 7 Okt 2026 (sebelumnya Rp2.500.000).
+- ✅ `risk_calculator.json` SUDAH ditulis ulang ke Rp24jt: 2% = **Rp480.000 = $30**, lot maks: SL10 → 0.30, SL30 → 0.10, SL135 → 0.02.
+- ✅ **Contract size = 100 oz KONFIRMASI** (7 Okt, dari P/L live: 1.0 lot 21 pip = ~Rp35jt ⇒ $100/pip). Angka lama 10 oz SALAH — jangan dipakai. Akibat: lot maks SL10 → 0.03, SL30 → 0.01, swing SL135 → TIDAK BISA di 2%.
+- ⚠️ **Belum diverifikasi**: `Contract size` XAUUSD Exness (hitungan sekarang = 10 oz dari rumus & riwayat trade). Cek di MT5: klik kanan XAUUSD → Specification. **Kalau 100, semua risiko ×10** (lihat blok `jika_kontrak_100oz`).
+- Spread: 0.2 pip. Min lot 0.01.
+- ⚠️ SL struktural swing (60-135 pip) **TIDAK BISA** di akun ini pada risiko 2% — butuh modal ≥ Rp10,8jt.
 
 ## 8. GAYA KERJA AI PENERUS
 - Selalu update `posisi.json` + `entry_hari.json` SETIAP event: limit terisi, SL kena, TP kena.

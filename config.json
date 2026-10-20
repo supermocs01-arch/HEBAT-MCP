@@ -1,8 +1,9 @@
 {
-  "pineStudyId": "lX3BtG",
-  "pineStudyVersion": "1.0",
-  "pineStudyName": "SMC×ICT Unified Fitra XAUUSD",
-  "pineStudyUpdatedAt": "2026-09-03T04:35:00.000Z",
+  "pineStudyId": "Eishxc",
+  "pineStudyVersion": "10.0",
+  "pineStudyName": "SMC×ICT Unified v1",
+  "pineStudyUpdatedAt": "2026-10-19T05:20:00.000Z",
+  "pineStudyNote": "Entity di-re-add 19 Okt 2026 dari script tersimpan 'SMC SWING PATEN v2 1'. Id lama (lX3BtG, ypai3y) sudah tidak valid.",
   "targetSymbol": "XAUUSD",
   "targetBroker": "OANDA",
   "accountType": "standard",

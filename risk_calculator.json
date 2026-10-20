@@ -1,81 +1,93 @@
 {
   "account": {
     "type": "STANDARD",
-    "modal_usd": 2200,
-    "currency": "USD",
-    "broker": "OANDA"
+    "currency": "IDR",
+    "modal_idr": 24000000,
+    "modal_usd_estimate": 1500,
+    "broker": "Exness",
+    "asumsi_kurs_usdidr": 16000,
+    "catatan_kurs": "ANGKA IDR memakai kurs 16.000. Kalau kurs riil beda, semua nilai IDR ikut berubah (persen risiko USD tidak berubah).",
+    "catatan_modal": "07 Okt 2026: user menyebut modal Rp24.000.000. Sebelumnya Rp2.500.000 (1 Okt)."
   },
   "risk_management": {
     "max_risk_per_trade_percent": 2,
-    "max_risk_per_trade_usd": 44,
+    "max_risk_per_trade_idr": 480000,
+    "max_risk_per_trade_usd": 30,
     "max_loss_per_day_percent": 4,
-    "max_loss_per_day_usd": 88,
+    "max_loss_per_day_idr": 960000,
     "max_loss_count": 2,
     "jatah_entry_per_hari": 3
   },
   "lot_calculation": {
-    "1_pip_value_01_lot": 0.10,
-    "1_pip_value_05_lot": 0.50,
-    "1_pip_value_10_lot": 1.00,
-    "1_pip_value_15_lot": 1.50,
-    "1_pip_value_20_lot": 2.00
+    "rumus": "risk_usd = sl_pips x lot x 100",
+    "pip_semantik": "1 'pip' catatan Fitra = $1.00 pergerakan harga XAUUSD",
+    "contract_size_oz": 100,
+    "contract_status": "KONFIRMASI 7 Okt 2026 - DARI P/L USER SENDIRI: posisi 1.0 lot floating 21 pip = ~Rp35.000.000 => $2.190 / 21 pip => ~$100/pip => 100 oz per lot. Angka lama 10 oz SALAH (ditarik dari riwayat trade akun OANDA lama).",
+    "verifikasi_kontrak": "SUDAH TERKONFIRMASI lewat hitungan P/L. (Cek silang opsional: MT5 -> klik kanan XAUUSD -> Specification -> Contract size = 100.)",
+    "min_lot": 0.01,
+    "max_lot": 200,
+    "leverage_disarankan": "1 lot XAUUSD 100oz = notional ~$410.000 -> butuh leverage tinggi (Exness standard sering 1:1000+)",
+    "pip_value_per_lot": "1.00 lot = $100 per $1 | 0.10 lot = $10 | 0.01 lot = $1",
+    "1_pip_value_01_lot": 1.00,
+    "1_pip_value_05_lot": 5.00,
+    "1_pip_value_10_lot": 10.00,
+    "1_pip_value_15_lot": 15.00,
+    "1_pip_value_20_lot": 20.00
+  },
+  "posisi_live_07okt": {
+    "status": "LIVE BUY 0.5 + 0.5 = 1.0 lot avg 4088.32, TP user 4600",
+    "floating_waktu_konfirmasi": "+21 pip = +$2.100 = +Rp33,8jt (~35jt) = +141% modal",
+    "sl_4058_reality": "SL 4058 = 30.3 pip x $100 = $3.030 = Rp48,5jt = 202% MODAL = AKUN HABIS (stop-out jauh sebelumnya, sekitar 4070-4075). SL struktural di bawah 4066.5 TIDAK MUNGKIN untuk 1.0 lot.",
+    "sl_yang_mungkin": "SL BE 4088.32 (risk nol) | SL 4098 (di bawah support 4103.5, kunci +$968 = +Rp15,5jt) | SL 4100 | atau KURANGI LOT dulu (close 0.5 = bank ~Rp17jt) baru SL BE.",
+    "per_pip_sekarang": "1 pip lawan = -$100 = -Rp1,6jt. FOMC Minutes 01:00 WIB bisa gas $20-40 = -Rp32jt s/d -Rp64jt."
   },
   "lot_by_sl_pips": {
-    "sl_10_pips": {
-      "max_lot": 0.44,
-      "recommended_lot": 0.3,
-      "risk_usd": 30
-    },
-    "sl_15_pips": {
-      "max_lot": 0.29,
-      "recommended_lot": 0.2,
-      "risk_usd": 30
-    },
-    "sl_20_pips": {
-      "max_lot": 0.22,
-      "recommended_lot": 0.15,
-      "risk_usd": 30
-    },
-    "sl_30_pips": {
-      "max_lot": 0.15,
-      "recommended_lot": 0.1,
-      "risk_usd": 30
-    },
-    "sl_40_pips": {
-      "max_lot": 0.11,
-      "recommended_lot": 0.1,
-      "risk_usd": 40
-    }
+    "sl_5_pips": { "max_lot": 0.06, "recommended_lot": 0.05, "risk_usd": 25.0, "risk_percent": 1.7 },
+    "sl_10_pips": { "max_lot": 0.03, "recommended_lot": 0.03, "risk_usd": 30.0, "risk_percent": 2.0, "note": "BATAS TERBESAR yang lolos 2%" },
+    "sl_15_pips": { "max_lot": 0.02, "recommended_lot": 0.02, "risk_usd": 30.0, "risk_percent": 2.0 },
+    "sl_20_pips": { "max_lot": 0.015, "recommended_lot": 0.01, "risk_usd": 20.0, "risk_percent": 1.3 },
+    "sl_30_pips": { "max_lot": 0.01, "recommended_lot": 0.01, "risk_usd": 30.0, "risk_percent": 2.0, "note": "0.01 lot = $30 = 2% tepat" },
+    "sl_40_pips": { "max_lot": null, "recommended_lot": 0.01, "risk_usd": 40.0, "risk_percent": 2.7, "note": "LEWAT 2% bahkan di lot minimum" },
+    "sl_60_pips": { "max_lot": null, "recommended_lot": 0.01, "risk_usd": 60.0, "risk_percent": 4.0, "note": "DILARANG" },
+    "sl_135_pips": { "max_lot": null, "recommended_lot": 0.01, "risk_usd": 135.0, "risk_percent": 9.0, "note": "DILARANG - swing jauh TIDAK BISA di akun ini (kontrak 100oz)" }
   },
   "spread": {
-    "type": "FIXED",
+    "type": "FLOATING/RAW (Exness)",
     "pips": 0.2,
-    "cost_per_lot": 2.00,
-    "note": "0.2 pip spread = $2 per 0.1 lot = $4 per 0.2 lot"
+    "cost_per_01_lot_usd": 0.20,
+    "cost_per_01_lot_idr": 3200,
+    "note": "Di 1.0 lot: spread ~$20 = Rp320rb sekali buka - bukan faktor utama; SL adalah faktor pembatas."
   },
   "quick_ref": {
-    "buy_limit_4300": {
-      "lot": 0.1,
-      "sl": 4270,
+    "sc_paten_30pip": {
+      "status": "FORMAT STANDAR YANG MUAT DI AKUN INI (kontrak 100oz)",
+      "lot": 0.01,
       "sl_pips": 30,
-      "risk_usd": 30,
-      "risk_percent": 1.36,
-      "tp1": 4345,
-      "tp1_pips": 45,
-      "reward_usd": 45,
-      "rr_1": "1:1.5"
+      "risk_usd": 30.0,
+      "risk_percent": 2.0,
+      "tp1_pips": 90,
+      "tp2_pips": 120,
+      "tp1_usd": 9.0,
+      "tp2_usd": 12.0,
+      "catatan": "Scalp paten: lot 0.01, SL 30 pip, TP1 1:3 = 90 pip. Risk tepat 2%."
     },
-    "buy_limit_4290": {
-      "lot": 0.15,
-      "sl": 4270,
-      "sl_pips": 20,
-      "risk_usd": 30,
-      "risk_percent": 1.36,
-      "tp1": 4345,
-      "tp1_pips": 55,
-      "reward_usd": 82.5,
-      "rr_1": "1:2.7"
+    "swing_watch_4000": {
+      "status": "TIDAK BISA dengan SL 135 pip - butuh lot 0.002 (di bawah minimum). SL maks yang sah utk swing: ~30 pip = 0.01 lot.",
+      "catatan": "Dulu (angka 10oz salah) disebut muat 0.02 lot - BATAL. Kontrak 100oz membuat swing SL lebar mustahil di risiko 2%."
     }
   },
-  "last_update": "2026-09-22"
+  "batasan_akun": [
+    "BATAS 2% = Rp480.000 = $30. Rumus: max_lot = 30 / (sl_pips x 100).",
+    "Lot maksimum: SL10 -> 0.03 | SL30 -> 0.01 | SL>30 -> TIDAK ADA yang lolos 2%.",
+    "SL selalu struktural minimal 30 pip COCOK dengan lot 0.01 (risk $30 = 2%).",
+    "Aturan 2 loss = STOP harian: worst case = -4% = -Rp960.000.",
+    "MINIMUM lot 0.01 = $1/pip."
+  ],
+  "warnings": [
+    "07 Okt 2026 MALAM: kontrak size DIPERBAIKI dari 10 (salah) -> 100 oz, dibuktikan dari P/L posisi live user (21 pip x 1.0 lot = ~Rp35jt => $100/pip). SEMUA angka risiko lama malam ini yang memakai 10oz TIDAK BERLAKU.",
+    "POSISI LIVE: BUY 1.0 lot avg 4088.32 tanpa SL. SL 4058 (struktural lama) = 202% = akun HABIS. Yang masuk akal: SL BE 4088.32 / SL 4098 / atau close 0.5 lot dulu.",
+    "1 pip = $100 di posisi sekarang = Rp1.600.000. Jangan biarkan 1.0 lot tanpa SL melewati FOMC Minutes 01:00 WIB.",
+    "Jangan pakai angka $2.200 OANDA atau lot 0.1 risiko lama - sudah tidak berlaku."
+  ],
+  "last_update": "2026-10-07 23:50"
 }
