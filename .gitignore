@@ -13,3 +13,7 @@ _backup/
 laporan/
 screenshots/
 runtime/
+
+# python
+__pycache__/
+*.pyc
