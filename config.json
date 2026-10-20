@@ -4,6 +4,26 @@
   "pineStudyName": "SMC×ICT Unified v1",
   "pineStudyUpdatedAt": "2026-10-19T05:20:00.000Z",
   "pineStudyNote": "Entity di-re-add 19 Okt 2026 dari script tersimpan 'SMC SWING PATEN v2 1'. Id lama (lX3BtG, ypai3y) sudah tidak valid.",
+  "mt5": {
+    "enabled": true,
+    "mode": "shadow",
+    "terminalPath": "C:\\Program Files\\MetaTrader 5\\terminal64.exe",
+    "python": "C:\\Users\\Newas\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "symbol": "XAUUSDm",
+    "pollSeconds": 10,
+    "maxAgeSec": 60,
+    "snapshot": "C:/HEBAT/runtime/mt5_snapshot.json",
+    "catatan": "Bridge READ-ONLY. mode shadow: hanya log diff, tidak mengubah posisi.json.",
+    "timeoutMs": 15000,
+    "demoAccount": {
+      "login": 414469397,
+      "server": "Exness-MT5Trial6",
+      "currency": "IDR",
+      "balance": 2500000,
+      "leverage": 2000,
+      "catatan": "Demo tes bridge 20 Okt 2026 (IDR). Bukan akun real."
+    }
+  },
   "targetSymbol": "XAUUSD",
   "targetBroker": "OANDA",
   "accountType": "standard",
@@ -27,7 +47,14 @@
   "mtf": {
     "enabled": true,
     "method": "CDP-driven (bukan request.security)",
-    "timeframes": ["M5", "M15", "M30", "H1", "H4", "D1"],
+    "timeframes": [
+      "M5",
+      "M15",
+      "M30",
+      "H1",
+      "H4",
+      "D1"
+    ],
     "note": "request.security() di Pine sering return NA setelah restart. MTF dihitung oleh analyzer Node.js via CDP cycle."
   },
   "analyzer": {

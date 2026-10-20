@@ -28,6 +28,15 @@ Update: 20 Okt 2026. Tujuan: AI/sesi baru tidak perlu menebak dari ~110 file `.c
 | `auto_start_watch.cjs` | Watcher TV (auto overlay/scan/monitor dengan lock) |
 | `full_pipeline.cjs` | Orkestrasi pipeline lama (masih dipakai hi_fitra lama) |
 
+## 2b. MT5 bridge (`services/`)
+| Skrip | Fungsi |
+|---|---|
+| `mt5_test.py` | Diagnostik read-only: versi, login, posisi, simbol XAU |
+| `mt5_bridge.py` | Tulis `runtime/mt5_snapshot.json` tiap 10 dtk (atomic, lock, `--once`) |
+| `mt5_env.py` | Samakan versi paket pip dengan build terminal (`--check` / `--install`) |
+| `mt5_doctor.py` | Cek proses/build/cache updater/lock; `--clean` untuk stub updater & cache |
+| `start_bridge.cmd` | Cek versi lalu jalankan bridge background |
+
 ## 3. Data (sumber kebenaran)
 `posisi.json`, `entry_hari.json`, `overlay_plan.json`, `events.json`, `risk_calculator.json`, `config.json`, `pelajaran_sl.md`, `monitor_plan_state.json` (runtime), `monitor.lock` (runtime).
 

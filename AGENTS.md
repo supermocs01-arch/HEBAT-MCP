@@ -38,6 +38,10 @@
 | `backup_data.cjs` | Backup JSON + pine ke `_backup/YYYY-MM-DD/` (retensi 14 hari). Dipanggil `hi_fitra.cjs`. |
 | `laporan_harian.cjs` | Tulis ringkasan harian ke `laporan/YYYY-MM-DD.md`. |
 | `test_sistem.cjs` | Smoke test: audit + PINE + overlay DOM + monitor + event. Exit code ≠0 kalau ada FAIL. |
+| `services/mt5_bridge.py` | Bridge MT5 **READ-ONLY**: tulis `runtime/mt5_snapshot.json` (akun, posisi, pending order, tick) tiap 10 dtk. Mode shadow. |
+| `services/mt5_test.py` | Diagnostik MT5 read-only (login, akun, posisi, simbol XAU). |
+| `risk_live.cjs` | Tabel risiko dari **equity MT5** (2%) + posisi terbuka. |
+| `entry_timing.cjs` | Guard ketepatan entry: TUNGGU / DI_ZONA / TELAT / INVALID / EXPIRED. |
 
 ## 4. FILE DATA (sumber kebenaran — EDIT INI, jangan hardcode di skrip)
 | File | Isi |
@@ -63,6 +67,9 @@ DXY/korelasi emas          -> node C:\HEBAT\usdxau_correlation.cjs  (switch char
 Cek event terdekat         -> node -e "console.log(require('C:/HEBAT/event_guard.cjs').text())"
 Laporan harian             -> node C:\HEBAT\laporan_harian.cjs   (tulis laporan/YYYY-MM-DD.md)
 Smoke test sistem          -> node C:\HEBAT\test_sistem.cjs      (exit ≠0 = ada yang rusak)
+Risk live (equity MT5)     -> node C:\HEBAT\risk_live.cjs
+Cek timing plan            -> node C:\HEBAT\entry_timing.cjs
+MT5 bridge (read-only)     -> C:\HEBAT\services\start_bridge.cmd
 Auto-detect study id       -> node C:\HEBAT\pine_study.cjs
 Backup manual              -> node C:\HEBAT\backup_data.cjs
 Cek log monitor            -> Get-Content C:\HEBAT\monitor_limit_xau.log -Tail 20
@@ -85,6 +92,7 @@ Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.c
 11. **PAKET BASIC = MAKS 2 INDIKATOR PER CHART** (19 Okt 2026). Menambah indikator ke-3 memunculkan modal upsell "Lebih banyak indikator…" dan penambahan DITOLAK. Modal itu menampilkan daftar indikator **stale** (masih menyebut indikator yang sudah dihapus) — abaikan daftarnya, hitung sendiri lewat `state`. Kalau perlu pasang yang lain: hapus dulu salah satu (`indicator remove <id>`).
 12. **"Tambah kedalam chart" dari Pine Editor** sering butuh 2 langkah: (a) kalau skrip punya perubahan belum tersimpan, TV menampilkan dialog **"Simpan skrip ini sebelum menambahkannya?"** → klik tombol **Simpan** di dialog (bukan yang di header), baru indikator masuk; (b) kliknya harus mouse event asli (`ui mouse` di tengah `getBoundingClientRect`), klik JS (`ui click`) sering tidak register. **Screenshot region "chart" itu di-scale** — jangan ambil koordinat klik dari gambar, selalu ambil rect dari DOM via `ui eval`. Untuk bikin file baru tanpa menimpa yang lama: dropdown judul skrip → **"Buat salinan…"**.
 13. **`config.json` menyimpan `pineStudyId`** — kalau indikator SMC dihapus/di-add ulang, id entity BERUBAH (19 Okt: `lX3BtG` → `ypai3y`) dan WAJIB di-update, kalau tidak skrip pipeline baca study salah. Cek `node C:\HEBAT\tradingview-mcp\src\cli\index.js state` untuk id terbaru, verifikasi dengan `node C:\HEBAT\baca_pine.cjs`.
+14. **MT5 bridge (20 Okt 2026)** — jalankan terminal **non-admin** kalau perlu otomasi (SendKeys hanya sampai ke window non-elevated). AutoTrading OFF = `retcode 10027`; nyalakan dengan **Ctrl+E** lalu cek `terminal_info().trade_allowed`. Kredensial demo disimpan di `runtime/mt5_auth.json` (gitignored) — JANGAN commit. Bridge hanya baca; kalau akun MT5 = demo sementara `posisi.json` = real, risk guard otomatis pakai angka config (bukan equity demo).
 
 ## 7. OPEN QUESTIONS (prioritas selesaikan)
 - ✅ Akun sekarang **Rp24.000.000 (Exness, akun IDR)** per 7 Okt 2026 (sebelumnya Rp2.500.000).

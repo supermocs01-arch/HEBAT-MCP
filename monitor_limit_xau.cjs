@@ -22,14 +22,33 @@ function readJson(f, def) { try { return JSON.parse(fs.readFileSync(f, 'utf8'));
 let riskWarnKey = null;
 let stopWarnDate = null;
 let blockEventId = null;
+const timingState = {};
 
-// ===== RISK GUARD (20 Okt): lot x 100 oz x SL poin harus <= 2% = $30 =====
+// ===== RISK GUARD (20 Okt): lot x 100 oz x SL poin harus <= 2% equity =====
+// Equity diambil dari snapshot MT5 (runtime/mt5_snapshot.json) kalau masih fresh.
 function riskReport() {
   const rc = readJson('C:/HEBAT/risk_calculator.json', {});
-  const maxUsd = Number((rc.risk_management || {}).max_risk_per_trade_usd) || 30;
   const oz = Number((rc.lot_calculation || {}).contract_size_oz) || 100;
-  const modalUsd = Number((rc.account || {}).modal_usd_estimate) || 1500;
-  const pos = readJson('C:/HEBAT/posisi.json', {});
+  const kurs = Number((rc.account || {}).asumsi_kurs_usdidr) || 16000;
+  const riskPct = (Number((rc.risk_management || {}).max_risk_per_trade_percent) || 2) / 100;
+
+  const snap = readJson('C:/HEBAT/runtime/mt5_snapshot.json', {});
+  const a = snap && snap.account;
+  const cfgMt5 = readJson('C:/HEBAT/config.json', {}).mt5 || {};
+  const demoLogin = Number((cfgMt5.demoAccount || {}).login) || 0;
+  const pos0 = readJson('C:/HEBAT/posisi.json', {});
+  const posLogin = Number(pos0.mt5_login) || 0;
+  const demoMismatch = !!(a && demoLogin && a.login === demoLogin && posLogin !== demoLogin);
+  const fresh = !!(snap && snap.ok && a && !demoMismatch && (Date.now() / 1000 - (Number(snap.ts) || 0) <= 180));
+  let modalUsd = Number((rc.account || {}).modal_usd_estimate) || 1500;
+  let src = demoMismatch ? 'config (akun MT5 ' + a.login + ' = DEMO, posisi ini REAL)' : 'config';
+  if (fresh) {
+    modalUsd = a.currency === 'IDR' ? (Number(a.equity) || 0) / kurs : (Number(a.equity) || 0);
+    src = 'MT5 ' + a.login + ' ' + a.currency;
+  }
+  const maxUsd = +(modalUsd * riskPct).toFixed(2);
+
+  const pos = pos0;
   const lots = Array.isArray(pos.layers) && pos.layers.length
     ? pos.layers.reduce((s, l) => s + (Number(l.lot) || 0), 0)
     : (Number(pos.lot) || (pos.active ? 0.01 : 0));
@@ -38,13 +57,13 @@ function riskReport() {
   const pips = Math.abs(entry - sl);
   const usd = +(lots * oz * pips).toFixed(2);
   const pct = +(usd / modalUsd * 100).toFixed(1);
-  const key = lots + '@' + pips;
+  const key = lots + '@' + pips + '@' + src;
   if (key !== riskWarnKey) {
     riskWarnKey = key;
-    log('RISK CHECK: ' + lots.toFixed(2) + ' lot x ' + pips.toFixed(1) + ' poin = $' + usd + ' (' + pct + '% modal) | batas $' + maxUsd +
+    log('RISK CHECK [' + src + ', equity $' + modalUsd.toFixed(2) + ']: ' + lots.toFixed(2) + ' lot x ' + pips.toFixed(1) + ' poin = $' + usd + ' (' + pct + '% equity) | batas 2% $' + maxUsd +
       (usd > maxUsd ? ' -> LEWAT BATAS ' + (usd / maxUsd).toFixed(1) + 'x' : ''));
   }
-  return { usd, pct, maxUsd, lots, pips };
+  return { usd, pct, maxUsd, lots, pips, src, modalUsd };
 }
 
 function stopDayCheck() {
@@ -61,7 +80,7 @@ function loadPlans() {
   const plans = [];
   try {
     const ov = JSON.parse(fs.readFileSync('C:/HEBAT/overlay_plan.json', 'utf8'));
-    if (ov.active && ov.plan_a_sell) plans.push({
+    if (ov.active && ov.plan_a_sell && !(Array.isArray(ov.layers) && ov.layers.length)) plans.push({
       id: 'A', name: 'SELL LIMIT', dir: 'SELL',
       entry: parseFloat(ov.plan_a_sell.entry), sl: parseFloat(ov.plan_a_sell.sl),
       tp1: parseFloat(ov.plan_a_sell.tp1), tp2: parseFloat(ov.plan_a_sell.tp2),
@@ -73,6 +92,16 @@ function loadPlans() {
       tp1: parseFloat(ov.plan_b_buy.tp1), tp2: parseFloat(ov.plan_b_buy.tp2),
       state: 'waiting'
     });
+    if (ov.active && Array.isArray(ov.layers)) {
+      ov.layers.forEach((L, i) => {
+        plans.push({
+          id: 'LY' + (i + 1), name: (L.name || 'SELL LIMIT') + (L.ticket ? ' #' + L.ticket : ''), dir: L.dir || 'SELL',
+          entry: parseFloat(L.entry), sl: parseFloat(L.sl),
+          tp1: parseFloat(L.tp1), tp2: parseFloat(L.tp2),
+          state: 'waiting'
+        });
+      });
+    }
   } catch (e) { log('WARN overlay_plan.json tidak terbaca: ' + e.message); }
   try {
     const p = JSON.parse(fs.readFileSync('C:/HEBAT/posisi.json', 'utf8'));
@@ -138,14 +167,14 @@ async function check() {
       // switch symbol (analisa_gabungan, usdxau_correlation, warmup_pine).
       const holder = chartLock.heldBy();
       if (holder) {
-        log('GUARD TF: chart dikunci ' + holder.owner + ' — auto-set M15 ditunda, siklus ini dilewati');
+        log('GUARD TF: chart dikunci ' + holder.owner + ' - auto-set M15 ditunda, siklus ini dilewati');
         return;
       }
       if (!(await chartLock.acquire('monitor_guard_tf', { waitMs: 0, pollMs: 250 }))) {
-        log('GUARD TF: baru saja dikunci skrip lain — auto-set M15 dilewati');
+        log('GUARD TF: baru saja dikunci skrip lain - auto-set M15 dilewati');
         return;
       }
-      log('GUARD TF: chart tidak di M15 (interval bar ' + Math.round(interval / 60) + ' mnt) — auto-set M15, siklus ini dilewati');
+      log('GUARD TF: chart tidak di M15 (interval bar ' + Math.round(interval / 60) + ' mnt) - auto-set M15, siklus ini dilewati');
       await send('Runtime.evaluate', { expression: `window.TradingViewApi._activeChartWidgetWV.value()._chartWidget.setResolution('15')` });
       await new Promise(r => setTimeout(r, 3000));
       chartLock.release();
@@ -154,7 +183,7 @@ async function check() {
 
     // ===== FILTER GLITCH (pelajaran tick 159.32 - 25 Aug) =====
     if (!v.c || v.c < 1000 || v.l < 1000 || v.h > 20000) {
-      log('GLITCH DITOLAK: c=' + v.c + ' l=' + v.l + ' h=' + v.h + ' — data tidak masuk akal, siklus dilewati');
+      log('GLITCH DITOLAK: c=' + v.c + ' l=' + v.l + ' h=' + v.h + ' - data tidak masuk akal, siklus dilewati');
       return;
     }
     if (lastClose !== null && Math.abs(v.c - lastClose) > 120) {
@@ -162,7 +191,7 @@ async function check() {
       return;
     }
     if (v.h - v.c > 120 || v.c - v.l > 120) {
-      log('GLITCH DITOLAK: wick mustahil (h=' + v.h + ' l=' + v.l + ' c=' + v.c.toFixed(2) + ') — bar tidak masuk akal utk intraday');
+      log('GLITCH DITOLAK: wick mustahil (h=' + v.h + ' l=' + v.l + ' c=' + v.c.toFixed(2) + ') - bar tidak masuk akal utk intraday');
       return;
     }
     lastClose = v.c;
@@ -170,6 +199,9 @@ async function check() {
     const pine = v.pine ? v.pine.split('|') : null;
     const sig = pine ? pine[3] : '?';
     const rsi = pine ? pine[2] : '?';
+    const atrM15 = pine && Number(pine[5]) > 0 ? Number(pine[5]) : 0;
+    const timing = require('./entry_timing.cjs');
+    const timingOv = (() => { try { return JSON.parse(fs.readFileSync('C:/HEBAT/overlay_plan.json', 'utf8')); } catch (e) { return {}; } })();
 
     // ===== EVENT GUARD (20 Okt): blokir limit pending +/- 30 mnt dari event high-impact =====
     const evActive = eventGuard.activeWindow();
@@ -189,6 +221,13 @@ async function check() {
       const skey = p.id + '@' + p.entry;
       if (planState[skey]) p.state = planState[skey];
       if (p.state === 'waiting' && !evActive) {
+        const ev = timing.evaluate(Object.assign({}, timingOv.timing, { dir: p.dir, entry: p.entry, sl: p.sl }), v.c, atrM15, Date.now());
+        const tkey = p.id + '|' + ev.status;
+        if (timingState[p.id] !== tkey) {
+          timingState[p.id] = tkey;
+          log('[TIMING ' + p.id + '] ' + ev.status + ' - ' + (ev.msg || '') + ' | maxChase ' + ev.maxChase + ' poin | ATR ' + ev.atr);
+          if (ev.status === 'INVALID' || ev.status === 'EXPIRED') log('[TIMING ' + p.id + '] >>> BATALKAN plan (jangan dipasang/dibiarkan)');
+        }
         const touched = p.dir === 'BUY' ? (v.l <= p.entry) : (v.h >= p.entry);
         if (touched) {
           p.state = 'filled';
@@ -196,7 +235,7 @@ async function check() {
           savePlanState();
           log('>>> ' + p.name + ' ' + p.id + ' KENA @' + p.entry + ' | harga=' + v.c.toFixed(2) + ' | PINE=' + sig + ' RSI=' + rsi);
           if ((p.dir === 'BUY' && sig !== 'BUY') || (p.dir === 'SELL' && sig !== 'SELL')) {
-            log('>>> PERINGATAN MISS #12: PINE belum konfirmasi ' + p.dir + ' — posisi AGRESIF, siap cut cepat!');
+            log('>>> PERINGATAN MISS #12: PINE belum konfirmasi ' + p.dir + ' - posisi AGRESIF, siap cut cepat!');
           }
           log('=== TRACKING ' + p.id + ': SL ' + p.sl + ' | TP1 ' + p.tp1 + ' (L1 close) | TP2 ' + p.tp2 + ' (L2 runner) ===');
         } else {
@@ -207,13 +246,13 @@ async function check() {
         const floatPips = ((v.c - p.entry) * (p.dir === 'BUY' ? 1 : -1)).toFixed(1);
         let events = [];
         if (p.dir === 'BUY') {
-          if (v.l <= p.sl) events.push('*** SL KENA *** harga=' + v.c.toFixed(2) + ' — CUT DISIPLIN, catat hasil');
-          else if (v.h >= p.tp2) events.push('*** TP2 KENA *** harga=' + v.c.toFixed(2) + ' — L2 full profit!');
-          else if (p.state !== 'tp1_done' && v.h >= p.tp1) events.push('*** TP1 KENA *** harga=' + v.c.toFixed(2) + ' — L1 profit! Geser SL L2 ke BE ' + p.entry);
+          if (v.l <= p.sl) events.push('*** SL KENA *** harga=' + v.c.toFixed(2) + ' - CUT DISIPLIN, catat hasil');
+          else if (v.h >= p.tp2) events.push('*** TP2 KENA *** harga=' + v.c.toFixed(2) + ' - L2 full profit!');
+          else if (p.state !== 'tp1_done' && v.h >= p.tp1) events.push('*** TP1 KENA *** harga=' + v.c.toFixed(2) + ' - L1 profit! Geser SL L2 ke BE ' + p.entry);
         } else {
-          if (v.h >= p.sl) events.push('*** SL KENA *** harga=' + v.c.toFixed(2) + ' — CUT DISIPLIN, catat hasil');
-          else if (v.l <= p.tp2) events.push('*** TP2 KENA *** harga=' + v.c.toFixed(2) + ' — L2 full profit!');
-          else if (p.state !== 'tp1_done' && v.l <= p.tp1) events.push('*** TP1 KENA *** harga=' + v.c.toFixed(2) + ' — L1 profit! Geser SL L2 ke BE ' + p.entry);
+          if (v.h >= p.sl) events.push('*** SL KENA *** harga=' + v.c.toFixed(2) + ' - CUT DISIPLIN, catat hasil');
+          else if (v.l <= p.tp2) events.push('*** TP2 KENA *** harga=' + v.c.toFixed(2) + ' - L2 full profit!');
+          else if (p.state !== 'tp1_done' && v.l <= p.tp1) events.push('*** TP1 KENA *** harga=' + v.c.toFixed(2) + ' - L1 profit! Geser SL L2 ke BE ' + p.entry);
         }
         if (events.length) {
           events.forEach(e => log(e));

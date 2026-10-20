@@ -1,60 +1,64 @@
 {
-  "active": false,
-  "manual": true,
-  "title": "NO LIMIT AKTIF (A + B SL kena 6-7 Okt) - tunggu setup",
-  "info": "UPDATE 20 Okt 14:07: XAU 4132.65 (turun dari 4184) - DI BAWAH 4150, waspada 4100. DXY 101.8 = premium + bias DOWN = DIVERGING. PINE M15 FLAT. Event: FOMC 28-29 Okt (statement 29 Okt 01:00 WIB), GDP+PCE 29 Okt 19:30 WIB. Risk guard monitor: posisi 1.0 lot = 101x batas risiko.",
-  "current_price": 4132.65,
-  "plan_a_sell": null,
-  "plan_b_sell": null,
-  "plan_a_buy": null,
-  "plan_b_buy": null,
-  "sl": null,
-  "tp1": null,
-  "tp2": null,
-  "slNote": "Tidak ada order - tidak ada SL aktif",
-  "tp1Note": "-",
-  "tp2Note": "-",
-  "status": "NO LIMIT AKTIF - tunggu scan baru + PINE ready=100 + CHoCH. Jangan pasang limit sebelum FOMC statement 29 Okt 01:00 WIB.",
-  "syarat": "Syarat entry TETAP berlaku (aturan paten 9.3): BUY hanya di DISKON + PINE M15 BUY ready=100 + CHoCH-B; SELL hanya D1 BEARISH + PREMIUM + PINE M15 SELL ready=100 + CHoCH-S. Double-plan: satu terisi -> CANCEL satunya. Limit baru BELUM dibuat (PINE FLAT semua TF = tidak ada konfirmasi).",
-  "catatan": "HASIL 6-7 Okt (tercatat di monitor): A SELL 4145/4157 KENA 6 Okt 22:14 (harga sudah 4162) -> SL 4157 kena = -12 pips, 2 layer x 0.01 = 1.5% (SIMULASI - konfirmasi apakah nyata di MT5). B BUY 4096/4078 KENA 7 Okt 19:28 -> SL 4078 kena (low 4066.5) = -18 pips, 0.01 = 1.2% (SIMULASI). Bug monitor spam KENA/SL (planState key mismatch) SUDAH DIPERBAIKI 7 Okt 21:20 + state persist ke monitor_plan_state.json.",
-  "hasil_limit": [
+  "active": true,
+  "title": "XAU SELL 2 LAYER (swing) — DEMO",
+  "info": "L1 4145 TP 4097 (1:3) | L2 4150.5 TP 4073.5 (runner) | SL 4161 | harga 4124 DISKON",
+  "sl": "4161.0",
+  "slNote": "di atas swing 4155.6 + buffer 5",
+  "tp1": "4097.0",
+  "tp1Note": "L1 1:3 (48 poin) - tutup L1 di sini",
+  "tp2": "4073.5",
+  "tp2Note": "L2 runner swing (range low H4) - SL L2 ke BE setelah L1 TP",
+  "lot": 0.02,
+  "risk_poin": 16,
+  "risk_usd": 26.5,
+  "risk_note": "Total 2 layer $26.5 = 1.8% akun real $1500. DEMO Rp2,5jt: 17% -> tes eksekusi saja.",
+  "tickets": [
+    "5289061981",
+    "5289064352"
+  ],
+  "plan_a_sell": {
+    "entry": 4145,
+    "sl": 4161,
+    "tp1": 4097,
+    "tp2": 4073.5
+  },
+  "layers": [
     {
-      "id": "A",
+      "name": "L1 SELL",
       "dir": "SELL",
       "entry": 4145,
-      "sl": 4157,
-      "outcome": "SL KENA 2026-10-06 22:14 (harga 4162+)",
-      "pips": -12,
-      "risk": "1.5% (2 layer x 0.01)"
+      "sl": 4161,
+      "tp1": 4097,
+      "tp2": 4073.5,
+      "lot": 0.01,
+      "ticket": 5289061981
     },
     {
-      "id": "B",
-      "dir": "BUY",
-      "entry": 4096,
-      "sl": 4078,
-      "outcome": "SL KENA 2026-10-07 19:31 (low 4066.5)",
-      "pips": -18,
-      "risk": "1.2% (0.01)"
+      "name": "L2 SELL runner",
+      "dir": "SELL",
+      "entry": 4150.5,
+      "sl": 4161,
+      "tp1": 4097,
+      "tp2": 4073.5,
+      "lot": 0.01,
+      "ticket": 5289064352
     }
   ],
-  "syarat_double_plan": "Satu limit terisi -> LANGSUNG cancel yang satunya (jangan hedging).",
-  "macro_context": [
-    {
-      "t": "RABU 7 Okt 21:30",
-      "e": "Minyak mentah AS (EIA)"
-    },
-    {
-      "t": "KAMIS 8 Okt 01:00 WIB",
-      "e": "FOMC Minutes - VOLATILITAS TINGGI, jangan entry sebelum/saat rilis"
-    },
-    {
-      "t": "HASIL A",
-      "e": "SELL 4145 -> SL 4157 KENA (6 Okt 22:14)"
-    },
-    {
-      "t": "HASIL B",
-      "e": "BUY 4096 -> SL 4078 KENA (7 Okt 19:31)"
-    }
-  ],
-  "last_update": "2026-10-20 14:07 WIB"
+  "syarat": "Limit sudah terpasang di DEMO. Untuk REAL: pasang hanya jika PINE M15 SELL + CHoCH-S saat harga masuk zona.",
+  "cancel": "Batalkan jika M15 close di atas 4161 atau tidak ada CHoCH-S saat zona disentuh.",
+  "status": "TERPASANG DI DEMO — menunggu retest 4145/4150.5",
+  "catatan": "Setelah L1 kena TP 4097: geser SL L2 ke BE 4150.5. Jangan tambah layer ke-3.",
+  "timing": {
+    "mode": "limit",
+    "zone": [
+      4144.9,
+      4151.1
+    ],
+    "max_chase_poin": 4,
+    "atr_default": 9,
+    "confirm": "PINE M15 SELL + CHoCH-S close",
+    "expire_at": "2026-10-21T04:00:00+07:00",
+    "stop_alternative": "SELL STOP < 4112.7 jika harga breakdown tanpa retest (konfirmasi CHoCH-S M15)"
+  },
+  "mode": "limit"
 }
