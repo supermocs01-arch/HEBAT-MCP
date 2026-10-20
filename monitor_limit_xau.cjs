@@ -1,9 +1,13 @@
 const http = require('http');
 const fs = require('fs');
+const chartLock = require('./chart_lock.cjs');
 
 const LOG = 'C:/HEBAT/monitor_limit_xau.log';
 let lastClose = null;
 const planState = {};
+const STATE_FILE = 'C:/HEBAT/monitor_plan_state.json';
+try { Object.assign(planState, JSON.parse(fs.readFileSync(STATE_FILE, 'utf8'))); } catch (e) {}
+function savePlanState() { try { fs.writeFileSync(STATE_FILE, JSON.stringify(planState, null, 2)); } catch (e) {} }
 
 function log(msg) {
   const n = new Date();
@@ -81,8 +85,8 @@ async function check() {
       var bars=pw._state.m_dataSources[0]._seriesSource._data.m_bars._items;
       var last=bars[bars.length-1].value;
       var st=null;
-      try{var s=wv.getStudyById('${SID}');var src=s._study||s;var g=src._graphics||(src._source&&src._source._graphics);var pc=g._primitivesCollection;var col=pc.dwglabels.get('labels').get(false)._primitivesDataById;col.forEach(function(l){if(l.t&&l.t.indexOf('PINE_DATA')===0)st=l.t});}catch(e){}
-      if(!st){try{var s2=wv.getStudyById('PTdIuB');var src2=s2._study||s2;var g2=src2._graphics||(src2._source&&src2._source._graphics);var pc2=g2._primitivesCollection;var col2=pc2.dwglabels.get('labels').get(false)._primitivesDataById;col2.forEach(function(l){if(l.t&&l.t.indexOf('PINE_DATA')===0)st=l.t});}catch(e){}}
+      try{var s=wv.getStudyById('${SID}');var src=s._study||s;var g=src._graphics||(src._source&&src._source._graphics);var pc=g._primitivesCollection;var col=pc.dwglabels.get('labels').get(false)._primitivesDataById;col.forEach(function(l){if(l.t&&l.t.indexOf('PINE_DATA|')===0)st=l.t});}catch(e){}
+      if(!st){try{var s2=wv.getStudyById('PTdIuB');var src2=s2._study||s2;var g2=src2._graphics||(src2._source&&src2._source._graphics);var pc2=g2._primitivesCollection;var col2=pc2.dwglabels.get('labels').get(false)._primitivesDataById;col2.forEach(function(l){if(l.t&&l.t.indexOf('PINE_DATA|')===0)st=l.t});}catch(e){}}
       return JSON.stringify({h:last[2],l:last[3],c:last[4],pine:st,t0:last[0],t1:bars.length>1?bars[bars.length-2].value[0]:0});
     })()`, returnByValue: true });
     const v = JSON.parse(r.result.value);
@@ -90,8 +94,21 @@ async function check() {
     // ===== GUARD TF (28 Aug: bar Weekly bikin alarm TP/SL palsu) =====
     const interval = v.t1 ? (v.t0 - v.t1) : 0;
     if (!interval || interval > 900) {
+      // CHART LOCK (2 Okt): jangan rebut chart saat skrip lain sedang cycle TF /
+      // switch symbol (analisa_gabungan, usdxau_correlation, warmup_pine).
+      const holder = chartLock.heldBy();
+      if (holder) {
+        log('GUARD TF: chart dikunci ' + holder.owner + ' — auto-set M15 ditunda, siklus ini dilewati');
+        return;
+      }
+      if (!(await chartLock.acquire('monitor_guard_tf', { waitMs: 0, pollMs: 250 }))) {
+        log('GUARD TF: baru saja dikunci skrip lain — auto-set M15 dilewati');
+        return;
+      }
       log('GUARD TF: chart tidak di M15 (interval bar ' + Math.round(interval / 60) + ' mnt) — auto-set M15, siklus ini dilewati');
       await send('Runtime.evaluate', { expression: `window.TradingViewApi._activeChartWidgetWV.value()._chartWidget.setResolution('15')` });
+      await new Promise(r => setTimeout(r, 3000));
+      chartLock.release();
       return;
     }
 
@@ -121,6 +138,8 @@ async function check() {
         const touched = p.dir === 'BUY' ? (v.l <= p.entry) : (v.h >= p.entry);
         if (touched) {
           p.state = 'filled';
+          planState[skey] = 'filled';
+          savePlanState();
           log('>>> ' + p.name + ' ' + p.id + ' KENA @' + p.entry + ' | harga=' + v.c.toFixed(2) + ' | PINE=' + sig + ' RSI=' + rsi);
           if ((p.dir === 'BUY' && sig !== 'BUY') || (p.dir === 'SELL' && sig !== 'SELL')) {
             log('>>> PERINGATAN MISS #12: PINE belum konfirmasi ' + p.dir + ' — posisi AGRESIF, siap cut cepat!');
@@ -145,7 +164,8 @@ async function check() {
         if (events.length) {
           events.forEach(e => log(e));
           p.state = events[0].includes('TP1') ? 'tp1_done' : 'closed';
-          planState[p.id] = p.state;
+          planState[skey] = p.state;
+          savePlanState();
         } else {
           log('[' + p.id + '] floating ' + floatPips + ' pips | harga=' + v.c.toFixed(2) + ' | PINE=' + sig + ' RSI=' + rsi);
         }

@@ -71,13 +71,14 @@ try {
     if (!hasPlan) warn('overlay_plan.json: active=true tapi tidak ada plan');
     else ok(`overlay_plan: ${o.title}`);
   }
-  if (o.account && o.account.type !== 'standard') warn('overlay_plan: account type bukan standard');
+  if (o.account && String(o.account.type || '').toLowerCase() !== 'standard') warn('overlay_plan: account type bukan standard');
 } catch (e) { fail(`overlay_plan.json: ${e.message}`); }
 
 try {
   const r = JSON.parse(fs.readFileSync(H + '/risk_calculator.json', 'utf8'));
-  if (r.account.type !== 'standard') warn('risk_calculator: account type bukan standard');
-  if (r.account.modal_usd !== 2200) warn('risk_calculator: modal bukan $2,200');
+  if (String(r.account.type || '').toLowerCase() !== 'standard') warn('risk_calculator: account type bukan standard');
+  const modalUsd = r.account.modal_usd_estimate || r.account.modal_usd || 0;
+  if (!modalUsd) warn('risk_calculator: modal USD tidak terbaca (isi modal_usd_estimate)');
   if (r.risk_management.max_risk_per_trade_percent > 2) warn('risk_calculator: max risk > 2%');
   ok('risk_calculator.json: loaded');
 } catch (e) { fail(`risk_calculator.json: ${e.message}`); }
@@ -194,12 +195,14 @@ try {
     else ok(`SL distance: ${slPips} pips`);
   }
 
-  // Cek modal standard
+  // Cek modal standard (mengikuti akun terbaru: IDR/Exness, modal_usd_estimate)
   const r = JSON.parse(fs.readFileSync(H + '/risk_calculator.json', 'utf8'));
-  if (r.account.type === 'standard' && r.account.modal_usd === 2200) {
-    ok('Modal: $2,200 STANDARD ✓');
-    if (r.risk_management.max_risk_per_trade_usd <= 44) ok('Max risk: $44 (2%) ✓');
-    else warn('Max risk > $44!');
+  const modalUsd = r.account.modal_usd_estimate || r.account.modal_usd || 0;
+  if (String(r.account.type || '').toLowerCase() === 'standard' && modalUsd > 0) {
+    ok(`Modal: ${r.account.currency || 'USD'} / ${r.account.broker || '-'} ~ $${modalUsd} STANDARD ✓`);
+    const batas = +(modalUsd * 0.02).toFixed(2);
+    if (r.risk_management.max_risk_per_trade_usd <= batas) ok(`Max risk: $${r.risk_management.max_risk_per_trade_usd} (2% dari $${modalUsd} = $${batas}) ✓`);
+    else warn(`Max risk $${r.risk_management.max_risk_per_trade_usd} > 2% ($${batas})!`);
   }
 
   ok(`Entry hari ini: ${e.entry_ke}/3 | Loss: ${e.loss_count}/2 | Sisa: ${e.sisa_jatah}`);

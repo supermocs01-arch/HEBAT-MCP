@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const { execFile } = require('child_process');
+const chartLock = require('./chart_lock.cjs');
 const PLAN_FILE = 'C:/HEBAT/overlay_plan.json';
 
 http.get('http://127.0.0.1:9222/json', (res) => {
@@ -230,12 +231,11 @@ http.get('http://127.0.0.1:9222/json', (res) => {
           var labels=[];
           col.forEach(function(l){var b=barOf(l.x);labels.push({b:b,dt:dts(b),y:l.y,t:l.t})});
           labels.sort(function(a,b){return a.b-b.b});
-          var pdLegacy=null, pdJson=null;
-          col.forEach(function(l){
-            if(l.t && l.t.indexOf('PINE_DATA_JSON|')===0) pdJson=l.t;
-            else if(l.t && l.t.indexOf('PINE_DATA|')===0) pdLegacy=l.t;
-          });
-          var pd=pdLegacy || pdJson;
+          var pd=null;
+          // labels sudah diurutkan bar -> ambil dari bar terakhir (paling baru)
+          for(var i=labels.length-1;i>=0;i--){
+            if(labels[i].t && labels[i].t.indexOf('PINE_DATA')===0){ pd={t:labels[i].t,b:labels[i].b,dt:labels[i].dt,y:labels[i].y}; break; }
+          }
           var bos=labels.filter(function(l){return /^BOS|^CHOCH/.test(l.t)});
           var lines=[];
           try{ var dl=pc.dwglines.get('lines').get(false)._primitivesDataById; dl.forEach(function(l){lines.push({b2:barOf(l.x2),y:l.y1,ci:l.ci})}); lines.sort(function(a,b){return b.b2-a.b2}); }catch(e){}
@@ -256,19 +256,30 @@ http.get('http://127.0.0.1:9222/json', (res) => {
     }
 
     function parsePineData(pd) {
-      if (!pd || !pd.t) return null;
-      if (pd.t.indexOf('PINE_DATA_JSON|') === 0) {
+      // Terima objek label {t,b,dt} ATAU string langsung (defensif).
+      let bar = null, dt = null;
+      if (pd && typeof pd === 'object') { bar = pd.b; dt = pd.dt; pd = pd.t; }
+      if (typeof pd !== 'string' || !pd) return null;
+      if (pd.indexOf('PINE_DATA_JSON|') === 0) {
         try {
-          const j = JSON.parse(pd.t.split('|')[1]);
-          return { price: j.px, rsi: j.rsi, sig: j.sig, ready: j.ready, atr: j.atr, bar: pd.b, dt: pd.dt };
+          const j = JSON.parse(pd.slice(pd.indexOf('|') + 1));
+          return { price: j.px, rsi: j.rsi, sig: j.sig, ready: j.ready, atr: j.atr, alasan: j.alasan, zona: j.zona, mid: j.mid, mtf: j.mtf, bar, dt };
         } catch(e) { return null; }
       }
-      const f = pd.t.split('|');
-      return { price: parseFloat(f[1]), rsi: parseFloat(f[2]), sig: f[3], ready: parseInt(f[4]), atr: parseFloat(f[5]), bar: pd.b, dt: pd.dt };
+      const f = pd.split('|');
+      return { price: parseFloat(f[1]), rsi: parseFloat(f[2]), sig: f[3], ready: parseInt(f[4]), atr: parseFloat(f[5]), bar, dt };
     }
 
     ws.on('open', async () => {
       await send('Runtime.enable');
+      // CHART LOCK: blok ini MENULIS timeframe chart (setResolution per TF).
+      // Kalau usdxau_correlation / warmup / monitor GUARD jalan bareng, data PINE
+      // dan analyzer jadi terbaca dari TF yang salah.
+      if (!(await chartLock.acquire('analisa_gabungan', { waitMs: 300000 }))) {
+        console.log('SCAN DIBATALKAN: chart masih dikunci ' + (chartLock.busyText() || '(tidak diketahui)'));
+        try { ws.close(); } catch (e) {}
+        return;
+      }
       const tfs = ['1440', '240', '60', '30', '15'];
       const results = {};
       for (const tf of tfs) {
@@ -308,6 +319,7 @@ http.get('http://127.0.0.1:9222/json', (res) => {
       }
       await send('Runtime.evaluate', { expression: `window.TradingViewApi._activeChartWidgetWV.value()._chartWidget.setResolution('15')` });
       await sleep(4000);
+      chartLock.release();
       ws.close();
 
       // ============ SINTESIS ============

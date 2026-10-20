@@ -5,10 +5,24 @@ const OV = JSON.parse(fs.readFileSync('C:/HEBAT/overlay_plan.json', 'utf8'));
 const P  = JSON.parse(fs.readFileSync('C:/HEBAT/posisi.json', 'utf8'));
 const J  = JSON.parse(fs.readFileSync('C:/HEBAT/entry_hari.json', 'utf8'));
 
+// Label akun dibaca dari risk_calculator.json (sumber kebenaran) - jangan hardcode
+let AKUN = 'AKUN STANDARD';
+try {
+  const R = JSON.parse(fs.readFileSync('C:/HEBAT/risk_calculator.json', 'utf8'));
+  const a = R.account || {};
+  const brk = (a.broker || '').toUpperCase();
+  const cur = a.currency === 'IDR' ? 'IDR' : (a.currency || 'USD');
+  const modal = a.modal_idr && cur === 'IDR'
+    ? 'Rp' + Number(a.modal_idr).toLocaleString('id-ID')
+    : (a.modal_usd_estimate ? '$' + a.modal_usd_estimate : '');
+  AKUN = [brk, cur, modal].filter(Boolean).join(' ') || 'AKUN STANDARD';
+} catch (e) { /* fallback label lama */ }
+
 const D = JSON.stringify({
-  pTitle: 'XAUUSD M15 • AKUN CENT 2,000 USC • SELL 4449 LIVE',
+  akun: AKUN,
+  pTitle: 'XAUUSD M15 • ' + AKUN + ' • ' + (P.active ? (/SELL/i.test(P.title || '') ? 'SELL' : 'BUY') + ' LIVE' : 'NO POSITION'),
   pInfo: OV.info || '',
-  currentPrice: OV.current_price || P.current_price || 4410.0,
+  currentPrice: OV.current_price || P.current_price || 4155.5,
   // LIVE posisi (dari posisi.json)
   liveActive: P.active ? true : false,
   liveDir: /SELL/i.test(P.title || '') ? 'SELL' : 'BUY',
@@ -32,7 +46,11 @@ const D = JSON.stringify({
   planBSl: OV.plan_b_buy?.sl || '—',
   planBTp1: OV.plan_b_buy?.tp1 || '—',
   planBTp2: OV.plan_b_buy?.tp2 || '—',
-  macro: OV.macro_context || []
+  macro: OV.macro_context || [],
+  // WATCHLIST / STATUS (overlay_plan.json)
+  watchTitle: OV.title || '',
+  watchStatus: OV.status || '',
+  watchSyarat: OV.syarat || ''
 });
 const code = `(function(){
   var D = ${D};
@@ -53,7 +71,7 @@ const code = `(function(){
   el('⚡ SMC SWING PATEN v2.2', 'color:#FFD700;font-weight:bold;font-size:14px;text-align:center;');
   var clock = el('', 'color:#FFFF00;font-size:13px;text-align:center;margin-bottom:4px;'); clock.id='smc_clock';
   var sess = el('', 'font-size:12px;text-align:center;margin-bottom:6px;padding:2px;border-radius:4px;font-weight:bold;'); sess.id='smc_session';
-  el('XAUUSD M15 • AKUN CENT 2,000 USC • LIVE ['+D.liveDir+']', 'color:#888;font-size:11px;text-align:center;');
+  el('XAUUSD M15 • '+(D.akun || 'AKUN STANDARD')+' • '+(D.liveActive ? 'LIVE ['+D.liveDir+']' : 'NO POSITION'), 'color:#888;font-size:11px;text-align:center;');
   el('Current: <b style="color:#FFD700;">'+D.currentPrice.toFixed(2)+'</b> &nbsp; Float: <b style="color:#00FF00;">+'+D.liveFloat+' pip</b>', 'color:#fff;font-weight:bold;font-size:12px;text-align:center;margin-bottom:6px;');
   sep();
 
@@ -81,6 +99,14 @@ const code = `(function(){
   if(D.macro && D.macro.length){
     el('MACRO (WIB):', 'color:#FF9800;font-weight:bold;font-size:11px;');
     D.macro.forEach(function(m){ el(' &bull; '+m.t+' — '+m.e, 'font-size:10px;color:#FFB74D;'); });
+  }
+
+  // WATCHLIST / NO-ENTRY STATUS (tampil meski tidak ada order)
+  if(D.watchStatus && (!D.planEntry || D.planEntry === '—')){
+    sep();
+    el('WATCH: '+D.watchStatus, 'color:#FFD700;font-weight:bold;font-size:11px;');
+    if(D.watchTitle) el(D.watchTitle, 'font-size:10px;color:#fff;margin-top:2px;');
+    if(D.watchSyarat) el(D.watchSyarat, 'font-size:10px;color:#FFB74D;margin-top:2px;');
   }
 
   document.body.appendChild(ov);
