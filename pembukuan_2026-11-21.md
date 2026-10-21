@@ -81,3 +81,14 @@ Skor per layer: **TEPAT / TERLALU CEPAT / TERLAMBAT**
 | Skor timing | TERLAMBAT secara struktur: breakdown = sweep-the-sweep, harga balik +12 poin |
 | Pelajaran | Stop order breakdown tanpa PINE SELL + CHoCH = dilarang; konflik DXY = veto; jangan perketat SL ke dalam OB |
 | Jatah | loss 1 dari 2; sisa jatah hari ini 2 -> STOP TOTAL kalau loss ke-2 |
+
+
+## 21 Okt 21:00 WIB — Evaluasi posisi premium (HOLD, tanpa aksi baru)
+| Item | Nilai |
+|---|---|
+| Harga | 4132,0 (PREMIUM, di atas mid 4114,6) |
+| Trend 4TF | D1/H4 BEAR, H1 BULL, M15 BEAR (bentur) |
+| PINE | FLAT ready=0 semua TF, RSI 46-54, tanpa CHoCH |
+| Posisi | L1 4136 +8.4 poin / L2 4141 +9.2 poin (floating hijau, sebelumnya sempat +11.7) |
+| Keputusan | HOLD - SL 4148.5 tidak diubah, TP 4096/4041 jalan, guardian kunci 4071 aktif |
+| Rasional | Sell searah D1 bear + zona premium + sweep buy-side; momen jangka pendek masih BULL => hanya pantau batas: M15 close > 4141.4 = waspada, > 4148.5 = SL |
