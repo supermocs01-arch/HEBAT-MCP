@@ -68,3 +68,16 @@ Skor per layer: **TEPAT / TERLALU CEPAT / TERLAMBAT**
 - [ ] Apakah TP2 4073.5 realistis atau perlu TP parsial di 4097/4085?
 - [ ] Apakah bridge shadow sudah cukup akurat untuk naik ke mode `warn`?
 - [ ] Jadwalkan audit penuh sistem (sesuai rencana pertengahan November).
+
+
+## Hasil 21 Okt 2026 — SELL STOP breakdown 4112 / 4111 (MISS #16)
+| Item | Nilai |
+|---|---|
+| Jenis | 2 layer SELL STOP 0.01 (L1 4111.93 TP 4073.5, L2 4110.95 TP 4040) |
+| Risk terpasang | $24.12 (1.61% dari $1.500) setelah SL diperketat 4126.5 -> 4123.5 |
+| Fill | 13:53-13:54 WIB |
+| Hasil | **SL 4123.5 @14:26 WIB = -$27.2** (equity demo Rp2.503.198 -> Rp2.067.944) |
+| Konfirmasi saat entry | PINE FLAT ready=0 semua TF, CHoCH tidak ada (MISS #16) |
+| Skor timing | TERLAMBAT secara struktur: breakdown = sweep-the-sweep, harga balik +12 poin |
+| Pelajaran | Stop order breakdown tanpa PINE SELL + CHoCH = dilarang; konflik DXY = veto; jangan perketat SL ke dalam OB |
+| Jatah | loss 1 dari 2; sisa jatah hari ini 2 -> STOP TOTAL kalau loss ke-2 |
