@@ -95,7 +95,7 @@ function loadPlans() {
     if (ov.active && Array.isArray(ov.layers)) {
       ov.layers.forEach((L, i) => {
         plans.push({
-          id: 'LY' + (i + 1), name: (L.name || 'SELL LIMIT') + (L.ticket ? ' #' + L.ticket : ''), dir: L.dir || 'SELL',
+          id: 'LY' + (i + 1), name: (L.name || 'SELL LIMIT') + (L.ticket ? ' #' + L.ticket : ''), dir: L.dir || 'SELL', mode: L.mode || (ov.timing && ov.timing.mode) || 'limit',
           entry: parseFloat(L.entry), sl: parseFloat(L.sl),
           tp1: parseFloat(L.tp1), tp2: parseFloat(L.tp2),
           state: 'waiting'
@@ -236,7 +236,10 @@ async function check() {
             log('[KONFIRMASI ' + p.id + '] ' + (searah ? 'PINE ' + sig + ' SEARAH - boleh jalan' : 'PINE=' + sig + ' BELUM SEARAH - JANGAN biarkan fill tanpa CHoCH (MISS #12)'));
           }
         }
-        const touched = p.dir === 'BUY' ? (v.l <= p.entry) : (v.h >= p.entry);
+        const isStop = p.mode === 'stop';
+        const touched = isStop
+          ? (p.dir === 'BUY' ? (v.h >= p.entry) : (v.l <= p.entry))
+          : (p.dir === 'BUY' ? (v.l <= p.entry) : (v.h >= p.entry));
         if (touched) {
           p.state = 'filled';
           planState[skey] = 'filled';

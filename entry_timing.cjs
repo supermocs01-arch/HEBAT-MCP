@@ -16,6 +16,13 @@ function evaluate(plan, price, atr, nowMs) {
 
   const dist = dir === 'SELL' ? entry - price : price - entry;
 
+  if (plan.mode === 'stop') {
+    const d = dir === 'SELL' ? price - entry : entry - price;
+    if (d <= 0) return { status: 'TERSENTUH', dist: d, maxChase, atr: atrEff, msg: 'stop sudah tersentuh - cek posisi' };
+    if (d <= maxChase) return { status: 'SIAP', dist: d, maxChase, atr: atrEff, msg: 'hanya ' + d.toFixed(1) + ' poin ke trigger breakdown' };
+    return { status: 'TUNGGU', dist: d, maxChase, atr: atrEff, msg: d.toFixed(1) + ' poin lagi ke trigger (' + (d / atrEff).toFixed(1) + ' ATR)' };
+  }
+
   if (dir === 'SELL') {
     if (price > sl) return { status: 'INVALID', dist, maxChase, atr: atrEff, msg: 'harga di atas SL ' + sl };
   } else {

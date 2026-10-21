@@ -1,63 +1,63 @@
 {
   "active": true,
-  "title": "XAU SELL 2 LAYER 4145 / 4150.5 - DEMO",
-  "info": "L1 4145 TP 4097 (1:3) | L2 4150.5 runner TP 4073.5 | SL 4161 | DXY 78% USD premium | no event <30m",
-  "sl": "4161.0",
-  "slNote": "di atas swing 4155.6 + buffer 5",
-  "tp1": "4097.0",
-  "tp1Note": "1:3 (48 poin)",
-  "tp2": "4073.5",
-  "tp2Note": "runner swing (range low H4)",
+  "title": "XAU SELL STOP BREAKDOWN 4112 / 4111 - DEMO",
+  "info": "Breakdown < 4113.2 (swing M15). D1/H4/H1 BEAR, M15 BULL (bentur). DXY 101.76 = 77% (USD premium) tapi bias USD DOWN. PINE FLAT.",
+  "sl": "4125.5",
+  "slNote": "di atas swing M15 4124.3 + buffer",
+  "tp1": "4073.5",
+  "tp1Note": "1:2.85 (L1) - range low H4",
+  "tp2": "4040.0",
+  "tp2Note": "L2 runner (1:5.6)",
   "lot": 0.02,
-  "risk_poin": 16,
-  "risk_usd": 26.5,
-  "risk_note": "2 layer total $26.5 = 1.8% real $1500 | demo Rp2,5jt = 17% (tes saja)",
+  "risk_poin": 13.5,
+  "risk_usd": 28,
+  "risk_note": "2 layer total $28 = 1.87% real $1500 | demo Rp2,5jt = 18% (tes saja)",
   "tickets": [
-    "5290530022",
-    "5290536016"
+    "5291003615",
+    "5291003631"
   ],
   "plan_a_sell": {
-    "entry": 4145,
-    "sl": 4161,
-    "tp1": 4097,
-    "tp2": 4073.5
+    "entry": 4112,
+    "sl": 4125.5,
+    "tp1": 4073.5,
+    "tp2": 4040
   },
   "layers": [
     {
-      "name": "L1 SELL 4145",
+      "name": "L1 STOP 4112",
       "dir": "SELL",
-      "entry": 4145,
-      "sl": 4161,
-      "tp1": 4097,
-      "tp2": 4073.5,
+      "entry": 4112,
+      "sl": 4125.5,
+      "tp1": 4073.5,
+      "tp2": 4040,
       "lot": 0.01,
-      "ticket": 5290530022
+      "ticket": 5291003615
     },
     {
-      "name": "L2 SELL runner 4150.5",
+      "name": "L2 STOP runner 4111",
       "dir": "SELL",
-      "entry": 4150.5,
-      "sl": 4161,
-      "tp1": 4097,
-      "tp2": 4073.5,
+      "entry": 4111,
+      "sl": 4125.5,
+      "tp1": 4073.5,
+      "tp2": 4040,
       "lot": 0.01,
-      "ticket": 5290536016
+      "ticket": 5291003631
     }
   ],
-  "syarat": "PINE M15 FLAT sekarang. Saat harga >=4152: WAJIB CHoCH-S M15 close + PINE SELL. Kalau tidak ada -> BATALKAN limit sebelum tersentuh.",
+  "syarat": "Trigger = 4112 ditembus (breakdown swing M15 4113.2). Valid kalau M15 close < 4113.2. Kalau harga balik ke atas 4125.5 sebelum trigger -> BATALKAN.",
   "timing": {
-    "mode": "limit",
+    "mode": "stop",
     "zone": [
-      4144.9,
-      4151.1
+      4112,
+      4111
     ],
     "max_chase_poin": 4,
-    "atr_default": 9,
+    "atr_default": 6,
     "expire_at": "2026-10-22T04:00:00+07:00",
-    "confirm": "CHoCH-S M15 close + PINE SELL",
-    "stop_alternative": "SELL STOP < 4106.3 (breakdown) setelah CHoCH-S"
+    "confirm": "M15 close < 4113.2 + PINE SELL setelah trigger",
+    "stop_alternative": "none"
   },
-  "status": "TERPASANG DI DEMO - menunggu retest premium 4145",
-  "cancel": "Batal jika: M15 close > 4161, PINE tidak SELL saat harga >=4152, atau lewat 22 Okt 04:00 WIB.",
-  "catatan": "Setelah L1 TP 4097: geser SL L2 ke BE 4150.5. Jangan tambah layer ke-3."
+  "status": "TERPASANG DI DEMO - SELL STOP 4112 / 4111, menunggu breakdown",
+  "cancel": "Batal jika: harga balik > 4125.5 sebelum trigger, tidak ada breakdown sampai 22 Okt 04:00 WIB, atau jatah habis.",
+  "catatan": "Setelah L1 TP 4073.5: geser SL L2 ke BE 4111. Jangan tambah layer ke-3."
 }
