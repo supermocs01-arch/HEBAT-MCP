@@ -228,6 +228,14 @@ async function check() {
           log('[TIMING ' + p.id + '] ' + ev.status + ' - ' + (ev.msg || '') + ' | maxChase ' + ev.maxChase + ' poin | ATR ' + ev.atr);
           if (ev.status === 'INVALID' || ev.status === 'EXPIRED') log('[TIMING ' + p.id + '] >>> BATALKAN plan (jangan dipasang/dibiarkan)');
         }
+        if (ev.status === 'DI_ZONA') {
+          const searah = (p.dir === 'BUY' && sig === 'BUY') || (p.dir === 'SELL' && sig === 'SELL');
+          const ck = p.id + '|' + (searah ? 'OK' : 'NO');
+          if (timingState['konf_' + p.id] !== ck) {
+            timingState['konf_' + p.id] = ck;
+            log('[KONFIRMASI ' + p.id + '] ' + (searah ? 'PINE ' + sig + ' SEARAH - boleh jalan' : 'PINE=' + sig + ' BELUM SEARAH - JANGAN biarkan fill tanpa CHoCH (MISS #12)'));
+          }
+        }
         const touched = p.dir === 'BUY' ? (v.l <= p.entry) : (v.h >= p.entry);
         if (touched) {
           p.state = 'filled';
