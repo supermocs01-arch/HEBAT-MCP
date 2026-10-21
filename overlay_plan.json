@@ -1,64 +1,23 @@
 {
-  "active": true,
-  "title": "XAU SELL 2 LAYER (swing) — DEMO",
-  "info": "L1 4145 TP 4097 (1:3) | L2 4150.5 TP 4073.5 (runner) | SL 4161 | harga 4124 DISKON",
-  "sl": "4161.0",
-  "slNote": "di atas swing 4155.6 + buffer 5",
-  "tp1": "4097.0",
-  "tp1Note": "L1 1:3 (48 poin) - tutup L1 di sini",
-  "tp2": "4073.5",
-  "tp2Note": "L2 runner swing (range low H4) - SL L2 ke BE setelah L1 TP",
-  "lot": 0.02,
-  "risk_poin": 16,
-  "risk_usd": 26.5,
-  "risk_note": "Total 2 layer $26.5 = 1.8% akun real $1500. DEMO Rp2,5jt: 17% -> tes eksekusi saja.",
-  "tickets": [
-    "5289061981",
-    "5289064352"
-  ],
-  "plan_a_sell": {
-    "entry": 4145,
-    "sl": 4161,
-    "tp1": 4097,
-    "tp2": 4073.5
-  },
-  "layers": [
-    {
-      "name": "L1 SELL",
-      "dir": "SELL",
-      "entry": 4145,
-      "sl": 4161,
-      "tp1": 4097,
-      "tp2": 4073.5,
-      "lot": 0.01,
-      "ticket": 5289061981
-    },
-    {
-      "name": "L2 SELL runner",
-      "dir": "SELL",
-      "entry": 4150.5,
-      "sl": 4161,
-      "tp1": 4097,
-      "tp2": 4073.5,
-      "lot": 0.01,
-      "ticket": 5289064352
-    }
-  ],
-  "syarat": "Limit sudah terpasang di DEMO. Untuk REAL: pasang hanya jika PINE M15 SELL + CHoCH-S saat harga masuk zona.",
-  "cancel": "Batalkan jika M15 close di atas 4161 atau tidak ada CHoCH-S saat zona disentuh.",
-  "status": "TERPASANG DI DEMO — menunggu retest 4145/4150.5",
-  "catatan": "Setelah L1 kena TP 4097: geser SL L2 ke BE 4150.5. Jangan tambah layer ke-3.",
+  "active": false,
+  "title": "WATCH ONLY - tidak ada entry valid",
+  "info": "Harga 4117.8 DISKON | MTF BEAR x5 | PINE FLAT | JUAL hanya jika retest premium 4145-4151 | BELI hanya 4100.4/4073.5 + sweep + CHoCH-B",
+  "status": "Limit 4145/4150.5 DIBATALKAN - expired 04:00 WIB, harga menjauh 28-34 poin (tidak terisi)",
+  "syarat": "Tunggu retest premium + PINE SELL/CHoCH-S, ATAU breakdown < 4106.3 dengan CHoCH-S",
   "timing": {
-    "mode": "limit",
+    "mode": "watch",
+    "max_chase_poin": 4,
+    "atr_default": 9,
     "zone": [
       4144.9,
       4151.1
     ],
-    "max_chase_poin": 4,
-    "atr_default": 9,
-    "confirm": "PINE M15 SELL + CHoCH-S close",
-    "expire_at": "2026-10-21T04:00:00+07:00",
-    "stop_alternative": "SELL STOP < 4112.7 jika harga breakdown tanpa retest (konfirmasi CHoCH-S M15)"
+    "zone_buy": [
+      4100.4,
+      4073.5
+    ],
+    "expire_at": "2026-10-22T04:00:00+07:00",
+    "stop_alternative": "SELL STOP < 4106.3 (breakdown) atau BUY STOP > 4131.9 (reklim) setelah konfirmasi"
   },
-  "mode": "limit"
+  "catatan": "Plan lama dibatalkan 21 Okt 08:50 WIB. Jangan pasang limit di zona jauh (MISS #5)."
 }

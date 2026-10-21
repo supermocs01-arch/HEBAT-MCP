@@ -15,19 +15,24 @@
 
 Total risk jika dua-duanya kena: **$26.5 (1.8% modal real $1.500)**.
 
-## Kolom yang WAJIB diisi saat review
+## Hasil aktual (diisi 21 Okt 08:50 WIB)
 | Item | L1 | L2 |
 |---|---|---|
 | Waktu order dibuat | 20 Okt 23:30 | 20 Okt 23:31 |
-| Waktu fill (atau "tidak kena") | | |
-| Harga fill vs limit (slip) | | |
-| PINE saat fill (sig/ready) | | |
-| CHoCH saat fill (ada/tidak) | | |
-| Hasil (TP / SL / expire / manual) | | |
-| P/L (IDR & USD) | | |
-| R multiple (hasil / risk) | | |
-| MFE (poin maksimal searah) | | |
-| MAE (poin maksimal lawan) | | |
+| Waktu fill | **tidak kena** | **tidak kena** |
+| Harga fill vs limit | - | - |
+| PINE saat fill | FLAT (ready 0) | FLAT (ready 0) |
+| CHoCH saat fill | tidak ada | tidak ada |
+| Hasil | **EXPIRED / dibatalkan** | **EXPIRED / dibatalkan** |
+| P/L | 0 | 0 |
+| R multiple | 0 | 0 |
+| MFE | ~0 (harga tidak pernah naik ke zona) | ~0 |
+| MAE | - | - |
+
+**Skor timing: TERLAMBAT / EXPIRED** — limit dipasang tanpa konfirmasi, harga justru turun 28–34 poin dari zona. Aturan `maxChase` 4 poin + `expire_at` 04:00 WIB mencegah chase. **Tidak ada loss.**
+
+Pelajaran: limit retest tanpa momentum/konfirmasi = uang menganggur. Untuk setup bearish, zona jual harus menyesuaikan struktur terbaru (M30 retest turun ke 4128.6–4130), bukan zona lama 4145.
+
 
 ## Evaluasi ketepatan waktu (inti review)
 Skor per layer: **TEPAT / TERLALU CEPAT / TERLAMBAT**
