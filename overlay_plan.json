@@ -1,6 +1,6 @@
 {
   "active": true,
-  "title": "XAU SELL STOP BREAKDOWN 4112 / 4111 (0.03 + 0.02) - DEMO",
+  "title": "XAU SELL STOP BREAKDOWN 4112 / 4111 (0.01 + 0.01) - DEMO",
   "info": "Breakdown < 4113.2 (swing M15). D1/H4/H1 BEAR, M15 BULL (bentur). DXY 101.76 = 77% (USD premium) tapi bias USD DOWN. PINE FLAT.",
   "sl": "4125.5",
   "slNote": "di atas swing M15 4124.3 + buffer",
@@ -8,13 +8,13 @@
   "tp1Note": "1:2.85 (L1) - range low H4",
   "tp2": "4040.0",
   "tp2Note": "L2 runner (1:5.6)",
-  "lot": 0.05,
+  "lot": 0.02,
   "risk_poin": 13.5,
-  "risk_usd": 69.5,
-  "risk_note": "DEMO ONLY: 0.03+0.02 = $69.5 = 4.63% real $1500 (LEWAT 2%). Untuk REAL wajib 0.01+0.01 = $28 = 1.87%.",
+  "risk_usd": 28,
+  "risk_note": "2 layer $28 = 1.87% real $1500 (di bawah batas 2%, paling dekat yang sah). Demo Rp2,5jt: 18%.",
   "tickets": [
-    "5291070904",
-    "5291070906"
+    "5291072240",
+    "5291072243"
   ],
   "plan_a_sell": {
     "entry": 4112,
@@ -24,24 +24,24 @@
   },
   "layers": [
     {
-      "name": "L1 STOP 4112 (0.03)",
+      "name": "L1 STOP 4112 (0.01)",
       "dir": "SELL",
       "entry": 4112,
       "sl": 4125.5,
       "tp1": 4073.5,
       "tp2": 4040,
-      "lot": 0.03,
-      "ticket": 5291070904
+      "lot": 0.01,
+      "ticket": 5291072240
     },
     {
-      "name": "L2 STOP runner 4111 (0.02)",
+      "name": "L2 STOP runner 4111 (0.01)",
       "dir": "SELL",
       "entry": 4111,
       "sl": 4125.5,
       "tp1": 4073.5,
       "tp2": 4040,
-      "lot": 0.02,
-      "ticket": 5291070906
+      "lot": 0.01,
+      "ticket": 5291072243
     }
   ],
   "syarat": "Trigger = 4112 ditembus (breakdown swing M15 4113.2). Valid kalau M15 close < 4113.2. Kalau harga balik ke atas 4125.5 sebelum trigger -> BATALKAN.",
