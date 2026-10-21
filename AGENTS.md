@@ -108,6 +108,8 @@ Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.c
 - Jangan pernah melonggarkan aturan paten demi "kesempatan emas". Tidak ada setup valid = NO ENTRY.
 - Struktur folder: `_arsip/` berisi ±140 skrip mati (draw_lines, probe, pine_paste, dll) — abaikan.
 - Sisa ~110 .cjs di root adalah utilitas one-off lama; kalau mau efisien penuh, arsipkan juga — tapi CEK dulu satu-satu, jangan asal pindah.
+- **Setiap push ke GitHub WAJIB dilaporkan detail ke Fitra**: hash commit, file yang berubah, isi perubahan, dan alasannya (format tabel). Jangan cuma bilang "sudah di-push".
+- **Keputusan trade = tanggung jawab AI** saat Fitra menyerahkan ("terserah kamu"): tetap tunduk GATE 9.3, maks 2 loss/hari, risk ≤2%, dan catat semua di `pelajaran_sl.md` + `pembukuan_2026-11-21.md`.
 
 ## 9. METODOLOGI ANALISIS (IKUTI INI SUPAYA HASILNYA KONSISTEN)
 
