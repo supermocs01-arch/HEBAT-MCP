@@ -1,71 +1,62 @@
 {
-  "active": false,
-  "title": "XAU SELL BREAKDOWN 4112/4111 - SL HIT (-$27.2)",
-  "info": "Breakdown < 4113.2 (swing M15). D1/H4/H1 BEAR, M15 BULL (bentur). DXY 101.76 = 77% (USD premium) tapi bias USD DOWN. PINE FLAT.",
-  "sl": "4123.5",
-  "slNote": "di atas H1 OB bear 4111.7-4122.9 + breaker M15 4122.7 (struktural, buffer 0.6)",
-  "tp1": "4073.5",
-  "tp1Note": "1:2.85 (L1) - range low H4",
-  "tp2": "4040.0",
-  "tp2Note": "L2 runner (1:5.6)",
+  "active": true,
+  "title": "XAU SELL LIMIT PREMIUM 4136 / 4141 (retest supply)",
+  "info": "Limit jual di zona premium (retest-sell 14.5-25% leg 4073.5-4155.6 = 4135-4144). D1/H4 BEAR, H1/M15 BULL (bentur). PINE FLAT -> fill wajib dicek konfirmasi.",
+  "sl": "4148.5",
+  "slNote": "di atas zona supply 4131.9 + buffer (di bawah range high 4155.6)",
+  "tp1": "4098.5",
+  "tp1Note": "1:3 dari L1 (37.5 poin)",
+  "tp2": "4085.0",
+  "tp2Note": "L2 runner (1:7.5 dari L2)",
   "lot": 0.02,
-  "risk_poin": 12.06,
-  "risk_usd": 24.12,
-  "risk_note": "Realisasi loss -$27.2 (risk terpasang $24.12 + spread/slippage). Equity demo Rp2.503.198 -> Rp2.067.944.",
+  "risk_poin": 10,
+  "risk_usd": 20,
+  "risk_note": "L1 12.5 poin ($12.5) + L2 7.5 poin ($7.5) = $20 = 1.33% real $1500.",
   "tickets": [
-    "5291072240",
-    "5291072243"
+    "5291995867",
+    "5291995888"
   ],
   "plan_a_sell": {
-    "entry": 4112,
-    "sl": 4125.5,
-    "tp1": 4073.5,
-    "tp2": 4040
+    "entry": 4136,
+    "sl": 4148.5,
+    "tp1": 4098.5,
+    "tp2": 4085
   },
   "layers": [
     {
-      "name": "L1 SELL 4111.93",
+      "name": "L1 SELL LIMIT 4136",
       "dir": "SELL",
-      "entry": 4111.927,
-      "sl": 4123.5,
-      "tp1": 4073.5,
-      "tp2": 4040,
+      "entry": 4136,
+      "sl": 4148.5,
+      "tp1": 4098.5,
+      "tp2": 4085,
       "lot": 0.01,
-      "ticket": 5291072240,
-      "status": "FILLED"
+      "ticket": 5291995867
     },
     {
-      "name": "L2 SELL runner 4110.95",
+      "name": "L2 SELL LIMIT runner 4141",
       "dir": "SELL",
-      "entry": 4110.95,
-      "sl": 4123.5,
-      "tp1": 4073.5,
-      "tp2": 4040,
+      "entry": 4141,
+      "sl": 4148.5,
+      "tp1": 4098.5,
+      "tp2": 4085,
       "lot": 0.01,
-      "ticket": 5291072243,
-      "status": "FILLED"
+      "ticket": 5291995888
     }
   ],
-  "syarat": "Sudah terisi (breakdown 4113.2). MTF SEARAH BEAR 5TF, harga di mid 4114.6 = chop. Hold selama M15 tidak close > 4123.5.",
+  "syarat": "Fill di premium hanya sah jika saat harga masuk zona: PINE M15 SELL + CHoCH-S. Kalau PINE FLAT/BUY saat fill -> tutup cepat (MISS #12/#16).",
   "timing": {
-    "mode": "filled",
+    "mode": "limit",
     "zone": [
-      4112,
-      4111
+      4136,
+      4141
     ],
     "max_chase_poin": 4,
     "atr_default": 6.4,
     "expire_at": "2026-10-22T04:00:00+07:00",
-    "confirm": "M15 close < 4113.2 + PINE SELL setelah trigger",
-    "stop_alternative": "none"
+    "confirm": "PINE M15 SELL ready>=50 + CHoCH-S saat harga di 4136-4141"
   },
-  "status": "SELESAI - SL HIT 4123.5 @14:26 WIB (loss -$27.2)",
-  "cancel": "Plan selesai. Tidak ada re-entry breakdown hari ini tanpa PINE M15 SELL ready>=50 + CHoCH-S.",
-  "catatan": "Setelah L1 TP 4073.5: geser SL L2 ke BE 4111. Jangan tambah layer ke-3.",
-  "result": {
-    "outcome": "SL",
-    "pnl_usd": -27.2,
-    "closed_at": "2026-10-21T14:26:00+07:00",
-    "miss": 16
-  }
+  "status": "PENDING - SELL LIMIT 4136 / 4141, menunggu retest premium",
+  "cancel": "Batal jika: tidak tersentuh sampai 22 Okt 04:00 WIB, atau M15 close > 4148.5 (invalidasi), atau harga breakdown < 4106.3 tanpa kita (jangan chase).",
+  "catatan": "Setelah L1 TP 4098.5: SL L2 ke BE 4141. Jangan tambah layer. Loss hari ini 1/2."
 }
