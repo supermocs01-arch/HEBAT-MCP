@@ -1,7 +1,7 @@
 {
   "active": true,
   "title": "XAU SELL LIMIT PREMIUM 4136 (TP 40) / 4141 (runner TP 100)",
-  "info": "Limit jual di zona premium (retest-sell 14.5-25% leg 4073.5-4155.6 = 4135-4144). D1/H4 BEAR, H1/M15 BULL (bentur). PINE FLAT -> fill wajib dicek konfirmasi.",
+  "info": "Limit premium terisi saat London/NY. Harga 4129,3. PINE FLAT RSI 54. SL 4148,5 tetap.",
   "sl": "4148.5",
   "slNote": "di atas zona supply 4131.9 + buffer (di bawah range high 4155.6)",
   "tp1": "4096.0",
@@ -31,7 +31,8 @@
       "tp1": 4096,
       "tp2": 4085,
       "lot": 0.01,
-      "ticket": 5291995867
+      "ticket": 5291995867,
+      "status": "FILLED"
     },
     {
       "name": "L2 SELL LIMIT runner 4141",
@@ -41,7 +42,8 @@
       "tp1": 4098.5,
       "tp2": 4041,
       "lot": 0.01,
-      "ticket": 5291995888
+      "ticket": 5291995888,
+      "status": "FILLED"
     }
   ],
   "syarat": "Fill di premium hanya sah jika saat harga masuk zona: PINE M15 SELL + CHoCH-S. Kalau PINE FLAT/BUY saat fill -> tutup cepat (MISS #12/#16).",
@@ -56,7 +58,8 @@
     "expire_at": "2026-10-22T04:00:00+07:00",
     "confirm": "PINE M15 SELL ready>=50 + CHoCH-S saat harga di 4136-4141"
   },
-  "status": "PENDING - SELL LIMIT 4136 / 4141, menunggu retest premium",
+  "status": "AKTIF - 2 layer terisi (L1 18:32, L2 18:43), floating profit",
   "cancel": "Batal jika: tidak tersentuh sampai 22 Okt 04:00 WIB, atau M15 close > 4148.5 (invalidasi), atau harga breakdown < 4106.3 tanpa kita (jangan chase).",
-  "catatan": "L1 TP 4096 (40 poin). L2: saat harga <= 4071 (70 poin), guardian kunci SL di 4106; sisa jalan ke 4041. Setelah L1 TP -> SL L2 ke BE 4141."
+  "catatan": "L1 TP 4096 (40 poin). L2: saat harga <= 4071 (70 poin), guardian kunci SL di 4106; sisa jalan ke 4041. Setelah L1 TP -> SL L2 ke BE 4141.",
+  "last_update": "2026-10-21 19:32 WIB"
 }
