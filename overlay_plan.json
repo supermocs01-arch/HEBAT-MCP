@@ -1,13 +1,13 @@
 {
   "active": true,
-  "title": "XAU SELL LIMIT PREMIUM 4136 / 4141 (retest supply)",
+  "title": "XAU SELL LIMIT PREMIUM 4136 (TP 40) / 4141 (runner TP 100)",
   "info": "Limit jual di zona premium (retest-sell 14.5-25% leg 4073.5-4155.6 = 4135-4144). D1/H4 BEAR, H1/M15 BULL (bentur). PINE FLAT -> fill wajib dicek konfirmasi.",
   "sl": "4148.5",
   "slNote": "di atas zona supply 4131.9 + buffer (di bawah range high 4155.6)",
-  "tp1": "4098.5",
-  "tp1Note": "1:3 dari L1 (37.5 poin)",
-  "tp2": "4085.0",
-  "tp2Note": "L2 runner (1:7.5 dari L2)",
+  "tp1": "4096.0",
+  "tp1Note": "40 poin = 1:3.2 dari L1",
+  "tp2": "4041.0",
+  "tp2Note": "100 poin = runner (L2). Kunci profit di 4071 -> SL 4106 (+35 poin)",
   "lot": 0.02,
   "risk_poin": 10,
   "risk_usd": 20,
@@ -28,7 +28,7 @@
       "dir": "SELL",
       "entry": 4136,
       "sl": 4148.5,
-      "tp1": 4098.5,
+      "tp1": 4096,
       "tp2": 4085,
       "lot": 0.01,
       "ticket": 5291995867
@@ -39,7 +39,7 @@
       "entry": 4141,
       "sl": 4148.5,
       "tp1": 4098.5,
-      "tp2": 4085,
+      "tp2": 4041,
       "lot": 0.01,
       "ticket": 5291995888
     }
@@ -58,5 +58,5 @@
   },
   "status": "PENDING - SELL LIMIT 4136 / 4141, menunggu retest premium",
   "cancel": "Batal jika: tidak tersentuh sampai 22 Okt 04:00 WIB, atau M15 close > 4148.5 (invalidasi), atau harga breakdown < 4106.3 tanpa kita (jangan chase).",
-  "catatan": "Setelah L1 TP 4098.5: SL L2 ke BE 4141. Jangan tambah layer. Loss hari ini 1/2."
+  "catatan": "L1 TP 4096 (40 poin). L2: saat harga <= 4071 (70 poin), guardian kunci SL di 4106; sisa jalan ke 4041. Setelah L1 TP -> SL L2 ke BE 4141."
 }
