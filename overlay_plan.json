@@ -1,17 +1,17 @@
 {
   "active": true,
-  "title": "XAU SELL STOP BREAKDOWN 4112 / 4111 (0.01 + 0.01) - DEMO",
+  "title": "XAU SELL (AKTIF) 4111.9 / 4111.0 - SL diperketat 4123.5",
   "info": "Breakdown < 4113.2 (swing M15). D1/H4/H1 BEAR, M15 BULL (bentur). DXY 101.76 = 77% (USD premium) tapi bias USD DOWN. PINE FLAT.",
-  "sl": "4126.5",
-  "slNote": "di atas swing 4124.3 + buffer 2.2 (pas 2.00% risk)",
+  "sl": "4123.5",
+  "slNote": "di atas H1 OB bear 4111.7-4122.9 + breaker M15 4122.7 (struktural, buffer 0.6)",
   "tp1": "4073.5",
   "tp1Note": "1:2.85 (L1) - range low H4",
   "tp2": "4040.0",
   "tp2Note": "L2 runner (1:5.6)",
   "lot": 0.02,
-  "risk_poin": 15,
-  "risk_usd": 30,
-  "risk_note": "TEPAT 2.00%: L1 14.5 poin ($14.5) + L2 15.5 poin ($15.5) = $30 = 2% real $1500.",
+  "risk_poin": 12.06,
+  "risk_usd": 24.12,
+  "risk_note": "Risk turun ke $24.12 = 1.61% real (dari $30/2.00%) setelah SL diperketat dari 4126.5.",
   "tickets": [
     "5291072240",
     "5291072243"
@@ -24,40 +24,42 @@
   },
   "layers": [
     {
-      "name": "L1 STOP 4112 (0.01)",
+      "name": "L1 SELL 4111.93",
       "dir": "SELL",
-      "entry": 4112,
-      "sl": 4126.5,
+      "entry": 4111.927,
+      "sl": 4123.5,
       "tp1": 4073.5,
       "tp2": 4040,
       "lot": 0.01,
-      "ticket": 5291072240
+      "ticket": 5291072240,
+      "status": "FILLED"
     },
     {
-      "name": "L2 STOP runner 4111 (0.01)",
+      "name": "L2 SELL runner 4110.95",
       "dir": "SELL",
-      "entry": 4111,
-      "sl": 4126.5,
+      "entry": 4110.95,
+      "sl": 4123.5,
       "tp1": 4073.5,
       "tp2": 4040,
       "lot": 0.01,
-      "ticket": 5291072243
+      "ticket": 5291072243,
+      "status": "FILLED"
     }
   ],
-  "syarat": "Trigger = 4112 ditembus (breakdown swing M15 4113.2). Valid kalau M15 close < 4113.2. Kalau harga balik ke atas 4125.5 sebelum trigger -> BATALKAN.",
+  "syarat": "Sudah terisi (breakdown 4113.2). MTF SEARAH BEAR 5TF, harga di mid 4114.6 = chop. Hold selama M15 tidak close > 4123.5.",
   "timing": {
-    "mode": "stop",
+    "mode": "filled",
     "zone": [
       4112,
       4111
     ],
     "max_chase_poin": 4,
-    "atr_default": 6,
+    "atr_default": 6.4,
     "expire_at": "2026-10-22T04:00:00+07:00",
     "confirm": "M15 close < 4113.2 + PINE SELL setelah trigger",
     "stop_alternative": "none"
   },
-  "status": "TERPASANG DI DEMO - SELL STOP 4112 / 4111, menunggu breakdown",
-  "cancel": "Batal jika: harga balik > 4126.5 sebelum trigger, tidak ada breakdown sampai 22 Okt 04:00 WIB, atau jatah habis.",
+  "status": "POSISI AKTIF 2 layer SELL 0.01 | SL 4123.5 | TP 4073.5 / 4040",
+  "cancel": "Cut/tutup jika M15 close > 4123.5 (SL otomatis) atau momentum bull kuat (close > 4120 dengan body >60%).",
   "catatan": "Setelah L1 TP 4073.5: geser SL L2 ke BE 4111. Jangan tambah layer ke-3."
 }
