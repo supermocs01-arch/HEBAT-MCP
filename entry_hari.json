@@ -1,12 +1,12 @@
 {
-  "tanggal": "2026-10-21",
-  "entry_ke": 1,
-  "sisa_jatah": 2,
-  "loss_count": 1,
-  "modal": "Rp24.000.000 STANDARD (Exness, akun IDR) + floating dari posisi BUY 1.0 lot avg 4088.32 (HOLD, akun uji terpisah)",
-  "lot": "Kontrak 100oz KONFIRMASI (1 lot = $100/pip). Batas 2% = $30: SL10 -> 0.03, SL30 -> 0.01, SL>30 TIDAK BISA",
+  "tanggal": "2026-10-22",
+  "entry_ke": 0,
+  "sisa_jatah": 3,
+  "loss_count": 0,
+  "modal": "Rp24.000.000 STANDARD (Exness, akun IDR) + posisi BUY 1.0 lot akun uji terpisah (abaikan)",
+  "lot": "Kontrak 100oz (0.01 = $1/poin). Batas 2% = $30",
   "spread": 0.2,
-  "note": "Loss #1 21 Okt: SELL STOP breakdown 4112/4111 (2 layer 0.01) kena SL 4123.5 pukul 14:26 WIB = -$27.2. Entry saat PINE FLAT (tanpa konfirmasi) = MISS #16. Sisa jatah 2; 1 loss lagi = STOP TOTAL hari ini.",
-  "reset_berikutnya": "2026-10-22 (jatah 3, loss 0)",
-  "last_update": "2026-10-21 14:32 WIB"
+  "note": "RESET 22 Okt (jatah 3, loss 0). Kemarin: loss breakdown -$27 (MISS #16), lalu TP harian +Rp1.331.703. Target harian baru: Rp1.500.000 (realized + floating semua layer).",
+  "reset_berikutnya": "2026-10-23 (jatah 3, loss 0)",
+  "last_update": "2026-10-22 13:20 WIB"
 }
