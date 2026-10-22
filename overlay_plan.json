@@ -1,5 +1,5 @@
 {
-  "active": true,
+  "active": false,
   "manual": true,
   "title": "XAU SELL LIMIT PREMIUM 4136 / 4141 (retest supply)",
   "info": "Limit premium 4135-4144 (retest-sell 14.5-25% leg 4073.5-4155.6). D1/H4 BEAR, H1/M15 BULL LALU. KEDUANYA TERISI 18:32/18:43.",
@@ -49,13 +49,19 @@
     }
   ],
   "syarat": "Terisi. PINE FLAT saat fill -> kelola ketat (cut kalau M15 close > 4141.4 tanpa reaksi).",
-  "status": "AKTIF - 2 layer terisi, floating profit",
-  "catatan": "L1 TP 4096 (40 poin). L2 runner 4041; guardian kunci SL 4106 saat harga <= 4071. Setelah L1 TP -> SL L2 ke BE 4141.",
+  "status": "SELESAI - TP HARIAN Rp1.331.703 (2 layer ditutup di 4091,5)",
+  "catatan": "Selesai. Target harian berikutnya: Rp1.500.000 (total semua layer).",
   "timing": {
     "mode": "filled",
     "max_chase_poin": 4,
     "atr_default": 6.4,
     "expire_at": "2026-10-22T04:00:00+07:00"
   },
-  "last_update": "2026-10-22 10:05 WIB"
+  "last_update": "2026-10-22 10:05 WIB",
+  "result": {
+    "outcome": "TP",
+    "pnl_idr": 1331703,
+    "closed_at": "2026-10-22T10:24:00+07:00",
+    "note": "Target 1,3jt kena; rule baru 1,5jt dipasang setelahnya"
+  }
 }

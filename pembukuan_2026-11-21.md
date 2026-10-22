@@ -92,3 +92,16 @@ Skor per layer: **TEPAT / TERLALU CEPAT / TERLAMBAT**
 | Posisi | L1 4136 +8.4 poin / L2 4141 +9.2 poin (floating hijau, sebelumnya sempat +11.7) |
 | Keputusan | HOLD - SL 4148.5 tidak diubah, TP 4096/4041 jalan, guardian kunci 4071 aktif |
 | Rasional | Sell searah D1 bear + zona premium + sweep buy-side; momen jangka pendek masih BULL => hanya pantau batas: M15 close > 4141.4 = waspada, > 4148.5 = SL |
+
+
+## Hasil 22 Okt 2026 — SELL LIMIT premium 4136/4141 -> TP HARIAN (semua layer)
+| Item | Nilai |
+|---|---|
+| Entry | L1 4136,0 / L2 4141,0 (0.01 + 0.01) |
+| SL | 4148,5 (risk $20 = 1,33%) |
+| TP individual | 4096 (40 poin) / 4041 (100 poin) - TIDAK tercapai |
+| Exit | **TP harian kolektif Rp1.331.703 di 4091,5** (10:24) - guardian tutup SEMUA layer |
+| P/L | L1 +Rp622.002, L2 +Rp709.701 = **+Rp1.331.703** |
+| Equity | Rp2.067.944 -> Rp3.397.649 |
+| Catatan | Aturan baru: target TP harian = Rp1.500.000 (prioritas terbesar), dipasang 13:12 WIB setelah trade ini |
+| Pelajaran | Target kolektif bekerja; TP individual terlalu jauh untuk 1 sesi; bug filling 10030 sempat menunda cut di 1,345jt |
