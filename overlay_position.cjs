@@ -20,6 +20,27 @@ try {
 
 const evGuard = require('./event_guard.cjs');
 
+// MT5 REAL-TIME (22 Okt): posisi & pending langsung dari bridge snapshot
+// -> entryan yang benar-benar ada di MT5 tampil otomatis, bukan dari file manual
+let MT5 = { positions: [], orders: [], account: null };
+try {
+  const S = JSON.parse(fs.readFileSync('C:/HEBAT/runtime/mt5_snapshot.json', 'utf8'));
+  if (S.ok) MT5 = { positions: S.positions || [], orders: S.orders || [], account: S.account || null };
+} catch (e) {}
+
+// Label live & harga = dari MT5 kalau ada (biar tidak stale), fallback posisi.json
+const mt5Bid = (() => { try { const t = JSON.parse(fs.readFileSync('C:/HEBAT/runtime/mt5_snapshot.json', 'utf8')).tick; return t ? (t.bid + t.ask) / 2 : 0; } catch { return 0; } })();
+let liveLabel, currentPriceLive;
+if (MT5.positions.length) {
+  const dirs = MT5.positions.map(p => p.type);
+  const uni = dirs.every(d => d === 'SELL') ? 'SELL' : (dirs.every(d => d === 'BUY') ? 'BUY' : 'MIX');
+  liveLabel = 'MT5 [' + uni + ' x' + dirs.length + ']';
+  currentPriceLive = mt5Bid;
+} else if (MT5.account) {
+  liveLabel = 'MT5 [NO POSITION]';
+  currentPriceLive = mt5Bid;
+}
+
 // RISK + EVENT (20 Okt): tampilkan risiko posisi vs batas 2% dan countdown event
 let riskLine = '', riskLvl = 0;
 try {
@@ -27,6 +48,22 @@ try {
   const maxUsd = Number((R.risk_management || {}).max_risk_per_trade_usd) || 30;
   const oz = Number((R.lot_calculation || {}).contract_size_oz) || 100;
   const modalUsd = Number((R.account || {}).modal_usd_estimate) || 1500;
+  // 22 Okt: kalau MT5 punya posisi, risiko dihitung DARI MT5 (bukan file manual)
+  if (MT5.positions.length) {
+    let usd = 0, lots = 0, pipsSum = 0;
+    MT5.positions.forEach(p => {
+      const dist = Math.abs((p.price_open || 0) - (p.sl || 0));
+      if (dist > 0) usd += (p.volume || 0) * oz * dist;
+      lots += (p.volume || 0);
+      pipsSum += dist;
+    });
+    if (usd > 0) {
+      const avgPips = pipsSum / MT5.positions.length;
+      const pct = (usd / modalUsd * 100).toFixed(1);
+      riskLine = 'RISK (MT5): ' + lots.toFixed(2) + ' lot x avg ' + avgPips.toFixed(1) + ' = $' + usd.toFixed(1) + ' (' + pct + '% modal, batas $' + maxUsd + ')';
+      riskLvl = usd > maxUsd ? 2 : (usd > maxUsd * 0.6 ? 1 : 0);
+    }
+  } else {
   const lots = Array.isArray(P.layers) && P.layers.length
     ? P.layers.reduce((s, l) => s + (Number(l.lot) || 0), 0)
     : (Number(P.lot) || (P.active ? 0.01 : 0));
@@ -36,6 +73,7 @@ try {
     const pct = (usd / modalUsd * 100).toFixed(0);
     riskLine = 'RISK: ' + lots.toFixed(2) + ' lot x ' + pips.toFixed(1) + ' = $' + usd + ' (' + pct + '% modal, batas $' + maxUsd + ')';
     riskLvl = usd > maxUsd ? 2 : (usd > maxUsd * 0.6 ? 1 : 0);
+  }
   }
 } catch (e) {}
 
@@ -47,7 +85,7 @@ const D = JSON.stringify({
   akun: AKUN,
   pTitle: 'XAUUSD M15 • ' + AKUN + ' • ' + (P.active ? (/SELL/i.test(P.title || '') ? 'SELL' : 'BUY') + ' LIVE' : 'NO POSITION'),
   pInfo: OV.info || '',
-  currentPrice: P.current_price || OV.current_price || 4155.5,
+  currentPrice: currentPriceLive || P.current_price || OV.current_price || 4155.5,
   // LIVE posisi (dari posisi.json)
   liveActive: P.active ? true : false,
   liveDir: /SELL/i.test(P.title || '') ? 'SELL' : 'BUY',
@@ -80,7 +118,19 @@ const D = JSON.stringify({
   riskLvl: riskLvl,
   evList: evList,
   evWin: evWin,
-  evText: evText
+  evText: evText,
+  mt5Acct: MT5.account ? (MT5.account.login + ' ' + MT5.account.currency) : '',
+  mt5Equity: MT5.account ? MT5.account.equity : 0,
+  mt5Profit: MT5.account ? MT5.account.profit : 0,
+  mt5LiveLabel: liveLabel || (P.active ? (/SELL/i.test(P.title || '') ? 'LIVE SELL (file)' : 'LIVE BUY (file)') : 'NO POSITION'),
+  mt5Positions: MT5.positions.map(p => ({
+    t: p.ticket, dir: p.type, vol: p.volume, entry: p.price_open, sl: p.sl, tp: p.tp,
+    pnl: Math.round(p.profit), cmt: (p.comment || '').slice(0, 24)
+  })),
+  mt5Orders: MT5.orders.map(o => ({
+    t: o.ticket, dir: o.type, vol: o.volume_current, entry: o.price_open, sl: o.sl, tp: o.tp,
+    cmt: (o.comment || '').slice(0, 24)
+  }))
 });
 const code = `(function(){
   var D = ${D};
@@ -101,8 +151,10 @@ const code = `(function(){
   el('⚡ SMC SWING PATEN v2.2', 'color:#FFD700;font-weight:bold;font-size:14px;text-align:center;');
   var clock = el('', 'color:#FFFF00;font-size:13px;text-align:center;margin-bottom:4px;'); clock.id='smc_clock';
   var sess = el('', 'font-size:12px;text-align:center;margin-bottom:6px;padding:2px;border-radius:4px;font-weight:bold;'); sess.id='smc_session';
-  el('XAUUSD M15 • '+(D.akun || 'AKUN STANDARD')+' • '+(D.liveActive ? 'LIVE ['+D.liveDir+']' : 'NO POSITION'), 'color:#888;font-size:11px;text-align:center;');
-  el('Current: <b style="color:#FFD700;">'+D.currentPrice.toFixed(2)+'</b> &nbsp; Float: <b style="color:#00FF00;">+'+D.liveFloat+' pip</b>', 'color:#fff;font-weight:bold;font-size:12px;text-align:center;margin-bottom:6px;');
+  el('XAUUSD M15 • ' + (D.mt5Acct ? 'MT5 ' + D.mt5Acct : (D.akun || 'AKUN STANDARD')) + ' • ' + D.mt5LiveLabel, 'color:#888;font-size:11px;text-align:center;');
+  el('Current: <b style="color:#FFD700;">' + D.currentPrice.toFixed(2) + '</b> &nbsp; ' + (D.mt5Acct
+    ? 'P/L: <b style="color:' + (D.mt5Profit >= 0 ? '#00FF00' : '#FF5252') + ';">' + (D.mt5Profit>=0?'+':'') + Math.round(D.mt5Profit).toLocaleString('id-ID') + '</b> ' + (D.mt5Acct.match(/IDR/) ? 'Rp' : '')
+    : 'Float: <b style="color:#00FF00;">+' + D.liveFloat + ' pip</b>'), 'color:#fff;font-weight:bold;font-size:12px;text-align:center;margin-bottom:6px;');
   if(D.riskLine){
     var rc = D.riskLvl>=2 ? '#FF5252' : (D.riskLvl>=1 ? '#FFA500' : '#66BB6A');
     el(D.riskLine, 'color:'+rc+';font-size:10px;text-align:center;margin-bottom:4px;font-weight:bold;');
@@ -111,22 +163,22 @@ const code = `(function(){
   evEl.id = 'smc_event';
   sep();
 
-  // LIVE POSITION (dari posisi.json)
-  if(D.liveActive){
-    el('LIVE: '+D.liveDir+' '+D.liveEntry, 'color:#26A69A;font-weight:bold;font-size:12px;');
-    el('SL: <b style="color:#FF5252;">'+D.liveSl+'</b> &nbsp; TP: '+D.liveTp1+' → '+D.liveTp2+' → '+D.liveTp3+' → '+D.liveRunner, 'font-size:11px;margin-top:2px;');
-    el('Jatah: <b>'+D.jatah+'</b>/3 · Loss: <b>'+D.jatahLoss+'</b> · PIN: '+D.liveStatus, 'font-size:10px;color:#FFA500;');
-  } else {
-    el('LIVE: — (NO POSITION)', 'font-size:11px;color:#888;');
+  // LIVE fallback (posisi.json) - hanya kalau MT5 tidak punya posisi
+  if(!D.mt5Positions.length){
+    if(D.liveActive){
+      el('LIVE: '+D.liveDir+' '+D.liveEntry, 'color:#26A69A;font-weight:bold;font-size:12px;');
+      el('SL: <b style="color:#FF5252;">'+D.liveSl+'</b> &nbsp; TP: '+D.liveTp1+' → '+D.liveTp2+' → '+D.liveTp3+' → '+D.liveRunner, 'font-size:11px;margin-top:2px;');
+      el('Jatah: <b>'+D.jatah+'</b>/3 · Loss: <b>'+D.jatahLoss+'</b> · PIN: '+D.liveStatus, 'font-size:10px;color:#FFA500;');
+    } else {
+      el('LIVE: — (NO POSITION)', 'font-size:11px;color:#888;');
+    }
+    sep();
   }
-  sep();
 
-  // PLAN (A: tidak ada / B: BUY 4353) + MACRO
+  // PLAN (A/B) + MACRO
   if(D.planEntry && D.planEntry !== '—'){
     el('PLAN A: SELL LIMIT '+D.planEntry, 'color:#FF5252;font-weight:bold;font-size:12px;');
     el('SL <b>'+D.planSl+'</b> &nbsp; TP1 <b>'+D.planTp1+'</b> &nbsp; TP2 <b>'+D.planTp2+'</b>', 'font-size:11px;');
-  } else {
-    el('PLAN A: — (SELL stale dihapus)', 'color:#888;font-size:11px;');
   }
   if(D.planBEntry && D.planBEntry !== '—'){
     el('PLAN B (WATCH): BUY LIMIT '+D.planBEntry+' 0.03', 'color:#64FF64;font-weight:bold;font-size:12px;');
@@ -137,9 +189,35 @@ const code = `(function(){
     D.macro.forEach(function(m){ el(' &bull; '+m.t+' — '+m.e, 'font-size:10px;color:#FFB74D;'); });
   }
 
-  // WATCHLIST / NO-ENTRY STATUS (tampil meski tidak ada order)
-  if(D.watchStatus && (!D.planEntry || D.planEntry === '—')){
+  sep();
+
+  // MT5 REAL-TIME (dari bridge snapshot - entrian aktif yang sebenarnya)
+  const pnlColor = x => x >= 0 ? '#00E676' : '#FF5252';
+  if(D.mt5Acct){
+    el('MT5 ' + D.mt5Acct + ' | Equity', 'color:#4FC3F7;font-weight:bold;font-size:11px;');
+    el('<b style="color:#FFD700;">' + Number(D.mt5Equity).toLocaleString('id-ID') + '</b> <span style="color:' + pnlColor(D.mt5Profit) + ';">(' + (D.mt5Profit>=0?'+':'') + Math.round(D.mt5Profit) + ')</span>', 'font-size:11px;text-align:right;');
+  }
+  if(D.mt5Positions.length){
+    el('POSISI MT5 (' + D.mt5Positions.length + '):', 'color:#26A69A;font-weight:bold;font-size:11px;');
+    D.mt5Positions.forEach(function(p){
+      el(p.dir + ' ' + p.vol.toFixed(2) + ' @ <b>' + p.entry + '</b> #' + p.t,
+        'font-size:10px;color:' + pnlColor(p.pnl) + ';');
+      el('&nbsp;&nbsp;SL ' + p.sl + ' → TP ' + p.tp + ' | ' + (p.pnl>=0?'+':'') + p.pnl.toLocaleString('id-ID'), 'font-size:9px;color:#90A4AE;');
+    });
+  } else if(D.mt5Acct){
+    el('POSISI MT5: — (kosong)', 'font-size:10px;color:#888;');
+  }
+  if(D.mt5Orders.length){
+    el('PENDING MT5 (' + D.mt5Orders.length + '):', 'color:#FFB74D;font-weight:bold;font-size:11px;');
+    D.mt5Orders.forEach(function(o){
+      el(o.dir + ' ' + o.vol.toFixed(2) + ' @ <b>' + o.entry + '</b> SL ' + o.sl + ' TP ' + o.tp + ' #' + o.t, 'font-size:10px;color:#FFE082;');
+    });
+  }
+
+  // WATCHLIST / NO-ENTRY STATUS
+  if(D.watchStatus){
     sep();
+
     el('WATCH: '+D.watchStatus, 'color:#FFD700;font-weight:bold;font-size:11px;');
     if(D.watchTitle) el(D.watchTitle, 'font-size:10px;color:#fff;margin-top:2px;');
     if(D.watchSyarat) el(D.watchSyarat, 'font-size:10px;color:#FFB74D;margin-top:2px;');

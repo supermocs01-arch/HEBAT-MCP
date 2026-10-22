@@ -1,5 +1,6 @@
 const http = require('http');
 const fs = require('fs');
+const { execFile } = require('child_process');
 const chartLock = require('./chart_lock.cjs');
 const eventGuard = require('./event_guard.cjs');
 
@@ -23,6 +24,27 @@ let riskWarnKey = null;
 let stopWarnDate = null;
 let blockEventId = null;
 const timingState = {};
+
+// OVERLAY AUTO-REFRESH (22 Okt): MT5 berubah -> inject ulang overlay (maks 1x/menit)
+let mt5Sig = null;
+let mt5InjectAt = 0;
+function overlayAutoRefresh() {
+  try {
+    const snap = readJson('C:/HEBAT/runtime/mt5_snapshot.json', {});
+    const posSig = (snap.positions || []).map(p => [p.ticket, p.sl, p.tp].join(':')).join('|');
+    const ordSig = (snap.orders || []).map(o => [o.ticket, o.sl, o.tp].join(':')).join('|');
+    const sig = posSig + '#' + ordSig;
+    if (sig !== mt5Sig && Date.now() - mt5InjectAt > 60000) {
+      const changed = mt5Sig !== null;
+      mt5Sig = sig;
+      mt5InjectAt = Date.now();
+      if (changed) {
+        log('[OVERLAY] MT5 berubah -> refresh overlay');
+        execFile('node', ['C:/HEBAT/overlay_position.cjs'], () => {});
+      }
+    }
+  } catch (e) {}
+}
 
 // ===== RISK GUARD (20 Okt): lot x 100 oz x SL poin harus <= 2% equity =====
 // Equity diambil dari snapshot MT5 (runtime/mt5_snapshot.json) kalau masih fresh.
@@ -319,6 +341,6 @@ async function check() {
   if (!p0.length) log('  Tidak ada plan aktif / posisi aktif saat ini');
   p0.forEach(p => log('  [' + p.id + '] ' + p.name + ' ' + p.dir + ' entry=' + p.entry + ' SL=' + p.sl + ' TP1=' + p.tp1 + ' TP2=' + p.tp2 + ' (' + p.state + ')'));
   await check();
-  setInterval(check, 60000);
+  setInterval(() => { overlayAutoRefresh(); check(); }, 60000);
   setTimeout(() => process.exit(0), 24 * 60 * 60 * 1000);
 })();

@@ -39,6 +39,7 @@
 | `laporan_harian.cjs` | Tulis ringkasan harian ke `laporan/YYYY-MM-DD.md`. |
 | `test_sistem.cjs` | Smoke test: audit + PINE + overlay DOM + monitor + event. Exit code ≠0 kalau ada FAIL. |
 | `services/mt5_bridge.py` | Bridge MT5 **READ-ONLY**: tulis `runtime/mt5_snapshot.json` (akun, posisi, pending order, tick) tiap 10 dtk. Mode shadow. |
+| `services/mt5_order.py` | **ORDER tool MT5**: `list / buy|sell market|limit|stop / set-sl / set-tp / modify-order / cancel / close` — real-time ke MT5 (default demo; `--real` untuk real). Log → `services/mt5_orders.log`. |
 | `services/mt5_test.py` | Diagnostik MT5 read-only (login, akun, posisi, simbol XAU). |
 | `risk_live.cjs` | Tabel risiko dari **equity MT5** (2%) + posisi terbuka. |
 | `entry_timing.cjs` | Guard ketepatan entry: TUNGGU / DI_ZONA / TELAT / INVALID / EXPIRED. |
@@ -93,6 +94,8 @@ Restart TV                 -> taskkill TradingView.exe, lalu jalankan hi_fitra.c
 12. **"Tambah kedalam chart" dari Pine Editor** sering butuh 2 langkah: (a) kalau skrip punya perubahan belum tersimpan, TV menampilkan dialog **"Simpan skrip ini sebelum menambahkannya?"** → klik tombol **Simpan** di dialog (bukan yang di header), baru indikator masuk; (b) kliknya harus mouse event asli (`ui mouse` di tengah `getBoundingClientRect`), klik JS (`ui click`) sering tidak register. **Screenshot region "chart" itu di-scale** — jangan ambil koordinat klik dari gambar, selalu ambil rect dari DOM via `ui eval`. Untuk bikin file baru tanpa menimpa yang lama: dropdown judul skrip → **"Buat salinan…"**.
 13. **`config.json` menyimpan `pineStudyId`** — kalau indikator SMC dihapus/di-add ulang, id entity BERUBAH (19 Okt: `lX3BtG` → `ypai3y`) dan WAJIB di-update, kalau tidak skrip pipeline baca study salah. Cek `node C:\HEBAT\tradingview-mcp\src\cli\index.js state` untuk id terbaru, verifikasi dengan `node C:\HEBAT\baca_pine.cjs`.
 14. **MT5 bridge (20 Okt 2026)** — jalankan terminal **non-admin** kalau perlu otomasi (SendKeys hanya sampai ke window non-elevated). AutoTrading OFF = `retcode 10027`; nyalakan dengan **Ctrl+E** lalu cek `terminal_info().trade_allowed`. Kredensial demo disimpan di `runtime/mt5_auth.json` (gitignored) — JANGAN commit. Bridge hanya baca; kalau akun MT5 = demo sementara `posisi.json` = real, risk guard otomatis pakai angka config (bukan equity demo).
+15. **Overlay = MT5-FIRST (22 Okt 2026)** — overlay (`overlay_position.cjs`) sekarang membaca `runtime/mt5_snapshot.json`: header, P/L, equity, POSISI MT5 & PENDING MT5 ditampilkan dari data MT5 asli; blok `posisi.json` hanya fallback saat MT5 kosong (jebakan lama: header menampilkan BUY 4088 stale akibat `posisi.json`, dan RISK 1.0 lot salah). **ALERAN: scan `analisa_gabungan` bisa MENIMPA `overlay_plan.json`** (plan premium 4136/4141 sempat tertimpa generated 4167.3) — guard baru: scan tidak menimpa kalau MT5 punya posisi/pending; sisanya `manual: true`.
+16. **SELL LIMIT vs SELL STOP di `mt5_order.py`** — penting pakai `ORDER_TYPE_*_LIMIT/STOP` untuk pending; memakai `type` market (0/1) dengan `TRADE_ACTION_PENDING` = retcode `10013 Invalid request`.
 
 ## 7. OPEN QUESTIONS (prioritas selesaikan)
 - ✅ Akun sekarang **Rp24.000.000 (Exness, akun IDR)** per 7 Okt 2026 (sebelumnya Rp2.500.000).

@@ -534,13 +534,21 @@ for (const o of others) {
         // GUARD MANUAL: plan manual (manual:true & active) tidak pernah ditimpa sinyal auto
         // (diaktifkan utk mode cuti Fitra 13-23 Sep — SELALU dipertahankan sampai manual::false)
         const manualPlan = prevPlan && prevPlan.active === true && prevPlan.manual === true;
-        if (!manualPlan && (plan.active || !prevPlan || !prevPlan.active)) {
+        // GUARD MT5 (22 Okt): kalau MT5 punya posisi/pending, plan jangan ditimpa scan (jebakan: plan premium 4136/4141 tertimpa plan generated 4167.3)
+        let mt5Busy = false;
+        try {
+          const snapM5 = JSON.parse(fs.readFileSync('C:/HEBAT/runtime/mt5_snapshot.json', 'utf8'));
+          mt5Busy = snapM5.ok && ((snapM5.positions || []).length > 0 || (snapM5.orders || []).length > 0);
+        } catch (e) {}
+        if (!manualPlan && !mt5Busy && (plan.active || !prevPlan || !prevPlan.active)) {
           fs.writeFileSync(PLAN_FILE, JSON.stringify(plan, null, 1));
           if (plan.active && plan.title.indexOf('ZONA BEKAS') < 0) console.log('LIMIT DIPASANG KE OVERLAY: ' + plan.title);
           else if (plan.active) console.log('OVERLAY: ' + plan.title);
           else console.log('Overlay: tidak ada limit baru (status TUNGGU)');
         } else {
-          console.log('Overlay: plan manual aktif dipertahankan (' + prevPlan.title + ') - scan tidak menimpa');
+          console.log(mt5Busy
+            ? 'Overlay: plan tidak ditimpa (MT5 punya posisi/pending)'
+            : 'Overlay: plan manual aktif dipertahankan (' + prevPlan.title + ') - scan tidak menimpa');
         }
         execFile('node', ['C:/HEBAT/overlay_position.cjs'], () => {});
       } catch (e) { console.log('Plan err: ' + e.message); }
