@@ -55,6 +55,10 @@ def connect():
 
 def send(req, label):
     r = mt5.order_send(req)
+    if r is None:
+        log(f"{label} -> request ditolak: {mt5.last_error()}")
+        print("  GAGAL: order_send NewsrNone, last_error", mt5.last_error())
+        raise SystemExit(4)
     log(f"{label} -> retcode {r.retcode} {r.comment} (order {r.order}, deal {r.deal})")
     if r.retcode != mt5.TRADE_RETCODE_DONE:
         print("  GAGAL:", r.retcode, r.comment)
@@ -100,23 +104,23 @@ def main():
             ("buy", "stop"): mt5.ORDER_TYPE_BUY_STOP,
             ("sell", "stop"): mt5.ORDER_TYPE_SELL_STOP,
         }
-        req = {"action": mt5.TRADE_ACTION_PENDING, "symbol": SYMBOL,
-               "type": type_map.get((side, mode)), "magic": MAGIC, "type_time": mt5.ORDER_TIME_GTC}
+        req = {"symbol": SYMBOL, "magic": MAGIC}
         if mode == "market":
-            req.update({"action": mt5.TRADE_ACTION_DEAL, "volume": float(rest[1]),
-                        "price": mt5.symbol_info_tick(SYMBOL).ask if act == "buy" else mt5.symbol_info_tick(SYMBOL).bid,
-                        "deviation": 30, "type_filling": mt5.ORDER_FILLING_RETURN})
+            req.update({"action": mt5.TRADE_ACTION_DEAL,
+                        "type": mt5.ORDER_TYPE_BUY if side == "buy" else mt5.ORDER_TYPE_SELL,
+                        "volume": float(rest[1]),
+                        "price": mt5.symbol_info_tick(SYMBOL).ask if side == "buy" else mt5.symbol_info_tick(SYMBOL).bid,
+                        "deviation": 30, "type_filling": mt5.ORDER_FILLING_FOK})
             if len(rest) > 2:
                 req["sl"] = float(rest[2])
             if len(rest) > 3:
                 req["tp"] = float(rest[3])
             label = f"{act} MARKET {req['volume']}"
         else:
-            req["volume"] = float(rest[1])
-            req["price"] = float(rest[2])
-            req["sl"] = float(rest[3])
-            req["tp"] = float(rest[4])
-            req["type_filling"] = mt5.ORDER_FILLING_RETURN
+            req.update({"action": mt5.TRADE_ACTION_PENDING, "type": type_map.get((side, mode)),
+                        "type_time": mt5.ORDER_TIME_GTC, "volume": float(rest[1]),
+                        "price": float(rest[2]), "sl": float(rest[3]), "tp": float(rest[4]),
+                        "type_filling": mt5.ORDER_FILLING_RETURN})
             label = f"{act} {'LIMIT' if mode == 'limit' else 'STOP'} {req['volume']} @ {req['price']}"
         send(req, label)
 
@@ -159,7 +163,7 @@ def main():
         send({"action": mt5.TRADE_ACTION_DEAL, "symbol": SYMBOL, "position": p.ticket, "volume": p.volume,
               "type": mt5.ORDER_TYPE_BUY if p.type == mt5.POSITION_TYPE_SELL else mt5.ORDER_TYPE_SELL,
               "price": t.ask if p.type == mt5.POSITION_TYPE_SELL else t.bid,
-              "deviation": 30, "magic": MAGIC, "type_filling": mt5.ORDER_FILLING_RETURN},
+              "deviation": 30, "magic": MAGIC, "type_filling": mt5.ORDER_FILLING_FOK},
              f"close posisi {p.ticket}")
 
     else:
