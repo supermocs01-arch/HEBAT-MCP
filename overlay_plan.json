@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-23T00:11:03.415Z",
+  "updated": "2026-10-23T00:12:50.039Z",
   "manual": true,
   "active": true,
   "mode": "swing",
@@ -11,11 +11,11 @@
       "type": "SELL LIMIT",
       "entry": 4107.9,
       "sl": 4121,
-      "tp1": 4067.9,
+      "tp1": 4055.5,
       "lot": 0.01,
       "risk_poin": 13.1,
-      "tp1_poin": 40,
-      "rr": "1:3.1",
+      "tp1_poin": 52.4,
+      "rr": "1:4",
       "role": "TP1 -> tutup"
     },
     {
@@ -35,7 +35,7 @@
   "konfluensi": "FIBO 50% 4107,9 + mid H1 4110,6 + mid M30 4105,5 + zona premium (mid range 4081,7)",
   "risk_total": "26,2 poin x 0.01 = $26,2 = 1,75% modal (batas 2% = $30)",
   "syarat": "Idealnya saat harga masuk zona muncul PINE M15 SELL + CHoCH-S. Kalau D1 flip BULLISH -> cancel.",
-  "aturan": "SL otomatis ke BE setelah +30 poin (guardian_be.py). TIDAK ada auto-close 1,5jt. L1 TP 4067,9; L2 runner 4007,9.",
+  "aturan": "TP1 1:4 (52,4 poin). SL otomatis ke BE setelah +30 poin (guardian_be.py). Runner L2 100 poin (1:7,6). TIDAK ada auto-close 1,5jt.",
   "invalidasi": "Cancel jika H1 close di atas 4121 sebelum fill (breakout premium gagal) atau D1 flip bullish.",
   "jatah": "reset 23 Okt: 3 entry, 0 loss"
 }
