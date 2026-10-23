@@ -1,67 +1,41 @@
 {
-  "active": false,
+  "updated": "2026-10-23T00:11:03.415Z",
   "manual": true,
-  "title": "XAU SELL LIMIT PREMIUM 4136 / 4141 (retest supply)",
-  "info": "Limit premium 4135-4144 (retest-sell 14.5-25% leg 4073.5-4155.6). D1/H4 BEAR, H1/M15 BULL LALU. KEDUANYA TERISI 18:32/18:43.",
-  "sl": "4148.5",
-  "slNote": "di atas zona supply 4131.9 + buffer",
-  "tp1": "4096.0",
-  "tp1Note": "40 poin = 1:3.2 dari L1",
-  "tp2": "4041.0",
-  "tp2Note": "100 poin runner. Lock profit di 4071 -> SL L2 4106",
-  "lot": 0.02,
-  "risk_usd": 20,
-  "risk_note": "Total $20 = 1.33% real $1500.",
-  "tickets": [
-    "5291995867",
-    "5291995888"
-  ],
-  "plan_a_sell": {
-    "entry": 4136,
-    "sl": 4148.5,
-    "tp1": 4096,
-    "tp2": 4041
-  },
+  "active": true,
+  "mode": "swing",
+  "bias": "SELL di PREMIUM - 4TF BEARISH (D1/H4/H1/M15). Harga di diskon ekstrem 4021-4025, tunggu retest 4107,9",
   "layers": [
     {
-      "name": "L1 SELL LIMIT 4136",
-      "dir": "SELL",
-      "mode": "limit",
-      "entry": 4136,
-      "sl": 4148.5,
-      "tp1": 4096,
-      "tp2": 4041,
+      "name": "L1",
+      "ticket": 5298075518,
+      "type": "SELL LIMIT",
+      "entry": 4107.9,
+      "sl": 4121,
+      "tp1": 4067.9,
       "lot": 0.01,
-      "ticket": 5291995867,
-      "status": "FILLED"
+      "risk_poin": 13.1,
+      "tp1_poin": 40,
+      "rr": "1:3.1",
+      "role": "TP1 -> tutup"
     },
     {
-      "name": "L2 SELL LIMIT runner 4141",
-      "dir": "SELL",
-      "mode": "limit",
-      "entry": 4141,
-      "sl": 4148.5,
-      "tp1": 4096,
-      "tp2": 4041,
+      "name": "L2",
+      "ticket": 5298075541,
+      "type": "SELL LIMIT",
+      "entry": 4107.9,
+      "sl": 4121,
+      "tp2": 4007.9,
       "lot": 0.01,
-      "ticket": 5291995888,
-      "status": "FILLED"
+      "risk_poin": 13.1,
+      "tp2_poin": 100,
+      "rr": "1:7.6",
+      "role": "runner 100 poin"
     }
   ],
-  "syarat": "Terisi. PINE FLAT saat fill -> kelola ketat (cut kalau M15 close > 4141.4 tanpa reaksi).",
-  "status": "SELESAI - TP HARIAN Rp1.331.703 (2 layer ditutup di 4091,5)",
-  "catatan": "Selesai. Target harian berikutnya: Rp1.500.000 (total semua layer).",
-  "timing": {
-    "mode": "filled",
-    "max_chase_poin": 4,
-    "atr_default": 6.4,
-    "expire_at": "2026-10-22T04:00:00+07:00"
-  },
-  "last_update": "2026-10-22 10:05 WIB",
-  "result": {
-    "outcome": "TP",
-    "pnl_idr": 1331703,
-    "closed_at": "2026-10-22T10:24:00+07:00",
-    "note": "Target 1,3jt kena; rule baru 1,5jt dipasang setelahnya"
-  }
+  "konfluensi": "FIBO 50% 4107,9 + mid H1 4110,6 + mid M30 4105,5 + zona premium (mid range 4081,7)",
+  "risk_total": "26,2 poin x 0.01 = $26,2 = 1,75% modal (batas 2% = $30)",
+  "syarat": "Idealnya saat harga masuk zona muncul PINE M15 SELL + CHoCH-S. Kalau D1 flip BULLISH -> cancel.",
+  "aturan": "SL otomatis ke BE setelah +30 poin (guardian_be.py). TIDAK ada auto-close 1,5jt. L1 TP 4067,9; L2 runner 4007,9.",
+  "invalidasi": "Cancel jika H1 close di atas 4121 sebelum fill (breakout premium gagal) atau D1 flip bullish.",
+  "jatah": "reset 23 Okt: 3 entry, 0 loss"
 }

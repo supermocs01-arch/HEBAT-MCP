@@ -1,12 +1,12 @@
 {
-  "tanggal": "2026-10-22",
+  "tanggal": "2026-10-23",
   "entry_ke": 0,
   "sisa_jatah": 3,
   "loss_count": 0,
-  "modal": "Rp24.000.000 STANDARD (Exness, akun IDR) + posisi BUY 1.0 lot akun uji terpisah (abaikan)",
+  "modal": "Rp24.000.000 STANDARD (Exness, akun IDR)",
   "lot": "Kontrak 100oz (0.01 = $1/poin). Batas 2% = $30",
   "spread": 0.2,
-  "note": "RESET 22 Okt (jatah 3, loss 0). Kemarin: loss breakdown -$27 (MISS #16), lalu TP harian +Rp1.331.703. Target harian baru: Rp1.500.000 (realized + floating semua layer).",
-  "reset_berikutnya": "2026-10-23 (jatah 3, loss 0)",
-  "last_update": "2026-10-22 13:20 WIB"
+  "note": "RESET 23 Okt. 22 Okt: TP harian +Rp1.331.703 (realized). Limit 4107,9 dipasang 23 Okt 07:10.",
+  "reset_berikutnya": "2026-10-24 (jatah 3, loss 0)",
+  "last_update": "2026-10-23 07:12 WIB"
 }

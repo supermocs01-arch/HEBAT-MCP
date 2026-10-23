@@ -128,7 +128,7 @@ const D = JSON.stringify({
     pnl: Math.round(p.profit), cmt: (p.comment || '').slice(0, 24)
   })),
   mt5Orders: MT5.orders.map(o => ({
-    t: o.ticket, dir: o.type, vol: o.volume_current, entry: o.price_open, sl: o.sl, tp: o.tp,
+    t: o.ticket, dir: o.type, vol: (o.volume_current != null ? o.volume_current : o.volume), entry: o.price_open, sl: o.sl, tp: o.tp,
     cmt: (o.comment || '').slice(0, 24)
   }))
 });
@@ -250,17 +250,14 @@ const code = `(function(){
   }
   uc();
   window._smcRefresh=setInterval(uc,60000);
+  return !!document.getElementById('smc_overlay');
 })()`;
 
-http.get('http://127.0.0.1:9222/json', (res) => {
-  let d = '';
-  res.on('data', c => d += c);
-  res.on('end', () => {
-    const targets = JSON.parse(d);
-    const chart = targets.find(t => t.url && t.url.includes('/chart/') && !t.url.includes('doubleclick') && !t.url.includes('google'));
-    if (!chart) { console.log('Chart not found'); process.exit(1); }
-    const WebSocket = require('ws');
-    const ws = new WebSocket(chart.webSocketDebuggerUrl);
+const WebSocket = require('ws');
+
+function inject(target) {
+  return new Promise((resolve) => {
+    const ws = new WebSocket(target.webSocketDebuggerUrl);
     let id = 1;
     function send(m, p) {
       return new Promise(r => {
@@ -270,12 +267,28 @@ http.get('http://127.0.0.1:9222/json', (res) => {
         ws.send(JSON.stringify({ id: msgId, method: m, params: p || {} }));
       });
     }
+    ws.on('error', () => resolve(false));
     ws.on('open', async () => {
-      await send('Page.enable');
       await send('Runtime.enable');
-      await send('Runtime.evaluate', { expression: code });
-      console.log('Overlay updated: LIVE posisi + PLAN A/B + MACRO (data nyata)');
-      ws.close(); process.exit(0);
+      const res = await send('Runtime.evaluate', { expression: code, returnByValue: true });
+      const ok = !!(res && res.result && res.result.value);
+      if (!ok) console.log('EVAL:', JSON.stringify(res).slice(0,600));
+      ws.close();
+      resolve(ok);
     });
+  });
+}
+
+http.get('http://127.0.0.1:9222/json', (res) => {
+  let d = '';
+  res.on('data', c => d += c);
+  res.on('end', async () => {
+    const targets = JSON.parse(d);
+    const charts = targets.filter(t => t.url && t.url.includes('/chart/') && !t.url.includes('doubleclick') && !t.url.includes('google') && t.webSocketDebuggerUrl);
+    if (!charts.length) { console.log('Chart not found'); process.exit(1); }
+    let done = 0;
+    for (const c of charts) { if (await inject(c)) done++; }
+    console.log('Overlay updated di ' + done + '/' + charts.length + ' chart target: LIVE posisi + PLAN A/B + MACRO (data nyata)');
+    process.exit(done > 0 ? 0 : 1);
   });
 }).on('error', e => { console.error(e.message); process.exit(1); });
