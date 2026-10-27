@@ -1,26 +1,26 @@
 {
-  "updated": "2026-10-23T00:12:50.039Z",
+  "updated": "2026-10-27T00:52:58.098Z",
   "manual": true,
   "active": true,
-  "mode": "swing",
-  "bias": "SELL di PREMIUM - 4TF BEARISH (D1/H4/H1/M15). Harga di diskon ekstrem 4021-4025, tunggu retest 4107,9",
+  "mode": "swing-mingguan",
+  "bias": "D1/H4 BEARISH, H1/M15 pullback. Range baru 3975,7-4034,1 (mid 4004,9) -> harga PREMIUM tipis. SELL hanya di premium, tanpa chase breakdown.",
   "layers": [
     {
       "name": "L1",
-      "ticket": 5298075518,
+      "ticket": 5317987330,
       "type": "SELL LIMIT",
       "entry": 4107.9,
       "sl": 4121,
-      "tp1": 4055.5,
+      "tp1": 4067.9,
       "lot": 0.01,
       "risk_poin": 13.1,
-      "tp1_poin": 52.4,
-      "rr": "1:4",
-      "role": "TP1 -> tutup"
+      "tp1_poin": 40,
+      "rr": "1:3,05",
+      "role": "TP1 40 pips"
     },
     {
       "name": "L2",
-      "ticket": 5298075541,
+      "ticket": 5317987354,
       "type": "SELL LIMIT",
       "entry": 4107.9,
       "sl": 4121,
@@ -28,14 +28,15 @@
       "lot": 0.01,
       "risk_poin": 13.1,
       "tp2_poin": 100,
-      "rr": "1:7.6",
-      "role": "runner 100 poin"
+      "rr": "1:7,6",
+      "role": "runner 100 pips"
     }
   ],
-  "konfluensi": "FIBO 50% 4107,9 + mid H1 4110,6 + mid M30 4105,5 + zona premium (mid range 4081,7)",
-  "risk_total": "26,2 poin x 0.01 = $26,2 = 1,75% modal (batas 2% = $30)",
-  "syarat": "Idealnya saat harga masuk zona muncul PINE M15 SELL + CHoCH-S. Kalau D1 flip BULLISH -> cancel.",
-  "aturan": "TP1 1:4 (52,4 poin). SL otomatis ke BE setelah +30 poin (guardian_be.py). Runner L2 100 poin (1:7,6). TIDAK ada auto-close 1,5jt.",
-  "invalidasi": "Cancel jika H1 close di atas 4121 sebelum fill (breakout premium gagal) atau D1 flip bullish.",
-  "jatah": "reset 23 Okt: 3 entry, 0 loss"
+  "risk_total": "26,2 poin x 0,01 = $26,2 (1,75% dari $1.500; batas 2% = $30)",
+  "konfluensi": "FIBO 50% 4107,9 + mid H1 4110,6 + supply 4116",
+  "syarat": "Fill idealnya saat retest premium; kalau D1 flip BULLISH -> cancel. Jangan tambah entry breakdown (MISS #16).",
+  "aturan": "SL otomatis ke BE saat +30 poin (guardian_be.py). TP1 4067,9; runner 4007,9. Tanpa auto-close 1,5jt.",
+  "fomc": "FOMC decision 29 Okt 01:00 WIB (28 Okt 14:00 ET). Base case HAWKISH HOLD (~92% hold, Des ~80% hike) -> tekanan ke 4000/3942-3975. Dovish hold -> squeeze 4100-4179 (limit kita bisa terisi). Surprise hike ~8-15% -> flush 3942.",
+  "invalidasi": "Cancel jika H1 close >4121 sebelum fill atau D1 flip bullish. Hindari entry baru 60 menit sebelum 01:00 WIB 29 Okt.",
+  "jatah": "26 Okt: 3 entry, 0 loss"
 }
